@@ -1,0 +1,64 @@
+---
+title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 1, Data"
+author: "Sarah Gaichas, James Gartland, Brian Smith, Elizabeth Ng, Michael Celestino,
+  Anthony Wood, Katie Drew, Abigail Tyrell, and James Thorson"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  bookdown::pdf_document2:
+    includes: 
+       in_header: latex/header1.tex
+    keep_tex: true
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
+  bookdown::word_document2:
+    toc: false
+link-citations: yes
+csl: "canadian-journal-of-fisheries-and-aquatic-sciences.csl"
+bibliography: FishDiet_EcoIndicators.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
+                      message = FALSE,
+                      warning = FALSE)
+
+library(tidyverse)
+theme_set(theme_bw())
+library(here)
+
+```
+
+The number of survey stations missing surface temperature data varied considerably by decade. A large percentage of survey stations lacked in-situ temperature measurements between 1985 and 1990, while the percentage of stations missing temperature was generally below 10% (with a few exceptions) from 1991-2021 (Table \@ref(tab:sstdat)). Therefore, OISST temperature estimates were more commonly substituted early in the time series. 
+
+```{r sstdat}
+#[add stuff about how many SST values were missing and which years got substituted]
+
+inputdat <- readRDS(here("fhdat/bluepyagg_stn_all_OISST.rds"))
+
+stnsummary <- inputdat %>%
+  dplyr::filter(year>1984) %>%
+  dplyr::group_by(year, season_ng) %>%
+  dplyr::summarise(nstation = n(),
+                   hastemp = sum(!is.na(surftemp))) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(percentmiss = (nstation - hastemp)/nstation*100) %>%
+  tidyr::pivot_wider(names_from = season_ng,
+    values_from = c(nstation, hastemp, percentmiss)) %>%
+  dplyr::select(year, nstation_SPRING, hastemp_SPRING, percentmiss_SPRING,
+                nstation_FALL, hastemp_FALL, percentmiss_FALL)
+
+flextable::flextable(stnsummary) %>%
+  flextable::set_header_labels(year = 'Year', 
+                               nstation_SPRING = "Spring N stations", 
+                               hastemp_SPRING = "Spring N stations with in situ temperature",
+                               percentmiss_SPRING = "Spring percent missing temperature",
+                               nstation_FALL = "Fall N stations", 
+                               hastemp_FALL = "Fall N stations with in situ temperature",
+                               percentmiss_FALL = "Fall percent missing temperature") %>%
+  flextable::set_caption("Number of survey stations by year and season with in situ sea surface temperature measurements.") %>%
+  flextable::colformat_double(big.mark = "", digits = 0) %>%
+  #flextable::autofit()
+  flextable::width(width = 1)
+
+```

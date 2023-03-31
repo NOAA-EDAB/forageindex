@@ -1,0 +1,240 @@
+---
+title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 2, Model selection"
+author: "Sarah Gaichas, James Gartland, Brian Smith, Elizabeth Ng, Michael Celestino,
+  Anthony Wood, Katie Drew, Abigail Tyrell, and James Thorson"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  bookdown::word_document2:
+    toc: false
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
+  bookdown::pdf_document2:
+    includes: 
+       in_header: latex/header1.tex
+    keep_tex: true
+link-citations: yes
+csl: "canadian-journal-of-fisheries-and-aquatic-sciences.csl"
+bibliography: FishDiet_EcoIndicators.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
+                      message = FALSE,
+                      warning = FALSE)
+
+library(tidyverse)
+theme_set(theme_bw())
+library(here)
+
+```
+
+# VAST model selection {-}
+
+Comparisons of AIC are presented for both the first (spatial and spatio-temporal random effects, Table \@ref(tab:modsel1)) and second (catchability covariates, Table \@ref(tab:modsel2)) rounds of model selection. 
+
+```{r}
+
+# from each output folder in pyindex, 
+outdir <- here("pyindex_modsel1")
+moddirs <- list.dirs(outdir) 
+moddirs <- moddirs[-1]
+# keep folder name
+modnames <- list.dirs(outdir, full.names = FALSE)
+
+
+# function to apply extracting info
+getmodinfo <- function(d.name){
+  # read settings
+  modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+  modname <- modpath[length(modpath)]
+  
+  settings <- read.table(file.path(d.name, "settings.txt"), comment.char = "",
+    fill = TRUE, header = FALSE)
+  
+  n_x <- as.numeric(as.character(settings[(which(settings[,1]=="$n_x")+1),2]))
+  grid_size_km <- as.numeric(as.character(settings[(which(settings[,1]=="$grid_size_km")+1),2]))
+  max_cells <- as.numeric(as.character(settings[(which(settings[,1]=="$max_cells")+1),2]))
+  use_anisotropy <- as.character(settings[(which(settings[,1]=="$use_anisotropy")+1),2])
+  fine_scale <- as.character(settings[(which(settings[,1]=="$fine_scale")+1),2])
+  bias.correct <- as.character(settings[(which(settings[,1]=="$bias.correct")+1),2])
+  
+  #FieldConfig
+  if(settings[(which(settings[,1]=="$FieldConfig")+1),1]=="Component_1"){
+    omega1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+2),2])
+    omega2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),1])
+    epsilon1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),2])
+    epsilon2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+5),1])
+    beta1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+6),2])
+    beta2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+7),1])
+  }
+  
+  if(settings[(which(settings[,1]=="$FieldConfig")+1),1]=="Omega1"){
+    omega1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),1])
+    omega2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),1])
+    epsilon1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),2])
+    epsilon2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),2])
+    beta1 <- "IID"
+    beta2 <- "IID"
+  }
+  
+  
+  #RhoConfig
+  rho_beta1 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+3),1]))
+  rho_beta2 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+3),2]))
+  rho_epsilon1 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+4),1]))
+  rho_epsilon2 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+4),2]))
+  
+  # read parameter estimates, object is called parameter_Estimates
+  load(file.path(d.name, "parameter_estimates.RData"))
+  
+  AIC <- parameter_estimates$AIC[1]  
+  converged <- parameter_estimates$Convergence_check[1]
+  fixedcoeff <- unname(parameter_estimates$number_of_coefficients[2])
+  randomcoeff <- unname(parameter_estimates$number_of_coefficients[3])
+  
+  #index <- read.csv(file.path(d.name, "Index.csv"))
+  
+  
+  # return model attributes as a dataframe
+  out <- data.frame(modname = modname,
+                    n_x = n_x,
+                    grid_size_km = grid_size_km,
+                    max_cells = max_cells,
+                    use_anisotropy = use_anisotropy,
+                    fine_scale =  fine_scale,
+                    bias.correct = bias.correct,
+                    omega1 = omega1,
+                    omega2 = omega2,
+                    epsilon1 = epsilon1,
+                    epsilon2 = epsilon2,
+                    beta1 = beta1,
+                    beta2 = beta2,
+                    rho_epsilon1 = rho_epsilon1,
+                    rho_epsilon2 = rho_epsilon2,
+                    rho_beta1 = rho_beta1,
+                    rho_beta2 = rho_beta2,
+                    AIC = AIC,
+                    converged = converged,
+                    fixedcoeff = fixedcoeff,
+                    randomcoeff = randomcoeff#,
+                    #index = index
+  )
+  	
+	return(out)
+
+}
+
+
+modcompare <- purrr::map_dfr(moddirs, getmodinfo)
+```
+
+Models compared using REML are identified by model name ("modname" in Tables \@ref(tab:modsel1)) which includes all prey aggregated ("allagg" for all models), season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which fixed and random spatial and spatio-temporal effects were included in which linear predictor (1 or 2). The names for model options and associated VAST model settings are:
+
+Model selection 1 (spatial, spatio-temporal effects, no covariates) options (following @ng_predator_2021) and naming:
+*  All models set Use_REML = TRUE in fit_model specifications.  
+*  Modeled effects, model name suffix, and VAST settings by model:  
+
+1.  "_alleffectson" = Spatial and spatio-temporal random effects plus anisotropy in both linear predictors; FieldConfig default (all IID)
+1.  "_noaniso" = Spatial and spatio-temporal random effects in both linear predictors with anisotopy turned off; FieldConfig default (all IID) and `use_anisotopy = FALSE`
+1.  "_noomeps2" = Spatial and spatio-temporal random effects plus anisotropy only in linear predictor 1;   FieldConfig = 0 for Omega2, Epsilon2
+1.  "_noomeps2_noaniso" = Spatial and spatio-temporal random effects only in linear predictor 1 with anisotopy turned off;  FieldConfig = 0 for Omega2, Epsilon2 and `use_anisotopy = FALSE`
+1. "_noomeps2_noeps1" =  Spatial random effects plus anisotropy only in linear predictor 1;   FieldConfig = 0 for Omega2, Epsilon2, Epsilon1
+1.  "_noomeps2_noeps1_noaniso" = Spatial random effects only in linear predictor 1 with anisotopy turned off;   FieldConfig = 0 for Omega2, Epsilon2, Epsilon1 and `use_anisotopy = FALSE`
+1.  "_noomeps12" = Anisotropy, but no spatial or spatio-temporal random effects in either linear predictor;   FieldConfig = 0 for both Omega, Epsilon 
+1.  "_noomeps12_noaniso" = No spatial or spatio-temporal random effects in either linear predictor;  FieldConfig = 0 for both Omega, Epsilon  and `use_anisotopy = FALSE`
+
+
+```{r modsel1}
+modselect <- modcompare %>%
+  dplyr::mutate(season = case_when(str_detect(modname, "_fall_") ~ "Fall",
+                            str_detect(modname, "spring") ~ "Spring",
+                            str_detect(modname, "_all_") ~ "Annual",
+                            TRUE ~ as.character(NA))) %>%
+  dplyr::mutate(converged2 = case_when(str_detect(converged, "no evidence") ~ "likely",
+                                str_detect(converged, "is likely not") ~ "unlikely",
+                                TRUE ~ as.character(NA))) %>%
+  dplyr::group_by(season) %>%
+  dplyr::mutate(deltaAIC = AIC-min(AIC)) %>%
+  dplyr::select(modname, season, deltaAIC, fixedcoeff,
+         randomcoeff, use_anisotropy, 
+         omega1, omega2, epsilon1, epsilon2, 
+         beta1, beta2, AIC, converged2) %>%
+  dplyr::arrange(season, AIC)
+
+# DT::datatable(modselect, rownames = FALSE, 
+#               options= list(pageLength = 25, scrollX = TRUE),
+#               caption = "Comparison of delta AIC values using Restricted Maxiumum Likelihood (REML) for alternative fixed and random effects model structures. See text for model descriptions.")
+
+flextable::flextable(modselect %>%
+                       dplyr::select(-c(use_anisotropy, 
+         omega1, omega2, epsilon1, epsilon2, 
+         beta1, beta2))) %>%
+  flextable::set_caption("Comparison of delta AIC values using Restricted Maxiumum Likelihood (REML) for alternative fixed and random effects model structures. See text for model descriptions.") %>%
+  flextable::fontsize(size = 9, part = "all") %>%
+  flextable::autofit()
+```
+
+Using REML, models including spatial and spatio-temporal random effects as well as anisotropy were best supported by the data. This was true for the spring dataset, the fall dataset, and the annual (seasons combined) dataset. 
+
+For the second round of model selection with different combinations of vessel effects and or catchability covariates, "modname" in \@ref(tab:modsel2) follows a similar pattern as above, with  all prey aggregated ("allagg" for all models), season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which vessel effects or covariates were included. The names for model options and associated VAST model settings are: 
+
+Model selection 2 (covariates) options, FieldConfig default (all IID), with anisotropy:
+
+1.  "_base" =          No vessel overdispersion or length/number covariates   
+1.  "_len" =           Predator mean length covariate
+1.  "_num" =           Number of predator species covariate
+1.  "_lennum" =        Predator mean length and number of predator species covariates
+1.  "_sst" =           Combined in situ and OISST covariate
+1.  "_lensst" =        Predator mean length and SST covariates
+1.  "_numsst" =        Number of predator species and SST covariates
+1.  "_lennumsst" =     Predator mean length, number of predator species, and SST covariates
+1.  "_eta10" =         Overdispersion (vessel effect) in first linear predictor (prey encounter)
+1.  "_eta11" =         Overdispersion (vessel effect) in both linear predictors (prey encounter and weight)
+
+
+```{r modsel2}
+# from each output folder in pyindex, 
+outdir <- here("pyindex_modsel2")
+moddirs <- list.dirs(outdir) 
+moddirs <- moddirs[-1]
+# keep folder name
+modnames <- list.dirs(outdir, full.names = FALSE)
+
+modcompare2 <- purrr::map_dfr(moddirs, getmodinfo)
+
+modselect2 <- modcompare2 %>%
+  dplyr::mutate(season = case_when(str_detect(modname, "_fall_") ~ "Fall",
+                            str_detect(modname, "spring") ~ "Spring",
+                            str_detect(modname, "_all_") ~ "Annual",
+                            TRUE ~ as.character(NA))) %>%
+  dplyr::mutate(converged2 = case_when(str_detect(converged, "no evidence") ~ "likely",
+                                str_detect(converged, "is likely not") ~ "unlikely",
+                                TRUE ~ as.character(NA))) %>%
+  dplyr::group_by(season) %>%
+  dplyr::mutate(deltaAIC = AIC-min(AIC)) %>%
+  dplyr::select(modname, season, deltaAIC, fixedcoeff,
+         randomcoeff, use_anisotropy, 
+         omega1, omega2, epsilon1, epsilon2, 
+         beta1, beta2, AIC, converged2) %>%
+  dplyr::arrange(season, AIC)
+
+# DT::datatable(modselect2, rownames = FALSE, 
+#               options= list(pageLength = 50, scrollX = TRUE),
+#               caption = "Comparison of delta AIC values for alternative vessel effects and catchability covariates. See text for model descriptions.")
+
+flextable::flextable(modselect2%>%
+                       dplyr::select(-c(use_anisotropy, 
+         omega1, omega2, epsilon1, epsilon2, 
+         beta1, beta2))) %>%
+  flextable::set_caption("Comparison of delta AIC values for alternative vessel effects and catchability covariates. See text for model descriptions.") %>%
+  flextable::fontsize(size = 9, part = "all") %>%
+  flextable::autofit()
+
+
+```
+
+
+Catchability covariates were better supported by the data than vessel effects. Model comparisons above led us to the best model fit using mean predator length, number of predator species, and SST at a survey station as catchability covariates. 
+
+# References
