@@ -1,0 +1,614 @@
+---
+title: "Create VAST Input Dataset"
+author: "Sarah Gaichas, Jim Gartland, Brian Smith, Bluefish WG"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    code_fold: hide
+link-citations: yes
+csl: ices-journal-of-marine-science.csl
+bibliography: FishDiet_EcoIndicators.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+
+library(tidyverse)
+library(here)
+library(DT)
+
+```
+
+
+## Create Input Data
+
+### Bluefish prey, from both NEFSC and NEAMAP surveys
+
+Get NEFSC food habits data (as of October 8 2022 contains only 1973-2020 data, check years):
+```{r}
+# object is called `allfh`
+load(here("fhdat/allfh.Rdata"))
+
+# as of October 8 2022 contains only 1973-2020 data
+unique(allfh$year)
+```
+
+Load 2021 NEFSC food habits data (October 8 2022, check years):
+
+```{r}
+#object is called allfh21
+load(here("fhdat/allfh21.Rdata"))
+
+# check years
+unique(allfh21$year)
+```
+
+Make new NEFSC dataset 1973-2021: 
+
+```{r}
+allfh <- allfh %>%
+  dplyr::bind_rows(allfh21)
+
+preycount <- allfh %>%
+   group_by(pdcomnam, pynam) %>%
+   summarise(count = n()) %>%
+   filter(pdcomnam != "") %>%
+   #arrange(desc(count))
+   pivot_wider(names_from = pdcomnam, values_from = count) 
+
+gencomlist <- allfh %>%  
+  select(pynam, pycomnam2, gencom2) %>%
+  distinct()
+
+NEFSCblueprey <- preycount %>%
+  #filter(BLUEFISH > 9) %>%
+  filter(!pynam %in% c("EMPTY", "BLOWN",
+                       "FISH", "OSTEICHTHYES",
+                       "ANIMAL REMAINS",
+                       "FISH SCALES")) %>%
+  #filter(!str_detect(pynam, "SHRIMP|CRAB")) %>%
+  left_join(gencomlist) %>%
+  filter(!gencom2 %in% c("ARTHROPODA", "ANNELIDA",
+                         "CNIDARIA", "UROCHORDATA",
+                         "ECHINODERMATA", "WORMS",
+                         "BRACHIOPODA", "COMB JELLIES",
+                         "BRYOZOA", "SPONGES",
+                         "MISCELLANEOUS", "OTHER")) %>%
+  arrange(desc(BLUEFISH))
+
+NEAMAPblueprey <- read.csv(here("fhdat/Full Prey List_Common Names.csv")) %>%
+  #filter(BLUEFISH > 9) %>%
+  filter(!SCIENTIFIC.NAME %in% c("Actinopterygii", "fish scales",
+                                 "Decapoda (megalope)", 
+                                 "unidentified material",
+                                 "Plantae",
+                                 "unidentified animal"))#,
+         #!COMMON.NAME %in% c("wrymouth"))
+
+NEAMAPprey <- NEAMAPblueprey %>%
+  dplyr::select(COMMON.NAME, SCIENTIFIC.NAME, BLUEFISH) %>%
+  dplyr::filter(!is.na(BLUEFISH)) %>%
+  dplyr::mutate(pynam2 = tolower(SCIENTIFIC.NAME),
+                pynam2 = stringr::str_replace(pynam2, "spp.", "sp")) %>%
+  dplyr::rename(NEAMAP = BLUEFISH)
+
+
+NEFSCprey <- NEFSCblueprey %>%
+  dplyr::select(pycomnam2, pynam, BLUEFISH) %>%
+  dplyr::filter(!is.na(BLUEFISH)) %>%
+  dplyr::mutate(pynam2 = tolower(pynam)) %>%
+  dplyr::rename(NEFSC = BLUEFISH)
+
+blueprey <- NEFSCprey %>% 
+  dplyr::full_join(NEAMAPprey) %>%
+  dplyr::mutate(NEAMAP = ifelse(is.na(NEAMAP), 0, NEAMAP),
+                NEFSC = ifelse(is.na(NEFSC), 0, NEFSC),
+                total = NEFSC + NEAMAP,
+                PREY = ifelse(is.na(SCIENTIFIC.NAME), pynam, SCIENTIFIC.NAME),
+                COMMON = ifelse(is.na(COMMON.NAME), pycomnam2, COMMON.NAME),
+                pynam = ifelse(is.na(pynam), toupper(pynam2), pynam)) %>%
+  dplyr::arrange(desc(total)) %>%
+  dplyr::filter(total>20 | pynam=="SCOMBER SCOMBRUS") %>% # >20 leaves out mackerel
+  dplyr::mutate(COMMON = case_when(pynam=="ILLEX SP" ~ "Shortfin squids",
+                                   pynam2=="teuthida" ~ "Unidentified squids",
+                                   TRUE ~ COMMON)) %>%
+  dplyr::mutate(PREY = stringr::str_to_sentence(PREY),
+                COMMON = stringr::str_to_sentence(COMMON))
+
+```
+
+### Predator list based on NEFSC survey
+
+The predator list is based on the most recent diet similarity matrix by Smith posted on the [NEFSC shiny app](https://fwdp.shinyapps.io/tm2020/#4_DIET_OVERLAP_AND_TROPHIC_GUILDS), which results in a new Piscivore guild different from @garrison_dietary_2000. 
+
+We investigated alternative cluster algorithms [here](https://sgaichas.github.io/bluefishdiet/PreySimilarityUpdate.html). 
+
+Input NEFSC food habits overlap matrix:
+```{r}
+dietoverlap <- read_csv(here("fhdat/tgmat.2022-02-15.csv"))
+```
+
+Generate the Piscivore list based on clustering with the "complete" algorithm. Identify which species cluster with all 3 sizes of bluefish:
+```{r, fig.height=12}
+# follows example here https://cran.r-project.org/web/packages/dendextend/vignettes/Cluster_Analysis.html
+
+library(dendextend)
+
+d_dietoverlap <- dist(dietoverlap)
+
+guilds <- hclust(d_dietoverlap)
+
+#plot(guilds)
+
+dend <- as.dendrogram(guilds)
+
+dend <- rotate(dend, 1:136)
+
+dend <- color_branches(dend, k=6) # Brian uses 6 categories
+
+labels(dend) <- paste(as.character(names(dietoverlap[-1]))[order.dendrogram(dend)],
+                           "(",labels(dend),")", 
+                           sep = "")
+
+dend <- hang.dendrogram(dend,hang_height=0.1)
+
+# reduce the size of the labels:
+# dend <- assign_values_to_leaves_nodePar(dend, 0.5, "lab.cex")
+dend <- set(dend, "labels_cex", 0.5)
+# And plot:
+par(mar = c(3,3,3,7))
+plot(dend, 
+     main = "Clustered NEFSC diet data, (complete)
+     (the labels give the predator species/size)", 
+     horiz =  TRUE,  nodePar = list(cex = .007))
+#legend("topleft", legend = iris_species, fill = rainbow_hcl(3))
+
+```
+
+This is the list of predators and sizes:
+```{r}
+# list of species in node with all three bluefish sizes
+pisccomplete <- partition_leaves(dend)[[
+  which_node(dend, c("Bluefish..S(37)", "Bluefish..M(36)", "Bluefish..L(35)"))
+]]
+
+pisccomplete
+```
+
+### Create the NEFSC input dataset.
+
+First filter to the predators and identify the bluefish prey (new prey list 2023):  
+```{r}
+pisccompletedf <- data.frame("COMNAME" = toupper(str_remove(pisccomplete, "\\..*")),
+                              "SizeCat" = str_remove(str_extract(pisccomplete, "\\..*[:upper:]+"), "\\.."),
+                              "feedguild" = "pisccomplete")
+ 
+ fh.nefsc.pisc.pisccomplete <- allfh %>%
+  #filter(pynam != "EMPTY") %>%
+  left_join(pisccompletedf, by = c("pdcomnam" = "COMNAME",
+                               "sizecat" = "SizeCat")) %>%
+  filter(!is.na(feedguild))
+ 
+preycount  <- fh.nefsc.pisc.pisccomplete %>%
+   #group_by(year, season, pdcomnam, pynam) %>%
+   group_by(pdcomnam, pynam) %>%
+   summarise(count = n()) %>%
+   #arrange(desc(count))
+   pivot_wider(names_from = pdcomnam, values_from = count)
+
+ 
+gencomlist <- allfh %>%
+  select(pynam, pycomnam2, gencom2) %>%
+  distinct()
+
+NEFSCblueprey <- preycount %>%
+  #filter(BLUEFISH > 9) %>%
+  filter(!pynam %in% c("EMPTY", "BLOWN",
+                       "FISH", "OSTEICHTHYES",
+                       "ANIMAL REMAINS",
+                       "FISH SCALES")) %>%
+  #filter(!str_detect(pynam, "SHRIMP|CRAB")) %>%
+  left_join(gencomlist) %>%
+  filter(!gencom2 %in% c("ARTHROPODA", "ANNELIDA",
+                         "CNIDARIA", "UROCHORDATA",
+                         "ECHINODERMATA", "WORMS",
+                         "BRACHIOPODA", "COMB JELLIES",
+                         "BRYOZOA", "SPONGES",
+                         "MISCELLANEOUS", "OTHER")) %>%
+  arrange(desc(BLUEFISH))
+
+# March 2023, formally add NEAMAP to prey decisions
+NEAMAPblueprey <- read.csv(here("fhdat/Full Prey List_Common Names.csv")) %>%
+  #filter(BLUEFISH > 9) %>%
+  filter(!SCIENTIFIC.NAME %in% c("Actinopterygii", "fish scales",
+                                 "Decapoda (megalope)", 
+                                 "unidentified material",
+                                 "Plantae",
+                                 "unidentified animal"))
+
+NEAMAPprey <- NEAMAPblueprey %>%
+  dplyr::select(COMMON.NAME, SCIENTIFIC.NAME, BLUEFISH) %>%
+  dplyr::filter(!is.na(BLUEFISH)) %>%
+  dplyr::mutate(pynam2 = tolower(SCIENTIFIC.NAME),
+                pynam2 = stringr::str_replace(pynam2, "spp.", "sp")) %>%
+  dplyr::rename(NEAMAP = BLUEFISH)
+
+
+NEFSCprey <- NEFSCblueprey %>%
+  dplyr::select(pycomnam2, pynam, BLUEFISH) %>%
+  dplyr::filter(!is.na(BLUEFISH)) %>%
+  dplyr::mutate(pynam2 = tolower(pynam)) %>%
+  dplyr::rename(NEFSC = BLUEFISH)
+
+# new criteria March 2023, >20 observations NEAMAP+NEFSC, but keep mackerel
+# removes the flatfish order (too broad) and unid Urophycis previously in NEAMAP
+blueprey <- NEFSCprey %>% 
+  dplyr::full_join(NEAMAPprey) %>%
+  dplyr::mutate(NEAMAP = ifelse(is.na(NEAMAP), 0, NEAMAP),
+                NEFSC = ifelse(is.na(NEFSC), 0, NEFSC),
+                total = NEFSC + NEAMAP,
+                PREY = ifelse(is.na(SCIENTIFIC.NAME), pynam, SCIENTIFIC.NAME),
+                COMMON = ifelse(is.na(COMMON.NAME), pycomnam2, COMMON.NAME),
+                pynam = ifelse(is.na(pynam), toupper(pynam2), pynam)) %>%
+  dplyr::arrange(desc(total)) %>%
+  dplyr::filter(total>20 | pynam=="SCOMBER SCOMBRUS") %>% # >20 leaves out mackerel
+  dplyr::mutate(COMMON = case_when(pynam=="ILLEX SP" ~ "Shortfin squids",
+                                   pynam2=="teuthida" ~ "Unidentified squids",
+                                   TRUE ~ COMMON)) %>%
+  dplyr::mutate(PREY = stringr::str_to_sentence(PREY),
+                COMMON = stringr::str_to_sentence(COMMON))
+
+
+fh.nefsc.pisc.pisccomplete.blueprey <- fh.nefsc.pisc.pisccomplete %>%
+  mutate(blueprey = case_when(pynam %in% blueprey$pynam ~ "blueprey",
+                              TRUE ~ "othprey"))
+
+preystn.pisccomplete <- fh.nefsc.pisc.pisccomplete.blueprey %>%
+  group_by(year, season, station) %>%
+  count(blueprey) %>%
+  pivot_wider(names_from = blueprey, values_from = n) %>%
+  filter(year>1984)
+
+#dim(preystn)[1]
+
+bluepreystn.pisccomplete <- preystn.pisccomplete %>% 
+  arrange(desc(blueprey)) %>%
+  filter(!is.na(blueprey))
+
+#dim(bluepreystn)[1]
+
+flextable::flextable(blueprey[,c('PREY', 'COMMON', 'NEFSC', 'NEAMAP', 'total')]) %>%
+  flextable::set_header_labels(PREY = "Prey",
+                               COMMON = "Prey common name",
+                               total = "Bluefish stomachs (n)") %>%
+  flextable::set_caption("Prey identified in bluefish stomachs, NEFSC (1973-2021) and NEAMAP (2007-2021) diet databases.") 
+
+
+```
+
+*Chunks below here save datasets so these are all set to eval=F*
+
+Assign station id, change the months for spring and fall to align with the assessment, and calculate mean bluefish prey per station in NEFSC:  
+```{r, eval=FALSE}
+bluepyall_stn <- fh.nefsc.pisc.pisccomplete.blueprey %>%
+  #create id linking cruise6_station
+  #create season_ng spring and fall Spring=Jan-May, Fall=June-Dec
+  mutate(id = paste0(cruise6, "_", station),
+         year = as.numeric(year),
+         month = as.numeric(month),
+         season_ng = case_when(month <= 6 ~ "SPRING",
+                               month >= 7 ~ "FALL",
+                               TRUE ~ as.character(NA))
+         ) %>%
+  select(year, season_ng, id, stratum,
+         pynam, pyamtw, pywgti, pyvoli, blueprey, 
+         pdcomnam, pdid, pdlen, pdsvol, pdswgt, 
+         beglat, beglon, declat, declon, 
+         bottemp, surftemp, setdepth) %>%
+  group_by(id) %>%
+  #mean blueprey g per stomach per tow: sum all blueprey g/n stomachs in tow
+  mutate(bluepywt = case_when(blueprey == "blueprey" ~ pyamtw,
+                               TRUE ~ 0.0),
+         bluepynam = case_when(blueprey == "blueprey" ~ pynam,
+                               TRUE ~ NA_character_)) 
+
+# save at prey disaggregated stage for paper
+saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn.rds"))
+
+stndat <- bluepyall_stn %>%
+  select(year, season_ng, id, 
+         beglat, beglon, declat, declon, 
+         bottemp, surftemp, setdepth) %>%
+  distinct()
+
+#pisc stomachs in tow count pdid for each pred and sum
+piscstom <- bluepyall_stn %>%
+  group_by(id, pdcomnam) %>%
+  summarise(nstompd = n_distinct(pdid)) %>%
+  group_by(id) %>%
+  summarise(nstomtot = sum(nstompd))
+
+#mean and var pred length per tow
+pisclen <- bluepyall_stn %>%
+  summarise(meanpisclen = mean(pdlen),
+            varpisclen = var(pdlen))
+
+bluepyagg_stn <- bluepyall_stn %>%
+  summarise(sumbluepywt = sum(bluepywt),
+            nbluepysp = n_distinct(bluepynam, na.rm = T),
+            npreysp = n_distinct(pynam),
+            npiscsp = n_distinct(pdcomnam)) %>%
+  left_join(piscstom) %>%
+  mutate(meanbluepywt = sumbluepywt/nstomtot) %>%
+  left_join(pisclen) %>%
+  left_join(stndat)
+
+# save at same stage as before, writing over old file
+saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn.rds"))
+
+# current dataset, fix declon, add vessel
+nefsc_bluepyagg_stn <- readRDS(here("fhdat/bluepyagg_stn.rds")) %>%
+  mutate(declon = -declon,
+         vessel = case_when(year<2009 ~ "AL",
+                            year>=2009 ~ "HB", 
+                            TRUE ~ as.character(NA)))
+
+
+```
+
+### Combine with NEAMAP
+
+NEAMAP inputs were similarly updated based on this predator size category list. NEAMAP includes the following predators, adding two not captured by the NEFSC survey offshore and leaving out those from NEFSC not captured inshore:
+
++  Summer Flounder 21-70 cm
++  Silver Hake 21-76 cm
++  Weakfish 26-50 cm
++  Atlantic Cod 81-150 cm (we actually had some!)
++  Bluefish 3 – 118 cm
++  Striped Bass 31 – 120 cm
++  Spanish Mackerel 10 – 33.5 cm (everything we had)
++  Spotted Sea Trout 15.5 – 34 cm (again, everything we had)
++  Spiny Dogfish 36 – 117 cm
++  Goosefish 5 – 124 cm
+
+
+Read in new inputs, align columns, merge datasets, correct single station with wrong data in original dataset, and save:  
+```{r, eval=FALSE}
+# new prey list 2023
+#neamap_bluepreyagg_stn <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish PreyWQ2.csv")) %>%
+neamap_bluepreyagg_stn <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish Prey_wWQ2023.csv")) %>%
+  mutate(vessel = "NEAMAP") %>%
+  rename(id = station,
+         sumbluepywt = sumbluepreywt,
+         nbluepysp = nbfpreyspp,
+         #npreysp = ,
+         npiscsp = npiscspp,
+         nstomtot = nstomtot, 
+         meanbluepywt = meanbluepreywt,
+         meanpisclen = meanpisclen.simple, 
+         #varpisclen = ,
+         season_ng = season,
+         declat  = lat,
+         declon = lon,
+         bottemp = bWT,
+         #surftemp = , 
+         setdepth = depthm) 
+
+  
+# combine  
+bluepyagg_stn <-  nefsc_bluepyagg_stn %>%
+  bind_rows(neamap_bluepreyagg_stn) 
+
+# check for incorrect NEAMAP station
+bluepyagg_stn %>% filter(id == "NM20070901011") # has this station
+# if sumbluepywt is 106564.2, this is incorrect
+# corrected by Jim Gartland in September 2022
+
+# correct single NEAMAP station if needed
+#bluepyagg_stn$sumbluepywt[bluepyagg_stn$id == "NM20070901011"] <- 4.8404
+#bluepyagg_stn$meanbluepywt[bluepyagg_stn$id == "NM20070901011"] <- 0.186169231
+
+
+saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all.rds"))
+```
+
+## Merge with SST data to fill gaps
+Now we take this dataset and add back the OISST data for stations missing surface temperature to apply our catchability covariates in VAST.
+
+New prey list may have new stations so do all this over.
+
+First add dates to NEFSC station data
+
+```{r, eval=FALSE}
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
+
+diethauls <- bluepyagg_stn_all %>%
+  dplyr::select(id, declat, declon)
+
+NEFSCstations <- allfh %>%
+  dplyr::mutate(id = paste0(cruise6, "_", station),
+         year = as.numeric(year),
+         month = as.numeric(month),
+         day = as.numeric(day),
+         declon = -declon) %>%
+  dplyr::select(id, year, month, day, declat, declon) %>%
+  dplyr::distinct()
+
+
+```
+
+Then add SST to NEAMAP pull
+```{r, eval=FALSE}
+
+NEAMAPstationSST <- read.csv(here("fhdat/NEAMAP SST_2007_2021.csv"))
+
+NEAMAPstations <- NEAMAPstationSST %>%
+  dplyr::mutate(id = station,
+         year = as.numeric(year),
+         month = as.numeric(month),
+         day = as.numeric(day),
+         declat = latitude,
+         declon = longitude) %>%
+  dplyr::select(id, year, month, day, declat, declon) %>%
+  dplyr::distinct()
+
+```
+
+Now combine NEAMAP and NEFSC and join with diet stations
+
+```{r, eval=FALSE}
+
+Allstations <- bind_rows(NEFSCstations, NEAMAPstations)
+
+diethauls <- left_join(diethauls, Allstations)
+
+```
+
+There are still mismatches, see SSTmethods for details.
+
+Since we know the NEAMAP lat and lon in the original diet dataset are correct, we will merge only the station id number, day, month, year, and surface temperature into the diet dataset to avoid the mismatch with 34 stations. We will also add the SST field as surftemp to be in the same column as in-situ measured temperature for the NEFSC survey.
+
+```{r, eval=FALSE}
+
+NEAMAPstations <- NEAMAPstationSST %>%
+  dplyr::mutate(id = station,
+         year = as.numeric(year),
+         month = as.numeric(month),
+         day = as.numeric(day)) %>%
+  dplyr::select(id, year, month, day) %>%
+  dplyr::distinct()
+
+# remake diethauls
+diethauls <- bluepyagg_stn_all %>%
+  dplyr::select(id, declat, declon)
+
+NEFSCstations <- dplyr::select(NEFSCstations, c(-declat, -declon))
+
+Allstations <- bind_rows(NEFSCstations, NEAMAPstations)
+
+#station id, lat lon, year month day
+diethauls <- left_join(diethauls, Allstations)
+
+#add year month day to diet data
+bluepyagg_stn_all <- left_join(bluepyagg_stn_all, diethauls)
+
+# add NEAMAP SST to surftemp field
+NEAMAPidSST <- NEAMAPstationSST %>%
+  mutate(id = station) %>%
+  dplyr::select(id, SST)
+  
+bluepyagg_stn_all <- left_join(bluepyagg_stn_all, NEAMAPidSST, by="id") %>%
+  mutate(surftemp = coalesce(surftemp, SST)) %>%
+  dplyr::select(-SST)
+
+# save merged dataset with day, month, and NEAMAP surftemp, same name
+saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all.rds"))
+```
+
+```{r, eval=FALSE}
+missing <- bluepyagg_stn_all %>%
+  group_by(vessel) %>%
+  summarise(missingSST = sum(is.na(surftemp)))
+
+
+```
+
+Now match stations to OISST
+
+```{r, eval=FALSE}
+#read in diet data with month day fields
+
+library(sf)
+library(raster)
+library(terra)
+library(nngeo)
+
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
+
+stations <- bluepyagg_stn_all %>%
+  dplyr::mutate(day = str_pad(day, 2, pad='0'),
+                month = str_pad(month, 2, pad='0'),
+                yrmody = as.numeric(paste0(year, month, day))) %>%
+  dplyr::select(id, declon, declat, year, yrmody) %>%
+  na.omit() %>%
+  sf::st_as_sf(coords=c("declon","declat"), crs=4326, remove=FALSE) 
+
+#list of SST dataframes
+SSTdfs <- list.files(here("data-raw/gridded/sst_data/"), pattern = "*.rds")
+
+dietstn_OISST <- tibble()
+
+
+for(df in SSTdfs){
+  sstdf <- readRDS(paste0(here("data-raw/gridded/sst_data/", df)))
+  
+  # keep only bluefish dates in SST year
+  stationsyr <- stations %>%
+    filter(year == unique(sstdf$year))
+  
+  # keep only sst days in bluefish dataset
+  sstdf_survdays <- sstdf %>%
+    dplyr::mutate(yrmody = as.numeric(paste0(year, month, day)) )%>%
+    dplyr::filter(yrmody %in% unique(stationsyr$yrmody)) %>%
+    dplyr::mutate(year = as.numeric(year),
+           month = as.numeric(month),
+           day = as.numeric(day),
+           declon = Lon,
+           declat = Lat) %>%
+    dplyr::select(-Lon, -Lat) %>%
+    sf::st_as_sf(coords=c("declon","declat"), crs=4326, remove=FALSE)  
+  
+  # now join by nearest neighbor and date
+    
+#https://stackoverflow.com/questions/71959927/spatial-join-two-data-frames-by-nearest-feature-and-date-in-r      
+  
+yrdietOISST <- do.call('rbind', lapply(split(stationsyr, 1:nrow(stationsyr)), function(x) {
+   sf::st_join(x, sstdf_survdays[sstdf_survdays$yrmody == unique(x$yrmody),],
+           #join = st_nearest_feature
+           join = st_nn, k = 1, progress = FALSE
+           )
+ }))
+  
+#   #datatable solution--works but doesnt seem faster?
+#    df1 <- data.table(stationsyr)
+#   
+#  .nearest_samedate <- function(x) {
+#    st_join(st_as_sf(x), sstdf_survdays[sstdf_survdays$yrmody == unique(x$yrmody),], join = st_nearest_feature)
+#  }
+# # 
+#  yrdietOISST <- df1[, .nearest_samedate(.SD), by = list(1:nrow(df1))]
+
+dietstn_OISST <- rbind(dietstn_OISST, yrdietOISST)
+
+}
+
+saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST.rds"))
+
+```
+
+Now join OISST with dataset
+
+```{r, eval=FALSE}
+
+#read in diet data and station-OISST
+
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
+dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST.rds"))
+
+dietstn_OISST_merge <- dietstn_OISST %>%
+  dplyr::rename(declon = declon.x,
+         declat = declat.x,
+         year = year.x,
+         oisst = sst) %>%
+  dplyr::select(id, oisst) %>%
+  sf::st_drop_geometry()
+
+bluepyagg_stn_all_OISST <- left_join(bluepyagg_stn_all, dietstn_OISST_merge)
+
+saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST.rds"))
+```
+
+
+## References
