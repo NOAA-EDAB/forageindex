@@ -62,3 +62,20 @@ flextable::flextable(stnsummary) %>%
   flextable::width(width = 1)
 
 ```
+
+For stations with in-situ surface temperature measurements, we compared these to OISST from the same area. The spatial resolution of the OISST dataset is 
+
+XXX
+
+Plot sample OISST
+
+Plot match with line
+
+Most mismatches were near Cape Hatteras where the temperature gradient from the nearby Gulf Stream is not well captured by the resolution of OISST. Others were similarly near the continetnal shelf.
+
+Plot selected years
+
+Point to website with all years
+
+Despite some mismatches, we felt substituting OISST temperature to retain the stomach samples at stations with missing temperature data was preferable to leaving stomach data out due to missing covariate information.
+
