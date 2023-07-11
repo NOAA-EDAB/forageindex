@@ -31,7 +31,7 @@ library(here)
 
 # Forage index sensitivity to included prey species {-}
 
-## Different prey cut-off
+## Different prey cut-off {-}
 
 Two methods were applied to derive the bluefish prey list. Initially, a cut-off of 10 observations of a prey item across all sampled bluefish stomachs was applied separately to the NEFSC food habits data and the NEAMAP food habits data. This approach resulted in the same common bluefish prey items for each dataset, but slightly different uncommon prey items. For example, Atlantic herring, Atlantic mackerel, and silver hake were included as prey items for NEFSC data, but not for NEAMAP data using this approach, due to the timing of the surveys combined with the distribution of large and small bluefish and these prey items inshore versus offshore. 
 
@@ -133,8 +133,61 @@ BF
 ```
 
 
-## Exclude assessed prey (Atlantic herring, Atlantic mackerel, silver hake)
+## Exclude assessed prey (Atlantic herring, Atlantic mackerel, silver hake) {-}
 
+For a different application, three assessed prey were excluded from the dataset: Atlantic herring, Atlantic mackerel, and silver hake. In NEFSC stomach data, unidentified Clupeids are also likely to be Atlantic herring, so this prey group was excluded as well. Using this dataset, we can evaluate the sensitivity of the index to the prey list. We hypothesized that excluding these three assessed prey might make the most difference at the larger spatial scales including offshore regions (EPUs, Gulf of Maine, Georges Bank, and Mid-Atlantic). In particular, the dominance of silver hake in stomach content inputs from the Gulf of Maine and of silver hake and herring in stomach content inputs on Georges Bank noted in the manuscript suggests that excluding these species in those regions should affect the index.
+
+The NEAMAP dataset had few of these three species observed in predator stomach contents sampled nearshore in the Mid-Atlantic bight, therefore we hypothesized that the index might be less sensitive to inclusion or exclusion at the scale of the Bluefish assessment indices.
+
+Below we add the indices without Atlantic herring, Atlantic mackerel, and silver hake in dotted lines for comparison with the index using the initial prey list (dashed) and the full list included in this paper (solid line with error bars).
+
+As hypothesized, there are large differences in both scale and trend for prey indices estimated by VAST for the Gulf of Maine and Georges Bank when excluding assessed prey species. There is a difference in scale for the Mid Atlantic, but index trends correspond better in that region.
+
+Estimated indices at the bluefish assessment scale (state waters and bluefish inshore survey strata) have remarkably similar trends, although leaving out the three assessed prey species reduces the scale of the index.
+
+
+```{r}
+splitoutunmod <- read.csv("pyindex/unmod/allagg_fall_500_lennosst_ALLsplit_biascorrect/Index.csv")
+
+splitoutputunmod <- splitoutunmod %>%
+  dplyr::left_join(stratlook) %>%
+  dplyr::filter(Region %in% c("GOM", "GB", "MAB","MABGBstate", "bfin")) %>%
+  dplyr::mutate(Type = ifelse(Region %in% c("GOM", "GB", "MAB"), "Ecoregion", "Bluefish"),
+                Region = case_when(Region == "MABGBstate" ~ "StateWaters",
+                                   Region == "bfin" ~ "SurveyBluefish",
+                                   TRUE ~ Region))
+
+EPU <- ggplot(splitoutput %>% dplyr::filter(Region %in% c("GOM", "GB", "MAB")), 
+              aes(x=Time, y=Estimate, colour=Region)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  geom_line(data=splitoutput2022 %>% dplyr::filter(Region %in% c("GOM", "GB", "MAB")),
+            aes(x=Time, y=Estimate, colour=Region), linetype = "dashed") +
+  geom_line(data=splitoutputunmod %>% dplyr::filter(Region %in% c("GOM", "GB", "MAB")),
+            aes(x=Time, y=Estimate, colour=Region), linetype = "dotted") +
+  facet_wrap(~fct_relevel(Region, "GOM", "GB", "MAB"), scales = "free_y", ncol = 1) +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum") 
+
+BF <- ggplot(splitoutput %>% dplyr::filter(Region %in% c("StateWaters", "SurveyBluefish")), 
+             aes(x=Time, y=Estimate, colour=Region)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  geom_line(data=splitoutput2022 %>% dplyr::filter(Region %in% c("StateWaters", "SurveyBluefish")),
+            aes(x=Time, y=Estimate, colour=Region), linetype = "dashed") +
+  geom_line(data=splitoutputunmod %>% dplyr::filter(Region %in% c("StateWaters", "SurveyBluefish")),
+            aes(x=Time, y=Estimate, colour=Region), linetype = "dotted") +
+  facet_wrap(~fct_relevel(Region, "StateWaters", "SurveyBluefish"), scales = "free_y", ncol = 1) +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")
+
+EPU
+
+BF
+
+```
 
 
 # Forage index sensitivity to included predator species {-}
@@ -412,4 +465,4 @@ ggplot(foragetsmean, aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
 ```
 Additional work to evaluate why the models with a depth covariate were less likely to converge is warranted if information on scale is important to the index. For our application as a catchability covariate for a stock assessment index, scale was less important than trend. Therefore, the fully converged models without depth as a covariate were put forward as the final index.
 
-# References
+# References {-}
