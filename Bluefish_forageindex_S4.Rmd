@@ -1,0 +1,415 @@
+---
+title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 4, Sensitivities"
+author: "Sarah Gaichas, James Gartland, Brian Smith, Elizabeth Ng, Michael Celestino,
+  Anthony Wood, Katie Drew, Abigail Tyrell, and James Thorson"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
+  bookdown::word_document2:
+    toc: false
+  bookdown::pdf_document2:
+    includes: 
+       in_header: latex/header1.tex
+    keep_tex: true
+link-citations: yes
+csl: "canadian-journal-of-fisheries-and-aquatic-sciences.csl"
+bibliography: FishDiet_EcoIndicators.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
+                      message = FALSE,
+                      warning = FALSE)
+
+library(tidyverse)
+theme_set(theme_bw())
+library(here)
+
+```
+
+# Forage index sensitivity to included prey species {-}
+
+## Different prey cut-off
+
+Two methods were applied to derive the bluefish prey list. Initially, a cut-off of 10 observations of a prey item across all sampled bluefish stomachs was applied separately to the NEFSC food habits data and the NEAMAP food habits data. This approach resulted in the same common bluefish prey items for each dataset, but slightly different uncommon prey items. For example, Atlantic herring, Atlantic mackerel, and silver hake were included as prey items for NEFSC data, but not for NEAMAP data using this approach, due to the timing of the surveys combined with the distribution of large and small bluefish and these prey items inshore versus offshore. 
+
+The second method (the one used for this paper) first combined the prey observations across NEFSC and NEAMAP food habits datasets and then applied a cutoff of 20 observations of a prey item to the combined dataset. This ensured that a consistent set of prey were used across predators for both datasets. The advantage of this approach is that any Atlantic herring, Atlantic mackerel, and silver hake seen in non-bluefish predator stomachs in the NEAMAP dataset would still be included in the prey index to reflect these prey nearshore. Further, categories reflecting different survey naming conventions for the same prey were combined using this approach (e.g., *Illex illecebrosus* and *Illex* sp.)
+
+While the second method is appealing in its consistent treatment of prey items across the two datasets, the resulting index showed extremely low sensitivity to this change (dashed line compared with solid line below). This suggests that the index is primarily driven by the most commonly identified prey items across the datasets.  
+
+```{r}
+# compare 2022 prey list to paper update preylist for indices
+
+stratlook <- data.frame(Stratum = c("Stratum_1",
+                                    "Stratum_2",
+                                    "Stratum_3",
+                                    "Stratum_4",
+                                    "Stratum_5",
+                                    "Stratum_6",
+                                    "Stratum_7",
+                                    "Stratum_8",
+                                    "Stratum_9",
+                                    "Stratum_10",
+                                    "Stratum_11",
+                                    "Stratum_12",
+                                    "Stratum_13",
+                                    "Stratum_14",
+                                    "Stratum_15"),
+                        Region  = c("AllEPU", 
+                                    "MABGB", 
+                                    "MABGBstate", 
+                                    "MABGBfed", 
+                                    "MAB",
+                                    "GB",
+                                    "GOM",
+                                    "bfall",
+                                    "bfin",
+                                    "bfoff",
+                                    "MABGBalbinshore",
+                                    "MABGBothoffshore",
+                                    "albbfin",
+                                    "albbfall",
+                                    "allother"))
+
+splitoutold <- read.csv("pyindex/2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/Index.csv")
+splitoutnew <- read.csv("pyindex/allagg_fall_500_lennosst_ALLsplit_biascorrect/Index.csv")
+
+splitoutput2022 <- splitoutold %>%
+  dplyr::left_join(stratlook) %>%
+  dplyr::filter(Region %in% c("GOM", "GB", "MAB","MABGBstate", "bfin")) %>%
+  dplyr::mutate(Type = ifelse(Region %in% c("GOM", "GB", "MAB"), "Ecoregion", "Bluefish"),
+                Region = case_when(Region == "MABGBstate" ~ "StateWaters",
+                                   Region == "bfin" ~ "SurveyBluefish",
+                                   TRUE ~ Region))
+
+splitoutput <- splitoutnew %>%
+  dplyr::left_join(stratlook) %>%
+  dplyr::filter(Region %in% c("GOM", "GB", "MAB","MABGBstate", "bfin")) %>%
+  dplyr::mutate(Type = ifelse(Region %in% c("GOM", "GB", "MAB"), "Ecoregion", "Bluefish"),
+                Region = case_when(Region == "MABGBstate" ~ "StateWaters",
+                                   Region == "bfin" ~ "SurveyBluefish",
+                                   TRUE ~ Region))
+
+foragemax <- max(splitoutput$Estimate) #scale to new prey list
+
+fig <- ggplot(splitoutput, aes(x=Time, y=Estimate, colour=Region)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum") 
+
+
+
+EPU <- ggplot(splitoutput %>% dplyr::filter(Region %in% c("GOM", "GB", "MAB")), 
+              aes(x=Time, y=Estimate, colour=Region)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  geom_line(data=splitoutput2022 %>% dplyr::filter(Region %in% c("GOM", "GB", "MAB")),
+            aes(x=Time, y=Estimate, colour=Region), linetype = "dashed") +
+  facet_wrap(~fct_relevel(Region, "GOM", "GB", "MAB"), scales = "free_y", ncol = 1) +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum") 
+
+BF <- ggplot(splitoutput %>% dplyr::filter(Region %in% c("StateWaters", "SurveyBluefish")), 
+             aes(x=Time, y=Estimate, colour=Region)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  geom_line(data=splitoutput2022 %>% dplyr::filter(Region %in% c("StateWaters", "SurveyBluefish")),
+            aes(x=Time, y=Estimate, colour=Region), linetype = "dashed") +
+  facet_wrap(~fct_relevel(Region, "StateWaters", "SurveyBluefish"), scales = "free_y", ncol = 1) +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")
+
+EPU
+
+BF
+
+```
+
+
+## Exclude assessed prey (Atlantic herring, Atlantic mackerel, silver hake)
+
+
+
+# Forage index sensitivity to included predator species {-}
+
+# VAST model fit and index sensitivity with depth as a covariate {-}
+
+Comparisons are presented for models with and without depth as a covariate. This sensitivity was run for the fall model only, and include the "base" model (no covariates) and the two best fit models across all seasons (mean predator length, number of predators, and sea surface temperature as covariates, "lennumsst"; and mean predator length and number of predators as covariates "lennum") compared with depth only as a covariate, and depth combined with the two best fit models across all seasons: "deplennum" and "deplennumsst". 
+
+```{r}
+
+# from each output folder in pyindex, 
+outdir <- here("pyindex_modsel2")
+moddirs <- list.dirs(outdir) 
+moddirs <- moddirs[-1]
+# keep folder name
+modnames <- list.dirs(outdir, full.names = FALSE)
+
+
+# function to apply extracting info
+getmodinfo <- function(d.name){
+  # read settings
+  modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+  modname <- modpath[length(modpath)]
+  
+  settings <- read.table(file.path(d.name, "settings.txt"), comment.char = "",
+    fill = TRUE, header = FALSE)
+  
+  n_x <- as.numeric(as.character(settings[(which(settings[,1]=="$n_x")+1),2]))
+  grid_size_km <- as.numeric(as.character(settings[(which(settings[,1]=="$grid_size_km")+1),2]))
+  max_cells <- as.numeric(as.character(settings[(which(settings[,1]=="$max_cells")+1),2]))
+  use_anisotropy <- as.character(settings[(which(settings[,1]=="$use_anisotropy")+1),2])
+  fine_scale <- as.character(settings[(which(settings[,1]=="$fine_scale")+1),2])
+  bias.correct <- as.character(settings[(which(settings[,1]=="$bias.correct")+1),2])
+  
+  #FieldConfig
+  if(settings[(which(settings[,1]=="$FieldConfig")+1),1]=="Component_1"){
+    omega1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+2),2])
+    omega2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),1])
+    epsilon1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),2])
+    epsilon2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+5),1])
+    beta1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+6),2])
+    beta2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+7),1])
+  }
+  
+  if(settings[(which(settings[,1]=="$FieldConfig")+1),1]=="Omega1"){
+    omega1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),1])
+    omega2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),1])
+    epsilon1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),2])
+    epsilon2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),2])
+    beta1 <- "IID"
+    beta2 <- "IID"
+  }
+  
+  
+  #RhoConfig
+  rho_beta1 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+3),1]))
+  rho_beta2 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+3),2]))
+  rho_epsilon1 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+4),1]))
+  rho_epsilon2 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+4),2]))
+  
+  # read parameter estimates, object is called parameter_Estimates
+  load(file.path(d.name, "parameter_estimates.RData"))
+  
+  AIC <- parameter_estimates$AIC[1]  
+  converged <- parameter_estimates$Convergence_check[1]
+  fixedcoeff <- unname(parameter_estimates$number_of_coefficients[2])
+  randomcoeff <- unname(parameter_estimates$number_of_coefficients[3])
+  
+  #index <- read.csv(file.path(d.name, "Index.csv"))
+  
+  
+  # return model attributes as a dataframe
+  out <- data.frame(modname = modname,
+                    n_x = n_x,
+                    grid_size_km = grid_size_km,
+                    max_cells = max_cells,
+                    use_anisotropy = use_anisotropy,
+                    fine_scale =  fine_scale,
+                    bias.correct = bias.correct,
+                    omega1 = omega1,
+                    omega2 = omega2,
+                    epsilon1 = epsilon1,
+                    epsilon2 = epsilon2,
+                    beta1 = beta1,
+                    beta2 = beta2,
+                    rho_epsilon1 = rho_epsilon1,
+                    rho_epsilon2 = rho_epsilon2,
+                    rho_beta1 = rho_beta1,
+                    rho_beta2 = rho_beta2,
+                    AIC = AIC,
+                    converged = converged,
+                    fixedcoeff = fixedcoeff,
+                    randomcoeff = randomcoeff#,
+                    #index = index
+  )
+  	
+	return(out)
+
+}
+
+
+modcompare <- purrr::map_dfr(moddirs, getmodinfo)
+```
+
+
+For model comparisons with different combinations of catchability covariates, "modname" in \@ref(tab:modsel2) follows a similar pattern as in Supplement 2, with  all prey aggregated ("allagg" for all models), season ("fall" for models of months 7-12), number of knots (500 for all models), and which covariates were included. The names for model options and associated VAST model settings are: 
+
+Model covariates sensitivity options, FieldConfig default (all IID), with anisotropy:
+
+1.  "_base" =          No vessel overdispersion or length/number covariates 
+<!--
+1.  "_len" =           Predator mean length covariate
+1.  "_num" =           Number of predator species covariate
+-->
+1.  "_lennum" =        Predator mean length and number of predator species covariates
+<!--
+1.  "_sst" =           Combined in situ and OISST covariate
+1.  "_lensst" =        Predator mean length and SST covariates
+1.  "_numsst" =        Number of predator species and SST covariates
+-->
+1.  "_lennumsst" =     Predator mean length, number of predator species, and SST covariates
+<!--
+1.  "_eta10" =         Overdispersion (vessel effect) in first linear predictor (prey encounter)
+1.  "_eta11" =         Overdispersion (vessel effect) in both linear predictors (prey encounter and weight)
+-->
+1.  "_depth" =         Survey station depth covariate
+1.  "_deplennum" =     Survey station depth, predator mean length and number of predator species covariates
+1.  "_deplennumsst" =  Survey station depth, predator mean length, number of predator species, and SST covariates
+
+
+```{r modsel2}
+# from each output folder in pyindex, 
+outdir <- here("pyindex_modsel2")
+moddirs <- list.dirs(outdir) 
+moddirs <- moddirs[-1]
+# keep folder name
+modnames <- list.dirs(outdir, full.names = FALSE)
+
+modcompare2 <- purrr::map_dfr(moddirs, getmodinfo)
+
+modselect2 <- modcompare2 %>%
+  dplyr::mutate(season = case_when(str_detect(modname, "_fall_") ~ "Fall",
+                            str_detect(modname, "spring") ~ "Spring",
+                            str_detect(modname, "_all_") ~ "Annual",
+                            TRUE ~ as.character(NA))) %>%
+  dplyr::mutate(converged2 = case_when(str_detect(converged, "no evidence") ~ "likely",
+                                str_detect(converged, "is likely not") ~ "unlikely",
+                                TRUE ~ as.character(NA))) %>%
+  dplyr::group_by(season) %>%
+  dplyr::mutate(deltaAIC = AIC-min(AIC)) %>%
+  dplyr::select(modname, season, deltaAIC, fixedcoeff,
+         randomcoeff, use_anisotropy, 
+         omega1, omega2, epsilon1, epsilon2, 
+         beta1, beta2, AIC, converged2) %>%
+  dplyr::arrange(season, AIC)
+
+# DT::datatable(modselect2, rownames = FALSE, 
+#               options= list(pageLength = 50, scrollX = TRUE),
+#               caption = "Comparison of delta AIC values for alternative vessel effects and catchability covariates. See text for model descriptions.")
+
+flextable::flextable(modselect2%>%
+                       dplyr::select(-c(use_anisotropy, 
+         omega1, omega2, epsilon1, epsilon2, 
+         beta1, beta2))) %>%
+  flextable::set_caption("Comparison of delta AIC values for alternative vessel effects and catchability covariates. See text for model descriptions.") %>%
+  flextable::fontsize(size = 9, part = "all") %>%
+  flextable::autofit()
+
+
+```
+
+
+Model comparisons above for fall reinforce initial model selection findings of the best model fit including mean predator length, number of predator species, and SST at a survey station as catchability covariates. Including depth in addition to these covariates resulted in slightly improved model fits. However, models with depth included as a covariate had convergence issues, with maximum gradients 
+
+Indices resulting from the best fit models including/not including depth differ in scale, but differences in trend are less apparent.
+
+
+```{r}
+stratlook <- data.frame(Stratum = c("Stratum_1",
+                                    "Stratum_2",
+                                    "Stratum_3",
+                                    "Stratum_4",
+                                    "Stratum_5",
+                                    "Stratum_6",
+                                    "Stratum_7",
+                                    "Stratum_8",
+                                    "Stratum_9",
+                                    "Stratum_10",
+                                    "Stratum_11",
+                                    "Stratum_12",
+                                    "Stratum_13",
+                                    "Stratum_14",
+                                    "Stratum_15"),
+                        Region  = c("AllEPU", 
+                                    "MABGB", 
+                                    "MABGBstate", 
+                                    "MABGBfed", 
+                                    "MAB",
+                                    "GB",
+                                    "GOM",
+                                    "bfall",
+                                    "bfin",
+                                    "bfoff",
+                                    "MABGBalbinshore",
+                                    "MABGBothoffshore",
+                                    "albbfin",
+                                    "albbfall",
+                                    "allother"))
+
+
+```
+
+
+```{r indexcompare}
+
+# function to apply extracting info
+getmodindex <- function(d.name){
+  # read settings
+  modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+  modname <- modpath[length(modpath)]
+  
+  index <- read.csv(file.path(d.name, "Index.csv"))
+  # return model indices as a dataframe
+  out <- data.frame(modname = modname,
+                    index
+  )
+  
+  return(out)
+}
+
+modcompareindex <- purrr::map_dfr(moddirs, getmodindex)
+
+splitout <- modcompareindex #read.csv("pyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/Index.csv")
+
+splitoutput <- splitout %>%
+  dplyr::left_join(stratlook) %>%
+  dplyr::filter(Region %in% c("GOM", "GB", "MAB","MABGBstate", "bfin")) %>%
+  dplyr::mutate(Type = ifelse(Region %in% c("GOM", "GB", "MAB"), "Ecoregion", "Bluefish"),
+                Region = case_when(Region == "MABGBstate" ~ "StateWaters",
+                                   Region == "bfin" ~ "SurveyBluefish",
+                                   TRUE ~ Region))
+
+foragemax <- max(splitoutput$Estimate)
+
+ggplot(splitoutput, aes(x=Time, y=Estimate, colour=modname)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  
+  
+
+
+
+```
+```{r}
+
+foragetsmean <- splitoutput %>%
+  dplyr::group_by(modname, Region) %>%
+  dplyr::mutate(fmean = mean(Estimate)) 
+
+
+ggplot(foragetsmean, aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to mean")  
+
+```
+Additional work to evaluate why the models with a depth covariate were less likely to converge is warranted if information on scale is important to the index. For our application as a catchability covariate for a stock assessment index, scale was less important than trend. Therefore, the fully converged models without depth as a covariate were put forward as the final index.
+
+# References
