@@ -281,10 +281,10 @@ New_Extrapolation_List <- readRDS(here::here("spatialdat/CustomExtrapolationList
 # list of data, settings, and directory for output for each option
 
 #mod.season <- c("all_500", "fall_500", "spring_500") #includes n knots
-mod.season <- c("fall_500") #includes n knots
+mod.season <- c("spring_500") #includes n knots
 
 #mod.dat <- list(bluepyagg_stn_all, bluepyagg_stn_fall, bluepyagg_stn_spring)
-mod.dat <- list(bluepyagg_stn_fall)
+mod.dat <- list(bluepyagg_stn_spring)
 
 names(mod.dat) <- mod.season
 
@@ -436,6 +436,8 @@ for(season in mod.season){
                   Q_ikdeplennumsst)
   
   names(mod.Qik) <- mod.covar
+  
+  mod.covar <- c("base", "depth", "deplennum", "deplennumsst", "lennum", "lennumsst")
   
   for(covar in mod.covar) {
     
