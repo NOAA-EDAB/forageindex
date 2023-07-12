@@ -209,7 +209,7 @@ There are 10 stations with depth information missing, which were dropped from th
 ```{r}
 
 # from each output folder in pyindex, 
-outdir <- here("pyindex_modsel2")
+outdir <- here("pyindex_modsel2depth")
 moddirs <- list.dirs(outdir) 
 moddirs <- moddirs[-1]
 # keep folder name
@@ -330,7 +330,7 @@ Model covariates sensitivity options, FieldConfig default (all IID), with anisot
 
 ```{r modsel2}
 # from each output folder in pyindex, 
-outdir <- here("pyindex_modsel2")
+outdir <- here("pyindex_modsel2depth")
 moddirs <- list.dirs(outdir) 
 moddirs <- moddirs[-1]
 # keep folder name
