@@ -37,7 +37,7 @@ Two methods were applied to derive the bluefish prey list. Initially, a cut-off 
 
 The second method (the one used for this paper) first combined the prey observations across NEFSC and NEAMAP food habits datasets and then applied a cutoff of 20 observations of a prey item to the combined dataset. This ensured that a consistent set of prey were used across predators for both datasets. The advantage of this approach is that any Atlantic herring, Atlantic mackerel, and silver hake seen in non-bluefish predator stomachs in the NEAMAP dataset would still be included in the prey index to reflect these prey nearshore. Further, categories reflecting different survey naming conventions for the same prey were combined using this approach (e.g., *Illex illecebrosus* and *Illex* sp.)
 
-While the second method is appealing in its consistent treatment of prey items across the two datasets, the resulting index showed extremely low sensitivity to this change (dashed line compared with solid line below). This suggests that the index is primarily driven by the most commonly identified prey items across the datasets.  
+While the second method used in this paper is appealing in its consistent treatment of prey items across the two datasets, the resulting index showed extremely low sensitivity to changing the prey cutoff (dashed line, method 1 compared with solid line, method 2 below for bias corrected fall models). This suggests that the index is primarily driven by the most commonly identified prey items across the datasets.  
 
 ```{r}
 # compare 2022 prey list to paper update preylist for indices
@@ -135,11 +135,11 @@ BF
 
 ## Exclude assessed prey (Atlantic herring, Atlantic mackerel, silver hake) {-}
 
-For a different application, three assessed prey were excluded from the dataset: Atlantic herring, Atlantic mackerel, and silver hake. In NEFSC stomach data, unidentified Clupeids are also likely to be Atlantic herring, so this prey group was excluded as well. Using this dataset, we can evaluate the sensitivity of the index to the prey list. We hypothesized that excluding these three assessed prey might make the most difference at the larger spatial scales including offshore regions (EPUs, Gulf of Maine, Georges Bank, and Mid-Atlantic). In particular, the dominance of silver hake in stomach content inputs from the Gulf of Maine and of silver hake and herring in stomach content inputs on Georges Bank noted in the manuscript suggests that excluding these species in those regions should affect the index.
+While the index is not sensitive to slight changes in the cut-off for including rarely observed prey, we would expect sensitivity to inclusion or exclusion of major prey. For a different application evaluating only unmanaged forage species, three assessed prey were excluded from the dataset: Atlantic herring, Atlantic mackerel, and silver hake. In NEFSC stomach data, unidentified Clupeids are also likely to be Atlantic herring, so this prey group was excluded as well. Using this dataset, we can evaluate the sensitivity of the index to major contributors to the prey list. We hypothesized that excluding these three assessed prey might make the most difference at the larger spatial scales including offshore regions (EPUs, Gulf of Maine, Georges Bank, and Mid-Atlantic). In particular, the dominance of silver hake in stomach content inputs from the Gulf of Maine and of silver hake and herring in stomach content inputs on Georges Bank noted in the manuscript suggests that excluding these species in those regions should affect the index.
 
 The NEAMAP dataset had few of these three species observed in predator stomach contents sampled nearshore in the Mid-Atlantic bight, therefore we hypothesized that the index might be less sensitive to inclusion or exclusion at the scale of the Bluefish assessment indices.
 
-Below we add the indices without Atlantic herring, Atlantic mackerel, and silver hake in dotted lines for comparison with the index using the initial prey list (dashed) and the full list included in this paper (solid line with error bars).
+Below we add the fall bias corrected indices without Atlantic herring, Atlantic mackerel, and silver hake in dotted lines for comparison with the bias corrected indices using the initial prey list (dashed) and the full list included in this paper (solid line with error bars).
 
 As hypothesized, there are large differences in both scale and trend for prey indices estimated by VAST for the Gulf of Maine and Georges Bank when excluding assessed prey species. There is a difference in scale for the Mid Atlantic, but index trends correspond better in that region.
 
@@ -192,9 +192,19 @@ BF
 
 # Forage index sensitivity to included predator species {-}
 
+Based on previous work [@ng_predator_2021], we expect that individual predator stomach contents only partially reflect available forage. This was the basis for including multiple predators to construct the forage index, and selecting the subset of predator size classes with the most similar diet to our target predator, bluefish. Therefore, we do expect some index sensitivity to which predators are included. 
+
+Similar to the prey inclusion evaluation above, we expect the index to be less sensitive to the inclusion of predators with relatively low sampling or sampling limited to a small proportion of years or areas relative to predators with relatively high sampling levels overall that have been sampled consistently through time and across space.
+
+
+
 # VAST model fit and index sensitivity with depth as a covariate {-}
 
-Comparisons are presented for models with and without depth as a covariate. This sensitivity was run for the fall model only, and include the "base" model (no covariates) and the two best fit models across all seasons (mean predator length, number of predators, and sea surface temperature as covariates, "lennumsst"; and mean predator length and number of predators as covariates "lennum") compared with depth only as a covariate, and depth combined with the two best fit models across all seasons: "deplennum" and "deplennumsst". 
+Previous work found predator size to be an important "catchability" covariate for stomach content based indices of Atlantic herring [@ng_predator_2021]. In the current work, the number of predator species was also found to be an important catchability covariate, along with sea surface temperature. Here we explore an additional potential covariate, depth, which might affect availability of pelagic forage species to demersal predators sampled by a bottom trawl.
+
+Comparisons are presented for models with and without depth as a covariate. This sensitivity was run for the fall and spring models only, and include the "base" model (no covariates) and the two best fit models across all seasons (mean predator length, number of predators, and sea surface temperature as covariates, "lennumsst"; and mean predator length and number of predators as covariates "lennum") compared with depth only as a covariate, and depth combined with the two best fit models across all seasons: "deplennum" and "deplennumsst". 
+
+There are 10 stations with depth information missing, which were dropped from this analysis. This leaves 26,590 stations combined over spring and fall.
 
 ```{r}
 
@@ -293,7 +303,7 @@ modcompare <- purrr::map_dfr(moddirs, getmodinfo)
 ```
 
 
-For model comparisons with different combinations of catchability covariates, "modname" in \@ref(tab:modsel2) follows a similar pattern as in Supplement 2, with  all prey aggregated ("allagg" for all models), season ("fall" for models of months 7-12), number of knots (500 for all models), and which covariates were included. The names for model options and associated VAST model settings are: 
+For model comparisons with different combinations of catchability covariates, "modname" in \@ref(tab:modsel2) follows a similar pattern as in Supplement 2, with  all prey aggregated ("allagg" for all models), season ("spring" for models of months 1-6, "fall" for models of months 7-12), number of knots (500 for all models), and which covariates were included. The names for model options and associated VAST model settings are: 
 
 Model covariates sensitivity options, FieldConfig default (all IID), with anisotropy:
 
@@ -360,9 +370,9 @@ flextable::flextable(modselect2%>%
 ```
 
 
-Model comparisons above for fall reinforce initial model selection findings of the best model fit including mean predator length, number of predator species, and SST at a survey station as catchability covariates. Including depth in addition to these covariates resulted in slightly improved model fits. However, models with depth included as a covariate had convergence issues, with maximum gradients 
+Model comparisons above for fall and spring reinforce initial model selection findings of the best model fit including mean predator length, number of predator species, and SST at a survey station as catchability covariates. Including depth in addition to these covariates resulted in slightly improved model fits. However, models with depth included as a covariate had convergence issues, with maximum gradients several orders of magnitude higher than models without depth.
 
-Indices resulting from the best fit models including/not including depth differ in scale, but differences in trend are less apparent.
+We would not use an index from an unconverged model; it is considered unreliable. However, for illustrative purposes we compare the fall indices below (spring indicies show similar patterns). Indices resulting from the best fit models including/not including depth differ in scale, but we see no substantial differences in trend. The indices put forward in the manuscript are indicated in pink. None of the compared indices are bias corrected, as this requires extra run time. 
 
 
 ```{r}
@@ -420,9 +430,8 @@ getmodindex <- function(d.name){
 
 modcompareindex <- purrr::map_dfr(moddirs, getmodindex)
 
-splitout <- modcompareindex #read.csv("pyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/Index.csv")
-
-splitoutput <- splitout %>%
+splitoutput <- modcompareindex %>%
+  dplyr::mutate(Season = modname |> map(str_split, pattern = "_") |> map_chr(c(1,2))) %>%
   dplyr::left_join(stratlook) %>%
   dplyr::filter(Region %in% c("GOM", "GB", "MAB","MABGBstate", "bfin")) %>%
   dplyr::mutate(Type = ifelse(Region %in% c("GOM", "GB", "MAB"), "Ecoregion", "Bluefish"),
@@ -432,19 +441,32 @@ splitoutput <- splitout %>%
 
 foragemax <- max(splitoutput$Estimate)
 
-ggplot(splitoutput, aes(x=Time, y=Estimate, colour=modname)) +
+ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=modname)) +
   geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
   geom_point()+
   geom_line()+
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
   facet_wrap(~Region, scales = "free_y") +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
-  ylab("Relative forage biomass scaled to maximum")  
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Fall models: scale comparison")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
   
 
+# ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=modname)) +
+#   geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+#   geom_point()+
+#   geom_line()+
+#   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+#   facet_wrap(~Region, scales = "free_y") +
+#   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+#   ylab("Relative forage biomass scaled to maximum")  +
+#   ggtitle("Spring models")
 
 
 ```
+
 ```{r}
 
 foragetsmean <- splitoutput %>%
@@ -452,7 +474,7 @@ foragetsmean <- splitoutput %>%
   dplyr::mutate(fmean = mean(Estimate)) 
 
 
-ggplot(foragetsmean, aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
+ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
   #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
   #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
   geom_point()+
@@ -460,9 +482,25 @@ ggplot(foragetsmean, aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
   facet_wrap(~Region, scales = "free_y") +
   #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
-  ylab("Relative forage biomass scaled to mean")  
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Fall models: trend comparison") +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+# ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
+#   #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+#   #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+#   geom_point()+
+#   geom_line()+
+#   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+#   facet_wrap(~Region, scales = "free_y") +
+#   #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+#   ylab("Relative forage biomass scaled to time series mean")  +
+#   ggtitle("Spring models")
+
 
 ```
-Additional work to evaluate why the models with a depth covariate were less likely to converge is warranted if information on scale is important to the index. For our application as a catchability covariate for a stock assessment index, scale was less important than trend. Therefore, the fully converged models without depth as a covariate were put forward as the final index.
+
+Additional work to evaluate why the models with a depth covariate were less likely to converge is warranted if information on scale is important to the index. For our application of the index as a catchability covariate for a stock assessment, scale was less important than trend. Therefore, the fully converged models without depth as a covariate were put forward as the final index.
 
 # References {-}
