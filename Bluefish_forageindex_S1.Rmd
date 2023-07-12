@@ -1,16 +1,16 @@
 ---
-title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 1, Data"
+title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 1, SST Covariate Data and Index Sensitivity"
 author: "Sarah Gaichas, James Gartland, Brian Smith, Elizabeth Ng, Michael Celestino,
   Anthony Wood, Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
   bookdown::pdf_document2:
     includes: 
        in_header: latex/header1.tex
     keep_tex: true
-  bookdown::html_document2: 
-    toc: true
-    toc_float: true
   bookdown::word_document2:
     toc: false
 link-citations: yes
@@ -63,6 +63,8 @@ flextable::flextable(stnsummary) %>%
 
 ```
 
+## Comparison of in situ and OISST
+
 For stations with in-situ surface temperature measurements, we compared these to OISST from the same area. The spatial resolution of the OISST dataset is 
 
 XXX
@@ -78,4 +80,203 @@ Plot selected years
 Point to website with all years
 
 Despite some mismatches, we felt substituting OISST temperature to retain the stomach samples at stations with missing temperature data was preferable to leaving stomach data out due to missing covariate information.
+
+## Index sensitivity to SST covariates 
+
+The two best fitting models both include mean predator length and number of predator species as covariates; adding sea surface temperature to these covariates resulted in the best fitting model. To evaluate the overall impact of SST as a covariate, we first compare the indices with and without this covariate (best and second best fit to the data, respectively, although in fall the difference in AIC was small). These indices are not bias corrected.
+
+Including SST slightly increased index scale relative to the second best fitting model in fall, but had the opposite effect in spring. However, the index trends estimated by both models are nearly identical. Therefore, including OISST to fill in missing in-situ temperature data seems to have no impact on index trend (as the sst covariate itself has no impact on index trend). 
+
+```{r}
+stratlook <- data.frame(Stratum = c("Stratum_1",
+                                    "Stratum_2",
+                                    "Stratum_3",
+                                    "Stratum_4",
+                                    "Stratum_5",
+                                    "Stratum_6",
+                                    "Stratum_7",
+                                    "Stratum_8",
+                                    "Stratum_9",
+                                    "Stratum_10",
+                                    "Stratum_11",
+                                    "Stratum_12",
+                                    "Stratum_13",
+                                    "Stratum_14",
+                                    "Stratum_15"),
+                        Region  = c("AllEPU", 
+                                    "MABGB", 
+                                    "MABGBstate", 
+                                    "MABGBfed", 
+                                    "MAB",
+                                    "GB",
+                                    "GOM",
+                                    "bfall",
+                                    "bfin",
+                                    "bfoff",
+                                    "MABGBalbinshore",
+                                    "MABGBothoffshore",
+                                    "albbfin",
+                                    "albbfall",
+                                    "allother"))
+
+
+```
+
+
+```{r}
+# from each output folder in pyindex, 
+outdir <- here("pyindex_modsel2")
+moddirs <- list.dirs(outdir) 
+moddirs <- moddirs[-1]
+# keep folder name
+modnames <- list.dirs(outdir, full.names = FALSE)
+
+# function to apply extracting info
+getmodindex <- function(d.name){
+  # read settings
+  modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+  modname <- modpath[length(modpath)]
+  
+  index <- read.csv(file.path(d.name, "Index.csv"))
+  # return model indices as a dataframe
+  out <- data.frame(modname = modname,
+                    index
+  )
+  
+  return(out)
+}
+
+modcompareindex <- purrr::map_dfr(moddirs, getmodindex)
+
+splitoutput <- modcompareindex %>%
+  dplyr::mutate(Season = modname |> map(str_split, pattern = "_") |> map_chr(c(1,2))) %>%
+  dplyr::left_join(stratlook) %>%
+  dplyr::filter(Region %in% c("GOM", "GB", "MAB","MABGBstate", "bfin")) %>%
+  dplyr::mutate(Type = ifelse(Region %in% c("GOM", "GB", "MAB"), "Ecoregion", "Bluefish"),
+                Region = case_when(Region == "MABGBstate" ~ "StateWaters",
+                                   Region == "bfin" ~ "SurveyBluefish",
+                                   TRUE ~ Region))
+
+foragemax <- max(splitoutput$Estimate)
+
+ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=modname)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Fall models: scale comparison")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=modname)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Spring models: scale comparison")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+
+```
+
+```{r}
+foragetsmean <- splitoutput %>%
+  dplyr::group_by(modname, Region) %>%
+  dplyr::mutate(fmean = mean(Estimate)) 
+
+
+ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
+  geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+                    ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Fall models: trend comparison") +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
+  geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+                    ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Spring models: trend comparison") +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+```
+
+
+Plot covariate effects? no.
+
+```{r}
+
+# from https://github.com/James-Thorson-NOAA/VAST/wiki/Visualize-covariate-response
+# run the model or load a previous fit
+
+#fit <- readRDS("~/Documents/0_Data/forageindex/pyindex/allagg_fall_500_lennosst_ALLsplit_biascorrect/fit.rds")
+
+#VAST::reload_model(fit)
+
+
+#####################
+# Effects package
+#####################
+# 
+# library(effects)  # Used to visualize covariate effects
+# 
+# # Must add data-frames to global environment (hope to fix in future)
+# covariate_data_full = fit$effects$covariate_data_full
+# catchability_data_full = fit$effects$catchability_data_full
+# 
+# # Plot 1st linear predictor, but could use `transformation` to apply link function
+# pred = Effect.fit_model( fit,
+#   focal.predictors = c("CPE"),
+#   which_formula = "X1",
+#   xlevels = 100,
+#   transformation = list(link=identity, inverse=identity) )
+# plot(pred)
+
+#####################
+# pdp package
+#####################
+# 
+# library(pdp)
+# 
+# # Make function to interface with pdp
+# pred.fun = function( object, newdata ){
+#   predict( x=object,
+#     Lat_i = object$data_frame$Lat_i,
+#     Lon_i = object$data_frame$Lon_i,
+#     t_i = object$data_frame$t_i,
+#     a_i = object$data_frame$a_i,
+#     what = "P1_iz",
+#     new_covariate_data = newdata,
+#     do_checks = FALSE )
+# }
+# 
+# # Run partial
+# Partial = partial( object = fit,
+#                    pred.var = "CPE",
+#                    pred.fun = pred.fun,
+#                    train = fit$covariate_data )
+# 
+# # Make plot using ggplot2
+# library(ggplot2)
+# autoplot(Partial)
+
+```
 
