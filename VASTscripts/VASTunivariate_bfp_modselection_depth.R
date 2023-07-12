@@ -443,7 +443,7 @@ for(season in mod.season){
     
     name <- paste0(season,"_", covar)
     
-    working_dir <- here::here(sprintf("pyindex_modsel2/allagg_%s/", name))
+    working_dir <- here::here(sprintf("pyindex_modsel2depth/allagg_%s/", name))
     
     if(!dir.exists(working_dir)) {
       dir.create(working_dir)
