@@ -192,10 +192,72 @@ BF
 
 # Forage index sensitivity to included predator species {-}
 
-Based on previous work [@ng_predator_2021], we expect that individual predator stomach contents only partially reflect available forage. This was the basis for including multiple predators to construct the forage index, and selecting the subset of predator size classes with the most similar diet to our target predator, bluefish. Therefore, we do expect some index sensitivity to which predators are included. 
+Based on previous work [@ng_predator_2021], we expect that individual predator stomach contents only partially reflect available forage. This was the reason for including multiple predators to construct the forage index, and selecting the subset of predator size classes with the most similar diet to our target predator, bluefish. Therefore, we do expect some index sensitivity to which predators are included. 
 
 Similar to the prey inclusion evaluation above, we expect the index to be less sensitive to the inclusion of predators with relatively low sampling or sampling limited to a small proportion of years or areas relative to predators with relatively high sampling levels overall that have been sampled consistently through time and across space.
 
+The number of stomachs currently included in the NEFSC dataset varies considerably by predator/size class. For example, while there are many Atlantic cod stomachs in the NEFSC database, we used only stomachs from extra large cod, the size class with the most similar diet to all sizes of bluefish. Based on our assumptions above, we would expect the index to be less sensitive to the removal of cusk, fourspot flounder, or one of the squid species that contribute less than 1% of stomachs to the total than it would be to the removal of spiny dogfish or silver hake which each contribute nearly 25% of stomachs to the total.
+
+```{r}
+# object is called `allfh`
+load(here("fhdat/allfh.Rdata"))
+
+#object is called allfh21
+load(here("fhdat/allfh21.Rdata"))
+
+allfh <- allfh %>%
+  dplyr::bind_rows(allfh21)
+
+dietoverlap <- read_csv(here("fhdat/tgmat.2022-02-15.csv"))
+
+library(dendextend)
+
+d_dietoverlap <- dist(dietoverlap)
+
+guilds <- hclust(d_dietoverlap)
+
+#plot(guilds)
+
+dend <- as.dendrogram(guilds)
+
+dend <- rotate(dend, 1:136)
+
+dend <- color_branches(dend, k=6) # Brian uses 6 categories
+
+labels(dend) <- paste(as.character(names(dietoverlap[-1]))[order.dendrogram(dend)],
+                           "(",labels(dend),")", 
+                           sep = "")
+
+dend <- hang.dendrogram(dend,hang_height=0.1)
+
+pisccomplete <- partition_leaves(dend)[[
+  which_node(dend, c("Bluefish..S(37)", "Bluefish..M(36)", "Bluefish..L(35)"))
+]]
+
+#pisccomplete
+
+pisccompletedf <- data.frame("COMNAME" = toupper(str_remove(pisccomplete, "\\..*")),
+                              "SizeCat" = str_remove(str_extract(pisccomplete, "\\..*[:upper:]+"), "\\.."),
+                              "feedguild" = "pisccomplete")
+ 
+ fh.nefsc.pisc.pisccomplete <- allfh %>%
+  #filter(pynam != "EMPTY") %>%
+  left_join(pisccompletedf, by = c("pdcomnam" = "COMNAME",
+                               "sizecat" = "SizeCat")) %>%
+  filter(!is.na(feedguild))
+ 
+stomcount <- fh.nefsc.pisc.pisccomplete |> 
+  filter(year > 1984) |>
+  group_by(cruise6, pdcomnam, station, pdid) |> 
+  summarise(pycount = n()) |>
+  group_by(pdcomnam) |>
+  summarise(pdcount = n())
+
+flextable::flextable(stomcount) %>%
+  flextable::set_caption("Total number of NEFSC stomachs for each predator included in analysis, 1985-2021") %>%
+  flextable::fontsize(size = 9, part = "all") %>%
+  flextable::autofit()
+```
 
 
 # VAST model fit and index sensitivity with depth as a covariate {-}

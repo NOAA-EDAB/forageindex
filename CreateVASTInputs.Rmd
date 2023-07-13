@@ -191,6 +191,13 @@ pisccompletedf <- data.frame("COMNAME" = toupper(str_remove(pisccomplete, "\\..*
                                "sizecat" = "SizeCat")) %>%
   filter(!is.na(feedguild))
  
+# stomcount <- fh.nefsc.pisc.pisccomplete |> 
+#   filter(year > 1984) |>
+#   group_by(cruise6, pdcomnam, station, pdid) |> 
+#   summarise(pycount = n()) |>
+#   group_by(pdcomnam) |>
+#   summarise(pdcount = n())
+ 
 preycount  <- fh.nefsc.pisc.pisccomplete %>%
    #group_by(year, season, pdcomnam, pynam) %>%
    group_by(pdcomnam, pynam) %>%
