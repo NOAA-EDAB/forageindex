@@ -259,26 +259,18 @@ flextable::flextable(stomcount) %>%
   flextable::autofit()
 ```
 
-Take out fourspot flounder
+Here we illustrate a range of sensitivities from removing four predators individually and examining the impact on both model convergence and impact to the index.
 
-Take out longfin squid
-
-Take out dogfish (needs NEAMAP assistance)
-
-# VAST model fit and index sensitivity with depth as a covariate {-}
-
-Previous work found predator size to be an important "catchability" covariate for stomach content based indices of Atlantic herring [@ng_predator_2021]. In the current work, the number of predator species was also found to be an important catchability covariate, along with sea surface temperature. Here we explore an additional potential covariate, depth, which might affect availability of pelagic forage species to demersal predators sampled by a bottom trawl.
-
-Comparisons are presented for models with and without depth as a covariate. This sensitivity was run for the fall and spring models only, and include the "base" model (no covariates) and the two best fit models across all seasons (mean predator length, number of predators, and sea surface temperature as covariates, "lennumsst"; and mean predator length and number of predators as covariates "lennum") compared with depth only as a covariate, and depth combined with the two best fit models across all seasons: "deplennum" and "deplennumsst". 
-
-There are 10 stations with depth information missing, which were dropped from this analysis. This leaves 26,590 stations combined over spring and fall.
-
-```{r}
+```{r getmodinfoindex}
 
 # from each output folder in pyindex, 
-outdir <- here("pyindex_modsel2depth")
-moddirs <- list.dirs(outdir) 
-moddirs <- moddirs[-1]
+outdir <- here("pyindex")
+moddirs <- list.dirs(outdir)
+# only get pred sensitivities and original full models
+moddirssens <- grep("predsens", moddirs, value = TRUE)
+fullfall <- grep("pyindex/allagg_fall_", moddirs, value = TRUE)
+fullspring <- grep("pyindex/allagg_spring_", moddirs, value = TRUE)
+moddirs <- c(moddirssens, fullfall, fullspring)
 # keep folder name
 modnames <- list.dirs(outdir, full.names = FALSE)
 
@@ -335,7 +327,6 @@ getmodinfo <- function(d.name){
   
   #index <- read.csv(file.path(d.name, "Index.csv"))
   
-  
   # return model attributes as a dataframe
   out <- data.frame(modname = modname,
                     n_x = n_x,
@@ -364,6 +355,166 @@ getmodinfo <- function(d.name){
 	return(out)
 
 }
+
+# getfitdat <- function(d.name){
+#   # read settings
+#   modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+#   modname <- modpath[length(modpath)]
+#   
+#   readRDS(file.path(d.name, "fit.rds"))
+#   nstations <- fit$data_list$n_i # this is grid size not input N stations
+#   out <- data.frame(modname = modname,
+#                     nstations = nstations
+#   )
+#   
+#   return(out)
+# }
+
+
+#Get number of stations in input data for each dataset
+
+predout <- c("", "_no4spot", "_nololigo", "_nowhake")
+
+modnstations <- data.frame()
+
+for(dat in predout){
+  
+  # this dataset created in SSTmethods.Rmd
+  
+  fname <- paste0("fhdat/bluepyagg_stn_all_OISST", dat, ".rds")
+  #print(fname)
+  
+  #bluepyagg_stn <- readRDS(here::here("fhdat/bluepyagg_stn_all_OISST.rds"))
+  bluepyagg_stn <- readRDS(here::here(fname))
+  
+  # make SST column that uses surftemp unless missing or 0
+  # there are 3 surftemp 0 values in the dataset, all with oisst > 15
+  bluepyagg_stn <- bluepyagg_stn %>%
+    dplyr::mutate(sstfill = ifelse((is.na(surftemp)|surftemp==0), oisst, surftemp))
+  
+  #bluepyagg_stn <- bluepyagg_pred_stn
+  
+  # filter to assessment years at Tony's suggestion
+  
+  # code Vessel as AL=0, HB=1, NEAMAP=2
+  
+  bluepyagg_stn_fall <- bluepyagg_stn %>%
+    #ungroup() %>%
+    filter(season_ng == "FALL",
+           year > 1984) %>%
+    mutate(AreaSwept_km2 = 1, #Elizabeth's code
+           #declon = -declon already done before neamap merge
+           Vessel = as.numeric(as.factor(vessel))-1
+    ) %>% 
+    dplyr::select(Catch_g = meanbluepywt, #use bluepywt for individuals input in example
+                  Year = year,
+                  Vessel,
+                  AreaSwept_km2,
+                  Lat = declat,
+                  Lon = declon,
+                  meanpisclen,
+                  npiscsp,
+                  #bottemp, #this leaves out many stations for NEFSC
+                  #surftemp, #this leaves out many stations for NEFSC
+                  oisst,
+                  sstfill
+    ) %>%
+    na.omit() %>%
+    as.data.frame()
+  
+  
+  bluepyagg_stn_spring <- bluepyagg_stn %>%
+    filter(season_ng == "SPRING",
+           year > 1984) %>%
+    mutate(AreaSwept_km2 =1, #Elizabeth's code
+           #declon = -declon already done before neamap merge
+           Vessel = as.numeric(as.factor(vessel))-1
+    ) %>% 
+    dplyr::select(Catch_g = meanbluepywt,
+                  Year = year,
+                  Vessel,
+                  AreaSwept_km2,
+                  Lat = declat,
+                  Lon = declon,
+                  meanpisclen,
+                  npiscsp,
+                  #bottemp, #this leaves out many stations for NEFSC
+                  #surftemp, #this leaves out many stations for NEFSC
+                  oisst,
+                  sstfill
+    ) %>%
+    na.omit() %>%
+    as.data.frame()
+  
+  nstations <- data.frame(dat = dat,
+                          season = c("fall", "spring"),
+                          nstations = c(dim(bluepyagg_stn_fall)[1],
+                                        dim(bluepyagg_stn_spring)[1])
+  )
+  
+  modnstations <- bind_rows(modnstations, nstations)
+}
+
+
+# function to apply extracting info
+getmodindex <- function(d.name){
+  # read settings
+  modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+  modname <- modpath[length(modpath)]
+  
+  index <- read.csv(file.path(d.name, "Index.csv"))
+  # return model indices as a dataframe
+  out <- data.frame(modname = modname,
+                    index
+  )
+  
+  return(out)
+}
+
+modcompare <- purrr::map_dfr(moddirs, getmodinfo)
+
+modcompareindex <- purrr::map_dfr(moddirs, getmodindex)
+
+```
+
+All of the models converged with alternative predator inputs. We report the total number of stations included for each model. The input datasets differ, so comparing AIC across these models is not appropriate, but we report AIC by model for information.
+
+```{r}
+
+```
+
+## Take out predators contributing fewer stomachs {-}
+
+### Fourspot flounder (demersal predator, small sample) {-}
+
+### Longfin squid (pelagic predator, small sample) {-}
+
+Squid stomachs were sampled during the first half of the time series.
+
+## Take out predators contributing many stomachs {-}
+
+### White hake (larger sample) {-}
+
+### Spiny dogfish (needs NEAMAP assistance, largest sample) {-}
+
+
+
+# VAST model fit and index sensitivity with depth as a covariate {-}
+
+Previous work found predator size to be an important "catchability" covariate for stomach content based indices of Atlantic herring [@ng_predator_2021]. In the current work, the number of predator species was also found to be an important catchability covariate, along with sea surface temperature. Here we explore an additional potential covariate, depth, which might affect availability of pelagic forage species to demersal predators sampled by a bottom trawl.
+
+Comparisons are presented for models with and without depth as a covariate. This sensitivity was run for the fall and spring models only, and include the "base" model (no covariates) and the two best fit models across all seasons (mean predator length, number of predators, and sea surface temperature as covariates, "lennumsst"; and mean predator length and number of predators as covariates "lennum") compared with depth only as a covariate, and depth combined with the two best fit models across all seasons: "deplennum" and "deplennumsst". 
+
+There are 10 stations with depth information missing, which were dropped from this analysis. This leaves 26,590 stations combined over spring and fall.
+
+```{r}
+
+# from each output folder in pyindex, 
+outdir <- here("pyindex_modsel2depth")
+moddirs <- list.dirs(outdir) 
+moddirs <- moddirs[-1]
+# keep folder name
+modnames <- list.dirs(outdir, full.names = FALSE)
 
 
 modcompare <- purrr::map_dfr(moddirs, getmodinfo)
@@ -442,58 +593,8 @@ Model comparisons above for fall and spring reinforce initial model selection fi
 We would not use an index from an unconverged model; it is considered unreliable. However, for illustrative purposes we compare the fall indices below (spring indicies show similar patterns). Indices resulting from the best fit models including/not including depth differ in scale, but we see no substantial differences in trend. The indices put forward in the manuscript are indicated in pink. None of the compared indices are bias corrected, as this requires extra run time. 
 
 
-```{r}
-stratlook <- data.frame(Stratum = c("Stratum_1",
-                                    "Stratum_2",
-                                    "Stratum_3",
-                                    "Stratum_4",
-                                    "Stratum_5",
-                                    "Stratum_6",
-                                    "Stratum_7",
-                                    "Stratum_8",
-                                    "Stratum_9",
-                                    "Stratum_10",
-                                    "Stratum_11",
-                                    "Stratum_12",
-                                    "Stratum_13",
-                                    "Stratum_14",
-                                    "Stratum_15"),
-                        Region  = c("AllEPU", 
-                                    "MABGB", 
-                                    "MABGBstate", 
-                                    "MABGBfed", 
-                                    "MAB",
-                                    "GB",
-                                    "GOM",
-                                    "bfall",
-                                    "bfin",
-                                    "bfoff",
-                                    "MABGBalbinshore",
-                                    "MABGBothoffshore",
-                                    "albbfin",
-                                    "albbfall",
-                                    "allother"))
-
-
-```
-
-
 ```{r indexcompare}
 
-# function to apply extracting info
-getmodindex <- function(d.name){
-  # read settings
-  modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
-  modname <- modpath[length(modpath)]
-  
-  index <- read.csv(file.path(d.name, "Index.csv"))
-  # return model indices as a dataframe
-  out <- data.frame(modname = modname,
-                    index
-  )
-  
-  return(out)
-}
 
 modcompareindex <- purrr::map_dfr(moddirs, getmodindex)
 
