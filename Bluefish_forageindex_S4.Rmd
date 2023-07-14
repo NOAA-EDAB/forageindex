@@ -446,7 +446,7 @@ for(dat in predout){
     na.omit() %>%
     as.data.frame()
   
-  nstations <- data.frame(dat = dat,
+  nstations <- data.frame(dat = map_chr(str_split(dat, "_"), 2, .default = NA_character_),
                           season = c("fall", "spring"),
                           nstations = c(dim(bluepyagg_stn_fall)[1],
                                         dim(bluepyagg_stn_spring)[1])
@@ -481,6 +481,38 @@ All of the models converged with alternative predator inputs. We report the tota
 
 ```{r}
 
+modsense <- modcompare %>%
+  dplyr::mutate(season = case_when(str_detect(modname, "_fall_") ~ "Fall",
+                            str_detect(modname, "spring") ~ "Spring",
+                            str_detect(modname, "_all_") ~ "Annual",
+                            TRUE ~ as.character(NA))) %>%
+  dplyr::mutate(dat = modname |> map(str_split, pattern = "_") |> map_chr(c(1,7), .default = NA_character_)) %>%
+  dplyr::mutate(converged2 = case_when(str_detect(converged, "no evidence") ~ "likely",
+                                str_detect(converged, "is likely not") ~ "unlikely",
+                                TRUE ~ as.character(NA))) %>%
+  dplyr::left_join(modnstations |> mutate(season = str_to_sentence(season))) |>
+  dplyr::group_by(season) %>%
+  dplyr::mutate(stationloss = max(nstations) - nstations) |>
+  #dplyr::mutate(deltaAIC = AIC-min(AIC)) %>%
+  dplyr::select(modname, season, #deltaAIC, 
+                fixedcoeff,
+         randomcoeff, 
+         #use_anisotropy, 
+         #omega1, omega2, epsilon1, epsilon2, 
+         #beta1, beta2, 
+         AIC, converged2, 
+         nstations,
+         stationloss) %>%
+  dplyr::arrange(season, AIC)
+
+# DT::datatable(modselect2, rownames = FALSE, 
+#               options= list(pageLength = 50, scrollX = TRUE),
+#               caption = "Comparison of delta AIC values for alternative vessel effects and catchability covariates. See text for model descriptions.")
+
+flextable::flextable(modsense) %>%
+  flextable::set_caption("Comparison of model convergence and sample size for predator sensitivity runs. See text for model descriptions.") %>%
+  flextable::fontsize(size = 9, part = "all") %>%
+  flextable::autofit()
 ```
 
 ## Take out predators contributing fewer stomachs {-}
@@ -496,6 +528,84 @@ Squid stomachs were sampled during the first half of the time series.
 ### White hake (larger sample) {-}
 
 ### Spiny dogfish (needs NEAMAP assistance, largest sample) {-}
+
+```{r}
+splitoutput <- modcompareindex %>%
+  dplyr::mutate(Season = modname |> map(str_split, pattern = "_") |> map_chr(c(1,2))) %>%
+  dplyr::mutate(Data = modname |> map(str_split, pattern = "_") |> map_chr(c(1,7), .default = "allpreds")) %>%
+  dplyr::left_join(stratlook) %>%
+  dplyr::filter(Region %in% c("GOM", "GB", "MAB","MABGBstate", "bfin")) %>%
+  dplyr::mutate(Type = ifelse(Region %in% c("GOM", "GB", "MAB"), "Ecoregion", "Bluefish"),
+                Region = case_when(Region == "MABGBstate" ~ "StateWaters",
+                                   Region == "bfin" ~ "SurveyBluefish",
+                                   TRUE ~ Region))
+
+foragemax <- max(splitoutput$Estimate)
+
+ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=Data)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Fall models: scale comparison")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+  
+
+ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=Data)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Spring models")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+
+```
+
+```{r}
+
+foragetsmean <- splitoutput %>%
+  dplyr::group_by(modname, Region) %>%
+  dplyr::mutate(fmean = mean(Estimate)) 
+
+
+ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Fall models: trend comparison") +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean,
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Spring models")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+
+```
+
 
 
 
