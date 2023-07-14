@@ -259,6 +259,11 @@ flextable::flextable(stomcount) %>%
   flextable::autofit()
 ```
 
+Take out fourspot flounder
+
+Take out longfin squid
+
+Take out dogfish (needs NEAMAP assistance)
 
 # VAST model fit and index sensitivity with depth as a covariate {-}
 

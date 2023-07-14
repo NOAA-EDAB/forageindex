@@ -297,9 +297,15 @@ flextable::flextable(blueprey[,c('PREY', 'COMMON', 'NEFSC', 'NEAMAP', 'total')])
 
 *Chunks below here save datasets so these are all set to eval=F*
 
+At this point, filter out NEFSC predators for sensitivities.
+
 Assign station id, change the months for spring and fall to align with the assessment, and calculate mean bluefish prey per station in NEFSC:  
 ```{r, eval=FALSE}
 bluepyall_stn <- fh.nefsc.pisc.pisccomplete.blueprey %>%
+  # uncomment to remove a predator for sensitivity
+  #filter(pdcomnam != "FOURSPOT FLOUNDER") %>%
+  #filter(pdcomnam != "LONGFIN SQUID") %>%
+  filter(pdcomnam != "WHITE HAKE") %>%
   #create id linking cruise6_station
   #create season_ng spring and fall Spring=Jan-May, Fall=June-Dec
   mutate(id = paste0(cruise6, "_", station),
@@ -309,7 +315,7 @@ bluepyall_stn <- fh.nefsc.pisc.pisccomplete.blueprey %>%
                                month >= 7 ~ "FALL",
                                TRUE ~ as.character(NA))
          ) %>%
-  select(year, season_ng, id, stratum,
+  dplyr::select(year, season_ng, id, stratum,
          pynam, pyamtw, pywgti, pyvoli, blueprey, 
          pdcomnam, pdid, pdlen, pdsvol, pdswgt, 
          beglat, beglon, declat, declon, 
@@ -322,10 +328,14 @@ bluepyall_stn <- fh.nefsc.pisc.pisccomplete.blueprey %>%
                                TRUE ~ NA_character_)) 
 
 # save at prey disaggregated stage for paper
-saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn.rds"))
+#saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn.rds"))
+# uncomment to save alternative predator set
+#saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn_no4spot.rds"))
+#saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn_nololigo.rds"))
+saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn_nowhake.rds"))
 
 stndat <- bluepyall_stn %>%
-  select(year, season_ng, id, 
+  dplyr::select(year, season_ng, id, 
          beglat, beglon, declat, declon, 
          bottemp, surftemp, setdepth) %>%
   distinct()
@@ -353,10 +363,15 @@ bluepyagg_stn <- bluepyall_stn %>%
   left_join(stndat)
 
 # save at same stage as before, writing over old file
-saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn.rds"))
+#saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn.rds"))
+# uncomment for alternative predator set
+#saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_no4spot.rds"))
+#saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_nololigo.rds"))
+saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_nowhake.rds"))
 
 # current dataset, fix declon, add vessel
-nefsc_bluepyagg_stn <- readRDS(here("fhdat/bluepyagg_stn.rds")) %>%
+#nefsc_bluepyagg_stn <- readRDS(here("fhdat/bluepyagg_stn.rds")) %>%
+nefsc_bluepyagg_stn <- bluepyagg_stn %>%
   mutate(declon = -declon,
          vessel = case_when(year<2009 ~ "AL",
                             year>=2009 ~ "HB", 
@@ -418,7 +433,10 @@ bluepyagg_stn %>% filter(id == "NM20070901011") # has this station
 #bluepyagg_stn$meanbluepywt[bluepyagg_stn$id == "NM20070901011"] <- 0.186169231
 
 
-saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all.rds"))
+#saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all.rds"))
+#saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all_no4spot.rds"))
+#saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all_nololigo.rds"))
+saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all_nowhake.rds"))
 ```
 
 ## Merge with SST data to fill gaps
@@ -429,7 +447,11 @@ New prey list may have new stations so do all this over.
 First add dates to NEFSC station data
 
 ```{r, eval=FALSE}
-bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
+# uncomment for predator sensitivity
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_no4spot.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nololigo.rds"))
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
 
 diethauls <- bluepyagg_stn_all %>%
   dplyr::select(id, declat, declon)
@@ -511,7 +533,11 @@ bluepyagg_stn_all <- left_join(bluepyagg_stn_all, NEAMAPidSST, by="id") %>%
   dplyr::select(-SST)
 
 # save merged dataset with day, month, and NEAMAP surftemp, same name
-saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all.rds"))
+#saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all.rds"))
+# uncomment for predator sensitivity
+#saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all_no4spot.rds"))
+#saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all_nololigo.rds"))
+saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all_nowhake.rds"))
 ```
 
 ```{r, eval=FALSE}
@@ -532,7 +558,10 @@ library(raster)
 library(terra)
 library(nngeo)
 
-bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_no4spot.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nololigo.rds"))
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
 
 stations <- bluepyagg_stn_all %>%
   dplyr::mutate(day = str_pad(day, 2, pad='0'),
@@ -591,7 +620,10 @@ dietstn_OISST <- rbind(dietstn_OISST, yrdietOISST)
 
 }
 
-saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST.rds"))
+#saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST.rds"))
+#saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_no4spot.rds"))
+#saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_nololigo.rds"))
+saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_nowhake.rds"))
 
 ```
 
@@ -601,8 +633,18 @@ Now join OISST with dataset
 
 #read in diet data and station-OISST
 
-bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
-dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
+#dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST.rds"))
+
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_no4spot.rds"))
+#dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST_no4spot.rds"))
+
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nololigo.rds"))
+#dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST_nololigo.rds"))
+
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST_nowhake.rds"))
+
 
 dietstn_OISST_merge <- dietstn_OISST %>%
   dplyr::rename(declon = declon.x,
@@ -614,7 +656,11 @@ dietstn_OISST_merge <- dietstn_OISST %>%
 
 bluepyagg_stn_all_OISST <- left_join(bluepyagg_stn_all, dietstn_OISST_merge)
 
-saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST.rds"))
+#saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST.rds"))
+#saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_no4spot.rds"))
+#saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_nololigo.rds"))
+saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_nowhake.rds"))
+
 ```
 
 
