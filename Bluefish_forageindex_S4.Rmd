@@ -373,7 +373,7 @@ getmodinfo <- function(d.name){
 
 #Get number of stations in input data for each dataset
 
-predout <- c("", "_no4spot", "_nololigo", "_nowhake")
+predout <- c("", "_no4spot", "_nololigo", "_nowhake", "_nospdog")
 
 modnstations <- data.frame()
 
@@ -492,9 +492,10 @@ modsense <- modcompare %>%
                                 TRUE ~ as.character(NA))) %>%
   dplyr::left_join(modnstations |> mutate(season = str_to_sentence(season))) |>
   dplyr::group_by(season) %>%
-  dplyr::mutate(stationloss = max(nstations) - nstations) |>
+  dplyr::mutate(stationloss = max(nstations) - nstations,
+                dat = if_else(is.na(dat), "allpreds", dat)) |>
   #dplyr::mutate(deltaAIC = AIC-min(AIC)) %>%
-  dplyr::select(modname, season, #deltaAIC, 
+  dplyr::select(dat, season, #deltaAIC, 
                 fixedcoeff,
          randomcoeff, 
          #use_anisotropy, 
@@ -515,11 +516,9 @@ flextable::flextable(modsense) %>%
   flextable::autofit()
 ```
 
-Removing fourspot flounder (demersal predator, small sample) and longfin squid (pelagic predator, small sample) resulted in almost no change to the fall and spring indices. Squid stomachs were sampled during the first half of the time series.
+## Impact of removing predators contributing fewer stomachs {-}
 
-Removing a predator with more stomachs contributing to the input data, White hake, made small changes in the index, but well within the error bars of the original. Changes in trend were most apparent in teh Gulf of Maine.
-
-Spiny dogfish (needs NEAMAP assistance, largest sample) 
+Removing fourspot flounder (demersal predator, small sample) and longfin squid (pelagic predator, small sample) resulted in the same or a similar number of survey stations included in analysis, with almost no change to the fall and spring indices. Squid stomachs were sampled only prior to the year 2000, but no change for the early portion of the index is apparent when leaving this predator out.
 
 ```{r}
 splitoutput <- modcompareindex %>%
@@ -534,7 +533,11 @@ splitoutput <- modcompareindex %>%
 
 foragemax <- max(splitoutput$Estimate)
 
-ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=Data)) +
+ggplot(splitoutput |> filter(Season =="fall",
+                             Data %in% c("allpreds",
+                                         "no4spot",
+                                         "nololigo")), 
+       aes(x=Time, y=Estimate, colour=Data)) +
   geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
   geom_point()+
   geom_line()+
@@ -547,7 +550,11 @@ ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=Da
         legend.justification = c(1, 0))
   
 
-ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=Data)) +
+ggplot(splitoutput |> filter(Season =="spring",
+                             Data %in% c("allpreds",
+                                         "no4spot",
+                                         "nololigo")), 
+       aes(x=Time, y=Estimate, colour=Data)) +
   geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
   geom_point()+
   geom_line()+
@@ -555,7 +562,7 @@ ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=
   facet_wrap(~Region, scales = "free_y") +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
   ylab("Relative forage biomass scaled to maximum")  +
-  ggtitle("Spring models")+
+  ggtitle("Spring models: scale comparison")+
   theme(legend.position = c(1, 0),
         legend.justification = c(1, 0))
 
@@ -569,7 +576,11 @@ foragetsmean <- splitoutput %>%
   dplyr::mutate(fmean = mean(Estimate)) 
 
 
-ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
+ggplot(foragetsmean |> filter(Season =="fall",
+                             Data %in% c("allpreds",
+                                         "no4spot",
+                                         "nololigo")), 
+       aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
   #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
   #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
   geom_point()+
@@ -582,7 +593,11 @@ ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/
   theme(legend.position = c(1, 0),
         legend.justification = c(1, 0))
 
-ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
+ggplot(foragetsmean |> filter(Season =="spring",
+                             Data %in% c("allpreds",
+                                         "no4spot",
+                                         "nololigo")), 
+       aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
   #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean,
   #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
   geom_point()+
@@ -591,7 +606,97 @@ ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean
   facet_wrap(~Region, scales = "free_y") +
   #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
   ylab("Relative forage biomass scaled to time series mean")  +
-  ggtitle("Spring models")+
+  ggtitle("Spring models: trend comparison")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+
+```
+
+## Impact of removing predators contributing many stomachs {-}
+
+Removing a predator with more stomachs contributing to the input data, white hake, made small changes in the index, but well within the error bars of the original. Changes in trend were most apparent in the Gulf of Maine.
+
+Removing spiny dogfish, which contributes over 25% of stomachs in the analysis, has the largest impact on the index, as predicted. The primary impact is on index scale, which is lower when excluding spiny dogfish.
+
+However, the forage index trend across multiple scales is remarkably robust to removing both white hake and spiny dogfish individually. 
+
+```{r}
+
+ggplot(splitoutput |> filter(Season =="fall",
+                             Data %in% c("allpreds",
+                                         "nowhake",
+                                         "nospdog")), 
+       aes(x=Time, y=Estimate, colour=Data)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Fall models: scale comparison")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+  
+
+ggplot(splitoutput |> filter(Season =="spring",
+                             Data %in% c("allpreds",
+                                         "nowhake",
+                                         "nospdog")), 
+       aes(x=Time, y=Estimate, colour=Data)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Spring models: scale comparison")+
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+
+```
+
+```{r}
+
+foragetsmean <- splitoutput %>%
+  dplyr::group_by(modname, Region) %>%
+  dplyr::mutate(fmean = mean(Estimate)) 
+
+
+ggplot(foragetsmean |> filter(Season =="fall",
+                             Data %in% c("allpreds",
+                                         "nowhake",
+                                         "nospdog")), 
+       aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Fall models: trend comparison") +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0))
+
+ggplot(foragetsmean |> filter(Season =="spring",
+                             Data %in% c("allpreds",
+                                         "nowhake",
+                                         "nospdog")), 
+       aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean,
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y") +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Spring models: trend comparison")+
   theme(legend.position = c(1, 0),
         legend.justification = c(1, 0))
 
