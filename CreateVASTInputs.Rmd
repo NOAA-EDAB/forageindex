@@ -305,7 +305,8 @@ bluepyall_stn <- fh.nefsc.pisc.pisccomplete.blueprey %>%
   # uncomment to remove a predator for sensitivity
   #filter(pdcomnam != "FOURSPOT FLOUNDER") %>%
   #filter(pdcomnam != "LONGFIN SQUID") %>%
-  filter(pdcomnam != "WHITE HAKE") %>%
+  #filter(pdcomnam != "WHITE HAKE") %>%
+  filter(pdcomnam != "SPINY DOGFISH") %>%
   #create id linking cruise6_station
   #create season_ng spring and fall Spring=Jan-May, Fall=June-Dec
   mutate(id = paste0(cruise6, "_", station),
@@ -332,7 +333,8 @@ bluepyall_stn <- fh.nefsc.pisc.pisccomplete.blueprey %>%
 # uncomment to save alternative predator set
 #saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn_no4spot.rds"))
 #saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn_nololigo.rds"))
-saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn_nowhake.rds"))
+#saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn_nowhake.rds"))
+saveRDS(bluepyall_stn, here("fhdat/bluepyall_stn_nospdog.rds"))
 
 stndat <- bluepyall_stn %>%
   dplyr::select(year, season_ng, id, 
@@ -367,7 +369,8 @@ bluepyagg_stn <- bluepyall_stn %>%
 # uncomment for alternative predator set
 #saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_no4spot.rds"))
 #saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_nololigo.rds"))
-saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_nowhake.rds"))
+#saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_nowhake.rds"))
+saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_nospdog.rds"))
 
 # current dataset, fix declon, add vessel
 #nefsc_bluepyagg_stn <- readRDS(here("fhdat/bluepyagg_stn.rds")) %>%
@@ -400,7 +403,8 @@ Read in new inputs, align columns, merge datasets, correct single station with w
 ```{r, eval=FALSE}
 # new prey list 2023
 #neamap_bluepreyagg_stn <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish PreyWQ2.csv")) %>%
-neamap_bluepreyagg_stn <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish Prey_wWQ2023.csv")) %>%
+#neamap_bluepreyagg_stn <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish Prey_wWQ2023.csv")) %>%
+neamap_bluepreyagg_stn <- read_csv(here("fhdat/Mean stomach weights_Bluefish Prey_NO SPINY_wWQ2023.csv")) %>%
   mutate(vessel = "NEAMAP") %>%
   rename(id = station,
          sumbluepywt = sumbluepreywt,
@@ -436,7 +440,8 @@ bluepyagg_stn %>% filter(id == "NM20070901011") # has this station
 #saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all.rds"))
 #saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all_no4spot.rds"))
 #saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all_nololigo.rds"))
-saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+#saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+saveRDS(bluepyagg_stn, here("fhdat/bluepyagg_stn_all_nospdog.rds"))
 ```
 
 ## Merge with SST data to fill gaps
@@ -451,7 +456,8 @@ First add dates to NEFSC station data
 # uncomment for predator sensitivity
 #bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_no4spot.rds"))
 #bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nololigo.rds"))
-bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nospdog.rds"))
 
 diethauls <- bluepyagg_stn_all %>%
   dplyr::select(id, declat, declon)
@@ -537,7 +543,8 @@ bluepyagg_stn_all <- left_join(bluepyagg_stn_all, NEAMAPidSST, by="id") %>%
 # uncomment for predator sensitivity
 #saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all_no4spot.rds"))
 #saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all_nololigo.rds"))
-saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+#saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+saveRDS(bluepyagg_stn_all, here("fhdat/bluepyagg_stn_all_nospdog.rds"))
 ```
 
 ```{r, eval=FALSE}
@@ -561,7 +568,8 @@ library(nngeo)
 #bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all.rds"))
 #bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_no4spot.rds"))
 #bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nololigo.rds"))
-bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nospdog.rds"))
 
 stations <- bluepyagg_stn_all %>%
   dplyr::mutate(day = str_pad(day, 2, pad='0'),
@@ -623,7 +631,8 @@ dietstn_OISST <- rbind(dietstn_OISST, yrdietOISST)
 #saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST.rds"))
 #saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_no4spot.rds"))
 #saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_nololigo.rds"))
-saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_nowhake.rds"))
+#saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_nowhake.rds"))
+saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_nospdog.rds"))
 
 ```
 
@@ -642,8 +651,11 @@ Now join OISST with dataset
 #bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nololigo.rds"))
 #dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST_nololigo.rds"))
 
-bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
-dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST_nowhake.rds"))
+#bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nowhake.rds"))
+#dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST_nowhake.rds"))
+
+bluepyagg_stn_all <- readRDS(here("fhdat/bluepyagg_stn_all_nospdog.rds"))
+dietstn_OISST <- readRDS(here("data-raw/dietstn_OISST_nospdog.rds"))
 
 
 dietstn_OISST_merge <- dietstn_OISST %>%
@@ -659,7 +671,8 @@ bluepyagg_stn_all_OISST <- left_join(bluepyagg_stn_all, dietstn_OISST_merge)
 #saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST.rds"))
 #saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_no4spot.rds"))
 #saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_nololigo.rds"))
-saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_nowhake.rds"))
+#saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_nowhake.rds"))
+saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_nospdog.rds"))
 
 ```
 

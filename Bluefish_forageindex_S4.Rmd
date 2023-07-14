@@ -515,19 +515,11 @@ flextable::flextable(modsense) %>%
   flextable::autofit()
 ```
 
-## Take out predators contributing fewer stomachs {-}
+Removing fourspot flounder (demersal predator, small sample) and longfin squid (pelagic predator, small sample) resulted in almost no change to the fall and spring indices. Squid stomachs were sampled during the first half of the time series.
 
-### Fourspot flounder (demersal predator, small sample) {-}
+Removing a predator with more stomachs contributing to the input data, White hake, made small changes in the index, but well within the error bars of the original. Changes in trend were most apparent in teh Gulf of Maine.
 
-### Longfin squid (pelagic predator, small sample) {-}
-
-Squid stomachs were sampled during the first half of the time series.
-
-## Take out predators contributing many stomachs {-}
-
-### White hake (larger sample) {-}
-
-### Spiny dogfish (needs NEAMAP assistance, largest sample) {-}
+Spiny dogfish (needs NEAMAP assistance, largest sample) 
 
 ```{r}
 splitoutput <- modcompareindex %>%

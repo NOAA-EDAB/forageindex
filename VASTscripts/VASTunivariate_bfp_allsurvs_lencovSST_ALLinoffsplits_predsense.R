@@ -8,7 +8,7 @@ library(VAST)
 
 #Read in data, separate spring and fall, and rename columns for VAST:
 
-predout <- c("no4spot", "nololigo", "nowhake")
+predout <- "nospdog" #c("no4spot", "nololigo", "nowhake")
 
 for(dat in predout){
   
