@@ -5,5 +5,5 @@
 
 .DS_Store
 
-.docx
-.html
+*.docx
+*.html
