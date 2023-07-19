@@ -4,15 +4,15 @@ author: "Sarah Gaichas, James Gartland, Brian Smith, Elizabeth Ng, Michael Celes
   Anthony Wood, Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  bookdown::html_document2: 
-    toc: true
-    toc_float: true
+  bookdown::word_document2:
+    toc: false
   bookdown::pdf_document2:
     includes: 
        in_header: latex/header1.tex
     keep_tex: true
-  bookdown::word_document2:
-    toc: false
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
 link-citations: yes
 csl: "canadian-journal-of-fisheries-and-aquatic-sciences.csl"
 bibliography: FishDiet_EcoIndicators.bib
@@ -26,6 +26,7 @@ knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
 library(tidyverse)
 theme_set(theme_bw())
 library(here)
+library(FishStatsUtils)
 
 ```
 
@@ -63,27 +64,131 @@ flextable::flextable(stnsummary) %>%
 
 ```
 
-## Comparison of in situ and OISST
+## Comparison of survey in situ surface temperature and OISST {-}
 
-For stations with in-situ surface temperature measurements, we compared these to OISST from the same area. The spatial resolution of the OISST dataset is 
+For stations with in-situ surface temperature measurements, we compared these to OISST from the area and date of each survey station. The spatial resolution of the OISST dataset 
 
-XXX
+Spatial resolution is visible in these sample plots of OISST from March 15 and September 15 2021:
 
-Plot sample OISST
+```{r, fig.show='hold', out.width='49%'}
+#visualize
+sst2021 <- readRDS(here("data-raw/gridded/sst_data/sst2021.rds"))
 
-Plot match with line
+oneday <- sst2021[sst2021$month=="07" & sst2021$day=="04",] 
 
-Most mismatches were near Cape Hatteras where the temperature gradient from the nearby Gulf Stream is not well captured by the resolution of OISST. Others were similarly near the continetnal shelf.
+jan15 <- sst2021[sst2021$month=="01" & sst2021$day=="15",] 
 
-Plot selected years
+mar15 <- sst2021[sst2021$month=="03" & sst2021$day=="15",]
 
-Point to website with all years
+may15 <- sst2021[sst2021$month=="05" & sst2021$day=="15",]
+
+jul15 <- sst2021[sst2021$month=="07" & sst2021$day=="15",]
+
+sep15 <- sst2021[sst2021$month=="09" & sst2021$day=="15",]
+
+nov15 <- sst2021[sst2021$month=="11" & sst2021$day=="15",]
+
+dailysstplot <- function(oneday){
+  ggplot() +
+    geom_tile(data = oneday, aes(x = Lon, y = Lat, fill = sst)) +
+    geom_sf(data = ecodata::coast) +
+    geom_point(data = northwest_atlantic_grid, aes(x = Lon, y = Lat), size=0.05, alpha=0.1) +
+    scale_fill_gradientn(name = "Temp C",
+                         limits = c(0.5, 31),
+                         colours = c(scales::muted("blue"), "white",
+                                     scales::muted("red"), "black")) +
+    coord_sf(xlim = c(-77, -65), ylim = c(35, 45)) + 
+    ggtitle(paste("SST, mm dd yyyy:", unique(oneday$month),
+                   unique(oneday$day), unique(oneday$year), sep = " "))
+}
+
+#dailysstplot(oneday)
+
+#par(mfrow=c(2,3))
+#dailysstplot(jan15)
+dailysstplot(mar15)
+#dailysstplot(may15)
+#dailysstplot(jul15)
+dailysstplot(sep15)
+#dailysstplot(nov15)
+```
+The range of temperatures observed on surveys differs by season.  Histogram of in situ surface temperatures:
+
+```{r}
+
+insitusst <- inputdat |>
+  dplyr::filter(year>1984) |>
+  dplyr::select(surftemp, season_ng) |>
+  na.omit()
+  
+ggplot2::ggplot(insitusst, aes(x=surftemp)) + 
+  geom_histogram() + 
+  facet_wrap(~season_ng)
+
+```
+
+
+Compare the in situ surface temperatures with OISST where there are both available:
+
+```{r}
+
+
+comparesst <- inputdat %>%
+  dplyr::filter(year>1984)%>%
+  dplyr::select(surftemp, oisst) %>%
+  na.omit()
+
+ggplot2::ggplot(comparesst, aes(x=surftemp, y=oisst)) +
+  geom_point(color="darkgray", alpha=0.3)+
+  geom_abline(intercept = 0, slope = 1) +
+  geom_smooth() +
+  theme_bw() 
+```
+
+```{r}
+mapsst <- inputdat %>%
+  dplyr::filter(year>1984) %>%
+  dplyr::mutate(sstdiff = surftemp-oisst) %>%
+  dplyr::select(id, year, season_ng, declon, declat, surftemp, oisst, sstdiff) 
+
+yrmap <- function(mapyr){
+  ggplot2::ggplot(mapsst%>%filter(year==mapyr)) +
+  geom_sf(data = ecodata::coast) +
+  coord_sf(xlim = c(-77, -65), ylim = c(35, 45)) + 
+  geom_point(aes(x=declon, y=declat, colour=sstdiff)) +
+  scale_color_gradient2(low = "blue",
+                        mid = "green",
+                        high = "purple",
+                        midpoint = 0,
+                        na.value = "yellow") +
+  theme_bw() +
+  facet_wrap(~season_ng) +
+  ggtitle(paste("SST difference survey-OISST:", mapyr, sep = " "))
+}
+```
+
+
+In the following maps of survey station locations by SST match/mismatch for each year. yellow is missing data that would be filled by OISST, and the color range shows how different SST is for stations with both values.
+
+Most mismatches were near Cape Hatteras where the temperature gradient from the nearby Gulf Stream is not well captured by the resolution of OISST. Others were similarly near the continental slope.
+
+```{r,  results='asis'}
+
+for(mapyr in c(1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020)){
+  
+    cat("  \n",  as.character(mapyr),"  \n")
+    print(yrmap(mapyr)) 
+    cat("  \n")   
+    
+  }
+```
+
 
 Despite some mismatches, we felt substituting OISST temperature to retain the stomach samples at stations with missing temperature data was preferable to leaving stomach data out due to missing covariate information.
 
-## Index sensitivity to SST covariates 
+## Index sensitivity to SST covariates  {-}
 
-The two best fitting models both include mean predator length and number of predator species as covariates; adding sea surface temperature to these covariates resulted in the best fitting model. To evaluate the overall impact of SST as a covariate, we first compare the indices with and without this covariate (best and second best fit to the data, respectively, although in fall the difference in AIC was small). These indices are not bias corrected.
+The two best fitting models both include mean predator length and number of predator species as covariates; adding sea surface temperature to these covariates resulted in the best fitting model in both seasons. To evaluate the overall impact of SST as a covariate, we first compare the indices with and without this covariate (best and second best fit to the data, respectively, although in fall the difference in AIC was small). These indices are not bias corrected.
 
 Including SST slightly increased index scale relative to the second best fitting model in fall, but had the opposite effect in spring. However, the index trends estimated by both models are nearly identical. Therefore, including OISST to fill in missing in-situ temperature data seems to have no impact on index trend (as the sst covariate itself has no impact on index trend). 
 
@@ -218,65 +323,3 @@ ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean
   theme(legend.position = c(1, 0),
         legend.justification = c(1, 0))
 ```
-
-
-Plot covariate effects? no.
-
-```{r}
-
-# from https://github.com/James-Thorson-NOAA/VAST/wiki/Visualize-covariate-response
-# run the model or load a previous fit
-
-#fit <- readRDS("~/Documents/0_Data/forageindex/pyindex/allagg_fall_500_lennosst_ALLsplit_biascorrect/fit.rds")
-
-#VAST::reload_model(fit)
-
-
-#####################
-# Effects package
-#####################
-# 
-# library(effects)  # Used to visualize covariate effects
-# 
-# # Must add data-frames to global environment (hope to fix in future)
-# covariate_data_full = fit$effects$covariate_data_full
-# catchability_data_full = fit$effects$catchability_data_full
-# 
-# # Plot 1st linear predictor, but could use `transformation` to apply link function
-# pred = Effect.fit_model( fit,
-#   focal.predictors = c("CPE"),
-#   which_formula = "X1",
-#   xlevels = 100,
-#   transformation = list(link=identity, inverse=identity) )
-# plot(pred)
-
-#####################
-# pdp package
-#####################
-# 
-# library(pdp)
-# 
-# # Make function to interface with pdp
-# pred.fun = function( object, newdata ){
-#   predict( x=object,
-#     Lat_i = object$data_frame$Lat_i,
-#     Lon_i = object$data_frame$Lon_i,
-#     t_i = object$data_frame$t_i,
-#     a_i = object$data_frame$a_i,
-#     what = "P1_iz",
-#     new_covariate_data = newdata,
-#     do_checks = FALSE )
-# }
-# 
-# # Run partial
-# Partial = partial( object = fit,
-#                    pred.var = "CPE",
-#                    pred.fun = pred.fun,
-#                    train = fit$covariate_data )
-# 
-# # Make plot using ggplot2
-# library(ggplot2)
-# autoplot(Partial)
-
-```
-

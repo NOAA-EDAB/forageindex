@@ -619,7 +619,7 @@ Removing a predator with more stomachs contributing to the input data, white hak
 
 Removing spiny dogfish, which contributes over 25% of stomachs in the analysis, has the largest impact on the index, as predicted. The primary impact is on index scale, which is lower when excluding spiny dogfish.
 
-However, the forage index trend across multiple scales is remarkably robust to removing both white hake and spiny dogfish individually. 
+However, the forage index trend across multiple scales is remarkably robust to removing both white hake and spiny dogfish individually.
 
 ```{r}
 
