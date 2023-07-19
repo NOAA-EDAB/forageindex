@@ -1,14 +1,14 @@
 ---
 title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 4, Sensitivities"
-author: "Sarah Gaichas, James Gartland, Brian Smith, Elizabeth Ng, Michael Celestino,
-  Anthony Wood, Katie Drew, Abigail Tyrell, and James Thorson"
+author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
+  Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  bookdown::word_document2:
+    toc: false
   bookdown::html_document2: 
     toc: true
     toc_float: true
-  bookdown::word_document2:
-    toc: false
   bookdown::pdf_document2:
     includes: 
        in_header: latex/header1.tex
@@ -826,7 +826,10 @@ ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=mo
   ylab("Relative forage biomass scaled to maximum")  +
   ggtitle("Fall models: scale comparison")+
   theme(legend.position = c(1, 0),
-        legend.justification = c(1, 0))
+        legend.justification = c(1, 0),
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
   
 
 # ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=modname)) +
@@ -860,7 +863,10 @@ ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/
   ylab("Relative forage biomass scaled to time series mean")  +
   ggtitle("Fall models: trend comparison") +
   theme(legend.position = c(1, 0),
-        legend.justification = c(1, 0))
+        legend.justification = c(1, 0),
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
 
 # ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
 #   #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
