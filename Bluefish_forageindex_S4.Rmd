@@ -4,11 +4,11 @@ author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng,
   Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  bookdown::word_document2:
-    toc: false
   bookdown::html_document2: 
     toc: true
     toc_float: true
+  bookdown::word_document2:
+    toc: false
   bookdown::pdf_document2:
     includes: 
        in_header: latex/header1.tex
@@ -258,6 +258,74 @@ flextable::flextable(stomcount) %>%
   flextable::fontsize(size = 9, part = "all") %>%
   flextable::autofit()
 ```
+
+The number of stomachs by year for each predator show general stability that seem unlikely to explain fluctuations in the index. The table shows number of stomachs by predator included in the NEFSC dataset to illustrate sampling over time. While there was more sampling overall during the 1990s relative to other portions of the time series, variation in the full Northeast US annual forage index does not correspond to higher or lower numbers of predator stomachs included as input data.
+
+```{r}
+stomcountyr <- fh.nefsc.pisc.pisccomplete |> 
+  filter(year > 1984) |>
+  group_by(cruise6, year, pdcomnam, station, pdid) |> 
+  summarise(pycount = n()) |>
+  group_by(pdcomnam, year) |>
+  summarise(pdcount = n()) |>
+  arrange(year, pdcomnam) |>
+  pivot_wider(names_from = year, values_from = pdcount)
+
+flextable::flextable(stomcountyr) %>%
+  flextable::set_caption("Number of NEFSC stomachs for each predator and year included in analysis, 1985-2021") %>%
+  flextable::fontsize(size = 9, part = "all") %>%
+  flextable::autofit()
+
+outann <- read.csv("pyindex/allagg_annual_500_lennosst_ALLsplit_biascorrect/Index.csv")
+
+splitoutann <-outann %>%
+  dplyr::left_join(stratlook) %>%
+  dplyr::filter(Region %in% c("AllEPU", "GOM", "GB", "MAB","MABGBstate", "bfin")) %>%
+  dplyr::mutate(Type = ifelse(Region %in% c("AllEPU","GOM", "GB", "MAB"), "Ecoregion", "Bluefish"),
+                Region = case_when(Region == "MABGBstate" ~ "StateWaters",
+                                   Region == "bfin" ~ "SurveyBluefish",
+                                   TRUE ~ Region))
+
+foragemaxann <- max(splitoutann$Estimate, na.rm = T)
+
+AllEPU <- ggplot(splitoutann %>% dplyr::filter(Region %in% c("AllEPU")), 
+              aes(x=Time, y=Estimate, colour=Region)) +
+  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_point()+
+  geom_line() +
+  scale_y_continuous(labels=function(x)round(x/foragemaxann, digits = 2)) +
+  ylab("Relative forage biomass scaled to maximum") +
+  ggtitle("Annual forage index, full Northeast US shelf (GOM + GB + MAB)")
+
+NEAMAPdat <- read.csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish Prey_wWQ2023.csv"))
+
+NEAMAPstomn <- NEAMAPdat |>
+  select(year, season, nstomtot) |>
+  group_by(year) |>
+  summarise(pdcount = sum(nstomtot)) |>
+  mutate(pdcomnam = "NEAMAP")
+
+stackbar <- fh.nefsc.pisc.pisccomplete |> 
+  filter(year > 1984) |>
+  group_by(cruise6, year, pdcomnam, station, pdid) |> 
+  summarise(pycount = n()) |>
+  group_by(pdcomnam, year) |>
+  summarise(pdcount = n()) |>
+  ungroup() |>
+  arrange(year, pdcomnam) |>
+  bind_rows(NEAMAPstomn) |>
+  ggplot(aes(x=year, y=pdcount, fill=pdcomnam)) +
+  geom_bar(position = "stack", stat = "identity") +
+  theme(legend.title = element_blank(), 
+        legend.text = element_text(size = 6),
+        legend.key.size = unit(0.3, "cm")) +
+  ggtitle("Number of NEFSC and NEAMAP stomachs included in dataset by year")
+
+stackbar
+
+AllEPU
+```
+
 
 Here we illustrate a range of sensitivities from removing four predators individually and examining the impact on both model convergence and impact to the index.
 
