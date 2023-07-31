@@ -192,6 +192,8 @@ BF
 
 # Forage index sensitivity to included predator species {-}
 
+Preliminary analysis demonstrated that the first step of model selection was robust to both the inclusion/exclusion of NEAMAP data and the use of a different piscivore list based on an older diet similarity analysis in @garrison_dietary_2000. The full model with anisotrophy, spatial random effects and spatio-temporal random effects was always selected (see [NEFSC old predator list](https://sgaichas.github.io/bluefishdiet/VASTmodsel.html) and [NEFSC/NEAMAP current predator list](https://sgaichas.github.io/bluefishdiet/VASTmodsel_updatedPreds.html)).
+
 Based on previous work [@ng_predator_2021], we expect that individual predator stomach contents only partially reflect available forage. This was the reason for including multiple predators to construct the forage index, and selecting the subset of predator size classes with the most similar diet to our target predator, bluefish. Therefore, we do expect some index sensitivity to which predators are included. 
 
 Similar to the prey inclusion evaluation above, we expect the index to be less sensitive to the inclusion of predators with relatively low sampling or sampling limited to a small proportion of years or areas relative to predators with relatively high sampling levels overall that have been sampled consistently through time and across space.
@@ -246,20 +248,31 @@ pisccompletedf <- data.frame("COMNAME" = toupper(str_remove(pisccomplete, "\\..*
                                "sizecat" = "SizeCat")) %>%
   filter(!is.na(feedguild))
  
+NEAMAPdat <- read.csv(here("fhdat/NEAMAP_Bluefish Prey Index_Pred Stomach Counts.csv"))
+
+NEAMAPstomn <- NEAMAPdat |>
+  pivot_longer(-year, names_to = "comnam", values_to = "pdcount") |>
+  mutate(pdcomnam = str_replace(str_to_upper(comnam), "\\.", " "))
+
+ 
 stomcount <- fh.nefsc.pisc.pisccomplete |> 
   filter(year > 1984) |>
   group_by(cruise6, pdcomnam, station, pdid) |> 
   summarise(pycount = n()) |>
   group_by(pdcomnam) |>
-  summarise(pdcount = n())
+  summarise(pdcount = n()) |>
+  left_join(NEAMAPstomn |> group_by(pdcomnam) |> summarize(neamapcount = sum(pdcount))) |>
+  rowwise() |>
+  mutate('N stomachs' = sum(c_across(pdcount:neamapcount), na.rm = T)) |>
+  select(Predator = pdcomnam, 'N stomachs')
 
 flextable::flextable(stomcount) %>%
-  flextable::set_caption("Total number of NEFSC stomachs for each predator included in analysis, 1985-2021") %>%
+  flextable::set_caption("Total number of stomachs for each predator included in analysis, 1985-2021") %>%
   flextable::fontsize(size = 9, part = "all") %>%
   flextable::autofit()
 ```
 
-The number of stomachs by year for each predator show general stability that seem unlikely to explain fluctuations in the index. The table shows number of stomachs by predator included in the NEFSC dataset to illustrate sampling over time. While there was more sampling overall during the 1990s relative to other portions of the time series, variation in the full Northeast US annual forage index does not correspond to higher or lower numbers of predator stomachs included as input data.
+The number of stomachs by year for each predator show general stability that seem unlikely to explain fluctuations in the index. The table shows number of stomachs by predator included from both the NEFSC and NEAMAP datasets. While there was more sampling overall during the 1990s relative to other portions of the time series, variation in the full Northeast US annual forage index does not correspond to higher or lower numbers of predator stomachs included as input data.
 
 ```{r}
 stomcountyr <- fh.nefsc.pisc.pisccomplete |> 
@@ -268,11 +281,14 @@ stomcountyr <- fh.nefsc.pisc.pisccomplete |>
   summarise(pycount = n()) |>
   group_by(pdcomnam, year) |>
   summarise(pdcount = n()) |>
+  bind_rows(NEAMAPstomn |> select(-comnam)) |>
+  group_by(pdcomnam, year) |>
+  summarize(pdcount = sum(pdcount, na.rm = T)) |>
   arrange(year, pdcomnam) |>
   pivot_wider(names_from = year, values_from = pdcount)
 
 flextable::flextable(stomcountyr) %>%
-  flextable::set_caption("Number of NEFSC stomachs for each predator and year included in analysis, 1985-2021") %>%
+  flextable::set_caption("Number of stomachs for each predator and year included in analysis, 1985-2021") %>%
   flextable::fontsize(size = 9, part = "all") %>%
   flextable::autofit()
 
@@ -297,29 +313,33 @@ AllEPU <- ggplot(splitoutann %>% dplyr::filter(Region %in% c("AllEPU")),
   ylab("Relative forage biomass scaled to maximum") +
   ggtitle("Annual forage index, full Northeast US shelf (GOM + GB + MAB)")
 
-NEAMAPdat <- read.csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish Prey_wWQ2023.csv"))
+NEAMAPtot <- read.csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish Prey_wWQ2023.csv"))
 
-NEAMAPstomn <- NEAMAPdat |>
+NEAMAPtotstomn <- NEAMAPtot |>
   select(year, season, nstomtot) |>
   group_by(year) |>
   summarise(pdcount = sum(nstomtot)) |>
   mutate(pdcomnam = "NEAMAP")
 
-stackbar <- fh.nefsc.pisc.pisccomplete |> 
-  filter(year > 1984) |>
-  group_by(cruise6, year, pdcomnam, station, pdid) |> 
-  summarise(pycount = n()) |>
-  group_by(pdcomnam, year) |>
-  summarise(pdcount = n()) |>
-  ungroup() |>
-  arrange(year, pdcomnam) |>
-  bind_rows(NEAMAPstomn) |>
+stackbar <- stomcountyr |>
+  pivot_longer(-pdcomnam, names_to = "year", values_to = "pdcount") |>
+  mutate(year = as.integer(year)) |>
+  # fh.nefsc.pisc.pisccomplete |> 
+  # filter(year > 1984) |>
+  # group_by(cruise6, year, pdcomnam, station, pdid) |> 
+  # summarise(pycount = n()) |>
+  # group_by(pdcomnam, year) |>
+  # summarise(pdcount = n()) |>
+  # ungroup() |>
+  # arrange(year, pdcomnam) |>
+  # bind_rows(NEAMAPstomn) |>
   ggplot(aes(x=year, y=pdcount, fill=pdcomnam)) +
   geom_bar(position = "stack", stat = "identity") +
   theme(legend.title = element_blank(), 
         legend.text = element_text(size = 6),
         legend.key.size = unit(0.3, "cm")) +
-  ggtitle("Number of NEFSC and NEAMAP stomachs included in dataset by year")
+  guides(fill = guide_legend(ncol = 1)) +
+  ggtitle("Number of stomachs included in dataset by year")
 
 stackbar
 
