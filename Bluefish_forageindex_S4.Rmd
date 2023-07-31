@@ -236,7 +236,23 @@ pisccomplete <- partition_leaves(dend)[[
   which_node(dend, c("Bluefish..S(37)", "Bluefish..M(36)", "Bluefish..L(35)"))
 ]]
 
-#pisccomplete
+pisccompleten <- str_remove(pisccomplete, "\\(.*\\)")
+
+dietoverlappisc <- dietoverlap |> 
+  rename(pred = "...1") |>
+  filter(pred %in% pisccompleten)
+
+#stats on overlap with bluefish
+# all preds
+mean(dietoverlap$Bluefish..L)
+mean(dietoverlap$Bluefish..M)
+mean(dietoverlap$Bluefish..S)
+
+# just piscivore preds
+mean(dietoverlappisc$Bluefish..L)
+mean(dietoverlappisc$Bluefish..M)
+mean(dietoverlappisc$Bluefish..S)
+
 
 pisccompletedf <- data.frame("COMNAME" = toupper(str_remove(pisccomplete, "\\..*")),
                               "SizeCat" = str_remove(str_extract(pisccomplete, "\\..*[:upper:]+"), "\\.."),
@@ -339,6 +355,7 @@ stackbar <- stomcountyr |>
         legend.text = element_text(size = 6),
         legend.key.size = unit(0.3, "cm")) +
   guides(fill = guide_legend(ncol = 1)) +
+  viridis::scale_fill_viridis(option="turbo", discrete=TRUE) +
   ggtitle("Number of stomachs included in dataset by year")
 
 stackbar
