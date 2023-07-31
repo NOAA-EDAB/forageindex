@@ -242,17 +242,20 @@ dietoverlappisc <- dietoverlap |>
   rename(pred = "...1") |>
   filter(pred %in% pisccompleten)
 
-#stats on overlap with bluefish
-# all preds
-mean(dietoverlap$Bluefish..L)
-mean(dietoverlap$Bluefish..M)
-mean(dietoverlap$Bluefish..S)
-
-# just piscivore preds
-mean(dietoverlappisc$Bluefish..L)
-mean(dietoverlappisc$Bluefish..M)
-mean(dietoverlappisc$Bluefish..S)
-
+# #stats on overlap with bluefish
+# # all preds
+# mean(dietoverlap$Bluefish..L)
+# mean(dietoverlap$Bluefish..M)
+# mean(dietoverlap$Bluefish..S)
+# 
+# 
+# # just piscivore preds
+# mean(dietoverlappisc$Bluefish..L)
+# mean(dietoverlappisc$Bluefish..M)
+# mean(dietoverlappisc$Bluefish..S)
+# 
+# summarise_all(dietoverlappisc|>select(-pred), mean) #list(min, mean, max))
+# 
 
 pisccompletedf <- data.frame("COMNAME" = toupper(str_remove(pisccomplete, "\\..*")),
                               "SizeCat" = str_remove(str_extract(pisccomplete, "\\..*[:upper:]+"), "\\.."),
@@ -358,9 +361,16 @@ stackbar <- stomcountyr |>
   viridis::scale_fill_viridis(option="turbo", discrete=TRUE) +
   ggtitle("Number of stomachs included in dataset by year")
 
+stomtotyr <- stomcountyr |>
+  pivot_longer(-pdcomnam, names_to = "year", values_to = "pdcount") |>
+  mutate(year = as.integer(year)) |> 
+  group_by(year) |> 
+  summarise(totsum = sum(pdcount, na.rm=T)) |> 
+  as.data.frame()
+
 stackbar
 
-AllEPU
+AllEPU + geom_line(data=stomtotyr, aes(x=year, y=totsum))
 ```
 
 
