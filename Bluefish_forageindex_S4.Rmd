@@ -370,7 +370,17 @@ stomtotyr <- stomcountyr |>
 
 stackbar
 
-AllEPU + geom_line(data=stomtotyr, aes(x=year, y=totsum))
+#AllEPU 
+
+splitoutann %>% dplyr::filter(Region %in% c("AllEPU")) |>
+  ggplot(aes(x=Time, y=Estimate)) +
+  geom_line() +
+  geom_line(aes(x=Time, y=mean(Estimate)), linetype=2) +
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate)) +
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate), alpha = 0.2) + 
+  geom_line(data=stomtotyr, aes(x=year, y=totsum), color="blue") +
+  geom_line(data=stomtotyr, aes(x=year, y=mean(totsum)), color="blue", linetype=2)
+            
 ```
 
 
