@@ -66,11 +66,11 @@ flextable::flextable(stnsummary) %>%
 
 ## Comparison of survey in situ surface temperature and OISST {-}
 
-For stations with in-situ surface temperature measurements, we compared these to OISST from the area and date of each survey station. The spatial resolution of the OISST dataset 
+For stations with in-situ surface temperature measurements, we compared these to OISST from the area and date of each survey station. The spatial resolution of the OISST dataset is 25 km, so survey stations anywhere within the 25 km block would be assigned the same temperature. 
 
-Spatial resolution is visible in these sample plots of OISST from March 15 and September 15 2021:
+Spatial resolution is visible in sample plots of OISST from March 15 and September 15 2021 (Fig. \@ref(fig:sampleOISST)).
 
-```{r, fig.show='hold', out.width='49%'}
+```{r sampleOISST, fig.show='hold', out.width='49%', fig.cap="March 15 2021 and September 15 2021 OISST for the Northeast US Shelf."}
 #visualize
 sst2021 <- readRDS(here("data-raw/gridded/sst_data/sst2021.rds"))
 
@@ -112,9 +112,9 @@ dailysstplot(mar15)
 dailysstplot(sep15)
 #dailysstplot(nov15)
 ```
-The range of temperatures observed on surveys differs by season.  Histogram of in situ surface temperatures:
+The range of temperatures observed on surveys differs by season (Fig. \@ref(fig:temprange)). 
 
-```{r}
+```{r temprange, fig.cap = "Range of in-situ surface temperatures from the NEFSC bottom trawl surveys by season, 1985-2021."}
 
 insitusst <- inputdat |>
   dplyr::filter(year>1984) |>
@@ -123,14 +123,14 @@ insitusst <- inputdat |>
   
 ggplot2::ggplot(insitusst, aes(x=surftemp)) + 
   geom_histogram() + 
-  facet_wrap(~season_ng)
+  facet_wrap(~season_ng, ncol = 1)
 
 ```
 
 
-Compare the in situ surface temperatures with OISST where there are both available:
+In situ survey surface temperatures compare well with OISST where there are both available over a wide range of temperatures, with some exceptions (Fig. \@ref(fig:comparestations)). 
 
-```{r}
+```{r comparestations, fig.cap="Comparison of NEFSC in situ surface temperature measurments (surftemp) with OISST temperatures (oisst) for the same date and 25 km grid cell. The blue line is a smooth through the data, the black line is the desired 1:1 relationship where temperatures match."}
 
 
 comparesst <- inputdat %>%
@@ -168,17 +168,20 @@ yrmap <- function(mapyr){
 ```
 
 
-In the following maps of survey station locations by SST match/mismatch for each year. yellow is missing data that would be filled by OISST, and the color range shows how different SST is for stations with both values.
+In the following maps of survey station locations by SST match/mismatch for each year, yellow points indicate missing data that would be filled by OISST, and the color range shows how different in situ and OISST temperature is for stations with both values (Fig. \@ref(fig:matchmaps)).
 
 Most mismatches were near Cape Hatteras where the temperature gradient from the nearby Gulf Stream is not well captured by the resolution of OISST. Others were similarly near the continental slope.
 
-```{r,  results='asis'}
+```{r matchmaps,  results='asis' }
+
+i=1
 
 for(mapyr in c(1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020)){
   
-    cat("  \n",  as.character(mapyr),"  \n")
+    cat("  \n",  letters[i],"  \n")
     print(yrmap(mapyr)) 
-    cat("  \n")   
+    cat("  \n") 
+    i <- i+1
     
   }
 ```
