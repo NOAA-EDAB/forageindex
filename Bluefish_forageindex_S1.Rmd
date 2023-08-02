@@ -6,13 +6,13 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   bookdown::word_document2:
     toc: false
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
   bookdown::pdf_document2:
     includes: 
        in_header: latex/header1.tex
     keep_tex: true
-  bookdown::html_document2: 
-    toc: true
-    toc_float: true
 link-citations: yes
 csl: "canadian-journal-of-fisheries-and-aquatic-sciences.csl"
 bibliography: FishDiet_EcoIndicators.bib
@@ -68,9 +68,10 @@ flextable::flextable(stnsummary) %>%
 
 For stations with in-situ surface temperature measurements, we compared these to OISST from the area and date of each survey station. The spatial resolution of the OISST dataset is 25 km, so survey stations anywhere within the 25 km block would be assigned the same temperature. 
 
-Spatial resolution is visible in sample plots of OISST from March 15 and September 15 2021 (Fig. \@ref(fig:sampleOISST)).
+Spatial resolution is visible in a sample plot of OISST from March 15, 2021 (Fig. \@ref(fig:sampleOISST)).
 
-```{r sampleOISST, fig.show='hold', out.width='49%', fig.cap="March 15 2021 and September 15 2021 OISST for the Northeast US Shelf."}
+```{r sampleOISST,  fig.cap="March 15 2021 OISST for the Northeast US Shelf."}
+#fig.show='hold', out.width='49%',
 #visualize
 sst2021 <- readRDS(here("data-raw/gridded/sst_data/sst2021.rds"))
 
@@ -109,9 +110,10 @@ dailysstplot <- function(oneday){
 dailysstplot(mar15)
 #dailysstplot(may15)
 #dailysstplot(jul15)
-dailysstplot(sep15)
+#dailysstplot(sep15)
 #dailysstplot(nov15)
 ```
+
 The range of temperatures observed on surveys differs by season (Fig. \@ref(fig:temprange)). 
 
 ```{r temprange, fig.cap = "Range of in-situ surface temperatures from the NEFSC bottom trawl surveys by season, 1985-2021."}
@@ -130,7 +132,7 @@ ggplot2::ggplot(insitusst, aes(x=surftemp)) +
 
 In situ survey surface temperatures compare well with OISST where there are both available over a wide range of temperatures, with some exceptions (Fig. \@ref(fig:comparestations)). 
 
-```{r comparestations, fig.cap="Comparison of NEFSC in situ surface temperature measurments (surftemp) with OISST temperatures (oisst) for the same date and 25 km grid cell. The blue line is a smooth through the data, the black line is the desired 1:1 relationship where temperatures match."}
+```{r comparestations, fig.cap="Comparison of NEFSC in situ surface temperature measurements (surftemp) with OISST temperatures (oisst) for the same date and 25 km grid cell. The blue line is a smooth through the data, the black line is the desired 1:1 relationship where temperatures match."}
 
 
 comparesst <- inputdat %>%
@@ -172,7 +174,8 @@ In the following maps of survey station locations by SST match/mismatch for each
 
 Most mismatches were near Cape Hatteras where the temperature gradient from the nearby Gulf Stream is not well captured by the resolution of OISST. Others were similarly near the continental slope.
 
-```{r matchmaps,  results='asis' }
+```{r matchmaps,  results='asis', fig.cap="Comparison of in-situ survey surface temperature and OISST for selected years."}
+#fig.show='hold',
 
 i=1
 
@@ -193,7 +196,7 @@ Despite some mismatches, we felt substituting OISST temperature to retain the st
 
 The two best fitting models both include mean predator length and number of predator species as covariates; adding sea surface temperature to these covariates resulted in the best fitting model in both seasons. To evaluate the overall impact of SST as a covariate, we first compare the indices with and without this covariate (best and second best fit to the data, respectively, although in fall the difference in AIC was small). These indices are not bias corrected.
 
-Including SST slightly increased index scale relative to the second best fitting model in fall, but had the opposite effect in spring. However, the index trends estimated by both models are nearly identical. Therefore, including OISST to fill in missing in-situ temperature data seems to have no impact on index trend (as the sst covariate itself has no impact on index trend). 
+Index trends estimated by both models are nearly identical (\@ref(fig:trendcomp)). Including SST slightly increased index scale relative to the second best fitting model in fall, but had the opposite effect in spring (\@ref(fig:scalecomp)). Therefore, including OISST to fill in missing in-situ temperature data seems to have no impact on index trend (as the sst covariate itself has no impact on index trend). 
 
 ```{r}
 stratlook <- data.frame(Stratum = c("Stratum_1",
@@ -230,8 +233,8 @@ stratlook <- data.frame(Stratum = c("Stratum_1",
 
 ```
 
+```{r trendcomp, fig.cap="Trend comparisons between forage indices estimated with and without SST as a catchability covariate.", fig.show='hold', fig.height=9}
 
-```{r}
 # from each output folder in pyindex, 
 outdir <- here("pyindex_modsel2")
 moddirs <- list.dirs(outdir) 
@@ -267,17 +270,62 @@ splitoutput <- modcompareindex %>%
 
 foragemax <- max(splitoutput$Estimate)
 
+foragetsmean <- splitoutput %>%
+  dplyr::group_by(modname, Region) %>%
+  dplyr::mutate(fmean = mean(Estimate)) 
+
+
+ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y", ncol = 1) +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Fall models: trend comparison") +
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0),
+        legend.position = "bottom",
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
+
+ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point()+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y", ncol = 1) +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Spring models: trend comparison") +
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0),
+        legend.position = "bottom",
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
+```
+
+
+```{r scalecomp, fig.cap="Scale comparisons between forage indices estimated with and without SST as a catchability covariate.", fig.show='hold', fig.height=9}
+# from each output folder in pyindex, 
+
 ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=modname)) +
   geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
   geom_point()+
   geom_line()+
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
-  facet_wrap(~Region, scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y", ncol = 1) +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
   ylab("Relative forage biomass scaled to maximum")  +
   ggtitle("Fall models: scale comparison")+
-  theme(legend.position = c(1, 0),
-        legend.justification = c(1, 0),
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0),
+        legend.position = "bottom",
         legend.text = element_text(size=rel(0.5)),
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
@@ -287,12 +335,13 @@ ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=
   geom_point()+
   geom_line()+
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
-  facet_wrap(~Region, scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y", ncol = 1) +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
   ylab("Relative forage biomass scaled to maximum")  +
   ggtitle("Spring models: scale comparison")+
-  theme(legend.position = c(1, 0),
-        legend.justification = c(1, 0),
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0),
+        legend.position = "bottom",
         legend.text = element_text(size=rel(0.5)),
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
@@ -300,41 +349,3 @@ ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=
 
 ```
 
-```{r}
-foragetsmean <- splitoutput %>%
-  dplyr::group_by(modname, Region) %>%
-  dplyr::mutate(fmean = mean(Estimate)) 
-
-
-ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
-  geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
-                    ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
-  geom_point()+
-  geom_line()+
-  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
-  facet_wrap(~Region, scales = "free_y") +
-  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
-  ylab("Relative forage biomass scaled to time series mean")  +
-  ggtitle("Fall models: trend comparison") +
-  theme(legend.position = c(1, 0),
-        legend.justification = c(1, 0),
-        legend.text = element_text(size=rel(0.5)),
-        legend.key.size = unit(0.5, 'lines'),
-        legend.title = element_text(size=rel(0.5)))
-
-ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
-  geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
-                    ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
-  geom_point()+
-  geom_line()+
-  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
-  facet_wrap(~Region, scales = "free_y") +
-  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
-  ylab("Relative forage biomass scaled to time series mean")  +
-  ggtitle("Spring models: trend comparison") +
-  theme(legend.position = c(1, 0),
-        legend.justification = c(1, 0),
-        legend.text = element_text(size=rel(0.5)),
-        legend.key.size = unit(0.5, 'lines'),
-        legend.title = element_text(size=rel(0.5)))
-```
