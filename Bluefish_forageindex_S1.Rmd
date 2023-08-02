@@ -278,7 +278,7 @@ foragetsmean <- splitoutput %>%
 ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
   #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
   #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
-  geom_point()+
+  geom_point(aes(shape=modname))+
   geom_line()+
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
   facet_wrap(~Region, scales = "free_y", ncol = 1) +
@@ -295,7 +295,7 @@ ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/
 ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
   #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
   #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
-  geom_point()+
+  geom_point(aes(shape=modname))+
   geom_line()+
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
   facet_wrap(~Region, scales = "free_y", ncol = 1) +
@@ -315,8 +315,9 @@ ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean
 # from each output folder in pyindex, 
 
 ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=modname)) +
-  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
-  geom_point()+
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=modname), linetype = 0, alpha = 0.15)+
+  geom_point(aes(shape=modname))+
   geom_line()+
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
   facet_wrap(~Region, scales = "free_y", ncol = 1) +
@@ -331,8 +332,9 @@ ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=mo
         legend.title = element_text(size=rel(0.5)))
 
 ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=modname)) +
-  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
-  geom_point()+
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=modname), linetype = 0, alpha = 0.15)+
+  geom_point(aes(shape=modname))+
   geom_line()+
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
   facet_wrap(~Region, scales = "free_y", ncol = 1) +
