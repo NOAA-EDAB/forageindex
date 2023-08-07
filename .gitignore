@@ -7,3 +7,6 @@
 
 *.docx
 *.html
+
+# local folders
+WHAMoutput/compare_png
