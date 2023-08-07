@@ -992,49 +992,11 @@ flextable::flextable(compwhamtab) |>
 
 \newpage 
 # Figures
-```{r circulardend, fig.cap="Circular dendogram grouping similar fish feeding guilds based on Northeast Fisheries Science Center bottom trawl survey collected food habits data, 1973-2020. Labels include fish common name and size category (XS = extra small, S = small, M = medium, L = large, XL = extra large), followed by a unique numeric identifier for each of the 136 fish/size category combinations. Colors indicate six major feeding categories, including the piscivore group containing all three bluefish size categories in gold (second group in clockwise order from top).", fig.width=8, fig.asp=1}
-
-guilds <- stats::hclust(d_dietoverlap)
-
-#guilds <- dendi
-
-dend <- stats::as.dendrogram(guilds)
-
-dend <- dendextend::rotate(dend, 1:136)
-
-dend <- dendextend::color_branches(dend, k=6)
-
-dend <- dendextend::color_labels(dend, k=6)
-
-labels(dend) <- paste(as.character(names(dietoverlap[-1]))[order.dendrogram(dend)],
-                           "(",labels(dend),")", 
-                           sep = "")
-
-dend <- dendextend::hang.dendrogram(dend,hang_height=0.1)
-
-# reduce the size of the labels:
-# dend <- assign_values_to_leaves_nodePar(dend, 0.5, "lab.cex")
-dend <- dendextend::set(dend, "labels_cex", 0.75)
-# And plot:
-# par(mar = c(3,3,3,7))
-# plot(dend, 
-#      main = "Clustered NEFSC diet data, (complete)
-#      (the labels give the predator species/size)", 
-#      horiz =  TRUE,  nodePar = list(cex = .007))
-
-circlize::circos.par(start.degree = 90)
-par(mar = rep(0,4))
-dendextend::circlize_dendrogram(dend,
-                    labels_track_height=0.3,
-                    dend_track_height = 0.6)
-
-```
-
 
 ```{r}
 
 # 3nm buffer
-coast3nmbuff <- readRDS(here("spatialdat/neus_coast3nmbuff.rds"))
+coast3nmbuff <- readRDS(here::here("spatialdat/neus_coast3nmbuff.rds"))
 
 fedwaters <- setdiff(FishStatsUtils::northwest_atlantic_grid, coast3nmbuff)
 
@@ -1092,7 +1054,25 @@ fedwatersgrid <- fedwaters %>%
 
 theme_set(theme_bw())
 
-ggplot(data = ecodata::coast) +
+bays <- data.frame(name = c("Cape Hatteras", "Albermarle Sound", "Chesapeake Bay", "Delaware Bay", "Long Island Sound"," Cape Cod Bay"),
+                     Lat = c(-75.5393, -75.9463, -76.105011, -74.947850, -72.9461, -70.3361),
+                     Lon = c(35.2480, 36.0787, 37.521374, 39.016490, 41.0748, 41.8451)) %>% 
+  sf::st_as_sf(coords = c("Lat", "Lon"), crs = 4326) 
+
+nestates <- spData::us_states |> 
+  dplyr::filter(NAME != "District of Columbia")
+
+base <- ggplot(data = ecodata::coast) +
+  geom_sf() +
+  geom_sf(data = nestates) +
+  geom_sf_label(data = nestates, aes(label = NAME),
+                check_overlap = TRUE, size = 3,
+                fill = NA) +
+  geom_sf_label(data = bays, aes(label = name)) +
+  coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) + #zoomed to Hatteras and ()
+  ggtitle("a. Base map")
+
+EPUs <- ggplot(data = ecodata::coast) +
   geom_sf() + 
   geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
   geom_point(data = MABgrid, aes(x = Lon, y = Lat), colour = "yellow", size=0.05, alpha=0.1) +
@@ -1100,10 +1080,10 @@ ggplot(data = ecodata::coast) +
   geom_point(data = GOMgrid, aes(x = Lon, y = Lat), colour = "red", size=0.05, alpha=0.1) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) + #full extent of VAST model
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) + #zoomed to Hatteras and N
-  ggtitle("a. MAB (yellow), GB (orange), GOM (red)")
+  ggtitle("b. MAB (yellow), GB (orange), GOM (red)")
 
 
-ggplot(data = ecodata::coast) +
+BFsurv <- ggplot(data = ecodata::coast) +
   geom_sf() + 
   geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
   geom_point(data = MABGBgrid, aes(x = Lon, y = Lat), size=0.05, colour = "green",  alpha=0.1) +
@@ -1112,16 +1092,18 @@ ggplot(data = ecodata::coast) +
   #geom_point(data = bfoffshoregrid, aes(x = Lon, y = Lat), size=0.05, colour = "orange",  alpha=0.3) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) +
-  ggtitle("b. Bluefish survey (blue) in MABGB (green)")
+  ggtitle("c. Bluefish survey (blue) in MABGB (green)")
 
-ggplot(data = ecodata::coast) +
+SWaters <- ggplot(data = ecodata::coast) +
   geom_sf() + 
   geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
   geom_point(data = MABGBgrid, aes(x = Lon, y = Lat), size=0.05, colour = "green",  alpha=0.1) +
   geom_point(data = statewatersgrid, aes(x = Lon, y = Lat), size=0.03, colour = "purple",  alpha=0.5) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) +
-  ggtitle("c. State waters (purple), in MABGB (green)")
+  ggtitle("d. State waters (purple), in MABGB (green)")
+
+
 
 ```
 
