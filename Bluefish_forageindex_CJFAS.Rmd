@@ -963,6 +963,29 @@ flextable::flextable(preycolcode %>%
 
 ```
 
+```{r results='hide', message=FALSE}
+
+ecov_off <- readRDS(here::here("WHAMoutput/BF28C_m7_ecov_off.rds"))
+ecov_on <- readRDS(here::here("WHAMoutput/BF28C_m7_ecov_on.rds"))
+
+mods <- list(ecov_off, ecov_on)
+names(mods) <- c("ecov_off", "ecov_on")
+
+compwham <- wham::compare_wham_models(mods, do.plot = F)
+
+```
+
+
+```{r WHAMresults, ft.arraystretch = 1}
+
+compwhamtab <- as.data.frame(compwham$tab) |>
+  tibble::rownames_to_column(var = "model")
+
+flextable::flextable(compwhamtab) |>
+  flextable::set_caption("Stock assessment model fit and retrospective diagnostics with (model = ecov_on) and without (model = ecov_off) the fall StateWaters forage index included as a catchability covariate on the recreational fishery catch per unit effort index. Mohn's rho values (rho) indicate retrospective performance for recruitment (R), spawning stock biomass (SSB) and fully selected fishing mortality (Fbar).")
+
+```
+
 
 \newpage  
 \listoffigures

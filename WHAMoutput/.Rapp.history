@@ -1,0 +1,6 @@
+load("/Users/sarah.gaichas/Documents/0_Data/forageindex/WHAMoutput/BF28C_m1_base_scaa.rds")
+load("/Users/sarah.gaichas/Documents/0_Data/forageindex/WHAMoutput/BF28C_m7_ecov_off.rds")
+load("/Users/sarah.gaichas/Documents/0_Data/forageindex/WHAMoutput/BF28C_m7_ecov_on.rds")
+load("/Users/sarah.gaichas/Documents/0_Data/forageindex/WHAMoutput/BF28C_m7.rds")
+exit
+q()
