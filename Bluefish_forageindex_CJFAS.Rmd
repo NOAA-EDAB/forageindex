@@ -34,7 +34,8 @@ urlcolor: blue
 
 knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
                       message = FALSE,
-                      warning = FALSE)
+                      warning = FALSE,
+                      dev = "cairo_pdf")
 
 library(tidyverse)
 theme_set(theme_bw())
@@ -256,7 +257,7 @@ with $p_{i,k}$ = the mean proportion (by volume) of prey group $k$ in the diet o
 The resulting diet overlap matrix was used to identify similar groups of predators using cluster analysis. We used R package `dendextend` [@galili_dendextend_2015] to transform the similarity matrix into a distance matrix (`stats::dist`) and then to categorize similarly feeding piscivores using hierarchical clustering based on the “complete” algorithm with k=6 clusters (`dendextend::hclust`). All sizes of bluefish clustered together using these criteria, indicating piscivorous feeding habits as juveniles and adults (Fig. \@ref(fig:circulardend)). The resulting piscivore list included the size classes of species that clustered with all 3 sizes of bluefish (Table \@ref(tab:pisclist)). While these piscivores have high diet similarity, they do not all overlap spatially. Because we are interested in a forage index for the full region that can be tailored to the spatial footprint of the bluefish stock assessment indices, the additional spatial coverage provided by the full piscivore list is an advantage.
 
 ```{r pisclistcalc}
-dietoverlap <- read_csv(here("datfromshiny/tgmat.2022-02-15.csv"))
+dietoverlap <- read_csv(here("fhdat/tgmat.2022-02-15.csv"))
 
 d_dietoverlap <- dist(dietoverlap)
 
@@ -496,7 +497,7 @@ ndietbfbfpreyNEFSC <- fh.nefsc.pisc.pisccomplete %>%
 
 
 # NEAMAP piscivores and bluefish
-neamap_bluepreyagg_stn <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish PreyWQ2.csv")) %>%
+neamap_bluepreyagg_stn <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish Prey_wWQ2023.csv")) %>%
   mutate(vessel = "NEAMAP") %>%
   rename(id = station,
          sumbluepywt = sumbluepreywt,
@@ -759,6 +760,8 @@ The authors are grateful for the support of the Bluefish Research Track Stock As
 flextable::flextable(blueprey[,c('PREY', 'COMMON', 'NEFSC', 'NEAMAP', 'total')]) %>%
   flextable::set_header_labels(PREY = "Prey",
                                COMMON = "Prey common name",
+                               NEFSC = "NEFSC stomachs (n) with prey",
+                               NEAMAP = "NEAMAP stomachs (n) with prey",
                                total = "Total bluefish stomachs (n) with prey") %>%
   flextable::set_caption("Prey identified in bluefish stomachs, Northeast Fisheries Science Center (NEFSC, years 1973-2021) and Northeast Area Monitoring and Assessment Program (NEAMAP, years 2007-2021) databases.") %>%
   flextable::width(width=c(1.5,1.5,1,1,1))
@@ -953,7 +956,8 @@ names(mgtcols) <- as.factor(preycolcode$prey)
 
 flextable::flextable(preycolcode %>% 
                        dplyr::select(bluepynam, group, managed) %>%
-                       dplyr::mutate(bluepynam = stringr::str_to_sentence(bluepynam))) %>%
+                       dplyr::mutate(bluepynam = stringr::str_to_sentence(bluepynam),
+                                     managed = ifelse(managed, "Yes", "No"))) %>%
   flextable::set_header_labels(bluepynam = 'Prey name', 
                                group = "Prey group", 
                                managed = "Managed species?") %>%
@@ -1050,7 +1054,7 @@ fedwatersgrid <- fedwaters %>%
 
 ```
 
-```{r maps, crop=TRUE, fig.cap="Maps of (a) Northeast USA states (ME = Maine, NH = New Hampshire, MA = Massachusetts, RI = Rhode Island, CT = Connecticut, NY = New York, NJ = New Jersey, DE = Delaware, MD = Maryland, VA = Virginia) and Atlantic coastal features, (b) areas corresponding to ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in (c) bottom trawl survey index strata (SurveyBluefish), and (d) state waters within 3 miles of shore (StateWaters) within the combined Mid Atlantic Bight and Georges Bank (MABGB) region. The full VAST model grid is shown in brown. ", fig.height=9}
+```{r maps, crop=TRUE, fig.cap="Maps of (a) Northeast USA states (ME = Maine, NH = New Hampshire, MA = Massachusetts, RI = Rhode Island, CT = Connecticut, NY = New York, NJ = New Jersey, DE = Delaware, MD = Maryland, VA = Virginia) and Atlantic coastal features, (b) areas corresponding to ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in (c) bottom trawl survey index strata (SurveyBluefish), and (d) state waters within 3 miles of shore (StateWaters) within the combined Mid Atlantic Bight and Georges Bank (MABGB) region. The full VAST model grid is shown in brown.", fig.dim=c(10,7)}
 
 theme_set(theme_bw())
 
@@ -1084,9 +1088,10 @@ base <- ggplot(data = ecodata::coast) +
   ) + 
   #geom_sf_label(data = bays, aes(label = name)) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) + #zoomed to Hatteras and ()
-  xlab("Lon") +
+  xlab("") +
   ylab("Lat") +
-  ggtitle("a. Coastal features")
+  ggtitle("a. Coastal features") +
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
 
 EPUs <- ggplot(data = ecodata::coast) +
   geom_sf() + 
@@ -1096,7 +1101,10 @@ EPUs <- ggplot(data = ecodata::coast) +
   geom_point(data = GOMgrid, aes(x = Lon, y = Lat), colour = "red", size=0.05, alpha=0.1) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) + #full extent of VAST model
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) + #zoomed to Hatteras and N
-  ggtitle("b. MAB (green), GB (orange), GOM (red)")
+  xlab("") +
+  ylab("") +
+  ggtitle("b. MAB (green), GB (orange), GOM (red)")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
 
 
 BFsurv <- ggplot(data = ecodata::coast) +
@@ -1108,7 +1116,10 @@ BFsurv <- ggplot(data = ecodata::coast) +
   #geom_point(data = bfoffshoregrid, aes(x = Lon, y = Lat), size=0.05, colour = "orange",  alpha=0.3) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) +
-  ggtitle("c. Bluefish survey (blue) in MABGB (yellow)")
+  xlab("Lon") +
+  ylab("Lat") +
+  ggtitle("c. Bluefish survey (blue) in MABGB (yellow)")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
 
 SWaters <- ggplot(data = ecodata::coast) +
   geom_sf() + 
@@ -1117,9 +1128,12 @@ SWaters <- ggplot(data = ecodata::coast) +
   geom_point(data = statewatersgrid, aes(x = Lon, y = Lat), size=0.03, colour = "purple",  alpha=0.5) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) +
-  ggtitle("d. State waters (purple), in MABGB (yellow)")
+  xlab("Lon") +
+  ylab("") +
+  ggtitle("d. State waters (purple), in MABGB (yellow)")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
 
-base + EPUs + BFsurv + SWaters + plot_layout(nrow = 2)
+base + EPUs + BFsurv + SWaters + plot_layout(nrow = 2) 
 
 ```
 
@@ -1197,7 +1211,7 @@ p2
 ```
 
 
-```{r falldens, fig.cap="Yearly maps of VAST model estimated forage fish density for Fall (months 7-12)."}
+```{r falldens, fig.cap="Yearly maps of VAST model estimated forage fish density for Fall (months 7-12).", out.width='99%'}
 knitr::include_graphics("pyindex/allagg_fall_500_lennosst_ALLsplit_biascorrect/ln_density-predicted.png")
 ```
 
@@ -1885,6 +1899,9 @@ foragefit + WHAMfit + plot_layout(ncol = 1)
 
 plotwham <- wham::compare_wham_models(mods, do.table = F)
 
-plotwham$g[[1]] + scale_color_manual(values = c("black", "indianred")) + scale_fill_manual(values = c("black", "indianred"))
+plotwham$g[[1]] + 
+  scale_color_manual(values = c("black", "indianred")) + 
+  scale_fill_manual(values = c("black", "indianred")) +
+  theme(legend.position = "right")
 ```
 
