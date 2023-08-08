@@ -45,7 +45,7 @@ set_flextable_defaults(font.size = 11, padding = 3,
                        fonts_ignore=TRUE) #for latex
 #library(DT)
 #library(pdftools)
-#library(patchwork)
+library(patchwork)
 library(ggiraph)
 library(ggpubr)
 library(data.table)
@@ -1050,27 +1050,43 @@ fedwatersgrid <- fedwaters %>%
 
 ```
 
-```{r maps, crop=TRUE, fig.cap="Maps of key areas for Bluefish assessment indices. The full VAST model grid is shown in brown.", fig.show='hold', out.width="33%"}
+```{r maps, crop=TRUE, fig.cap="Maps of (a) Northeast US Atlantic coastal features, (b) areas corresponding to ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in (c) bottom trawl survey index strata (SurveyBluefish), and (d) state waters within 3 miles of shore (StateWaters) within the combined Mid Atlantic Bight and Georges Bank (MABGB) region. The full VAST model grid is shown in brown. ", fig.height=9}
 
 theme_set(theme_bw())
 
-bays <- data.frame(name = c("Cape Hatteras", "Albermarle Sound", "Chesapeake Bay", "Delaware Bay", "Long Island Sound"," Cape Cod Bay"),
-                     Lat = c(-75.5393, -75.9463, -76.105011, -74.947850, -72.9461, -70.3361),
-                     Lon = c(35.2480, 36.0787, 37.521374, 39.016490, 41.0748, 41.8451)) %>% 
+bays <- data.frame(name = c("Cape Hatteras", "Albermarle Sound", "Chesapeake Bay", "Delaware Bay", "Long Island Sound"," Cape Cod Bay", "Cape Cod"),
+                     Lat = c(-75.5393, -75.9463, -76.105011, -74.947850, -72.9461, -70.3361, -69.9598),
+                     Lon = c(35.2480, 36.0787, 37.521374, 39.016490, 41.0748, 41.8451, 41.6821)) %>% 
   sf::st_as_sf(coords = c("Lat", "Lon"), crs = 4326) 
 
+statelook <- bind_cols(state.abb, state.name) 
+names(statelook) <- c("abbr", "NAME")
+
 nestates <- spData::us_states |> 
-  dplyr::filter(NAME != "District of Columbia")
+  dplyr::filter(NAME %in% c("Maine", "New Hampshire", "Massachusetts",
+                            "Rhode Island", "New York", "New Jersey",
+                            "Delaware", "Maryland", "Virginia",
+                            "North Carolina", "Connecticut")) |>
+  dplyr::left_join(statelook)
+  
 
 base <- ggplot(data = ecodata::coast) +
   geom_sf() +
   geom_sf(data = nestates) +
-  geom_sf_label(data = nestates, aes(label = NAME),
-                check_overlap = TRUE, size = 3,
-                fill = NA) +
-  geom_sf_label(data = bays, aes(label = name)) +
+  geom_sf_text(data = nestates, aes(label = abbr),
+               size = 2.5) +
+  ggrepel::geom_label_repel(data = bays,
+                            aes(label = name, geometry = geometry),
+    stat = "sf_coordinates",
+    min.segment.length = 0,
+    hjust=0, nudge_x=5, direction="y",
+    color = "black", fill= "white", box.padding = 1
+  ) + 
+  #geom_sf_label(data = bays, aes(label = name)) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) + #zoomed to Hatteras and ()
-  ggtitle("a. Base map")
+  xlab("Lon") +
+  ylab("Lat") +
+  ggtitle("a. Coastal features")
 
 EPUs <- ggplot(data = ecodata::coast) +
   geom_sf() + 
@@ -1103,7 +1119,7 @@ SWaters <- ggplot(data = ecodata::coast) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) +
   ggtitle("d. State waters (purple), in MABGB (green)")
 
-
+base + EPUs + BFsurv + SWaters + plot_layout(nrow = 2)
 
 ```
 
