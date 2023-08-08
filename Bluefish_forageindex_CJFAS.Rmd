@@ -759,8 +759,8 @@ The authors are grateful for the support of the Bluefish Research Track Stock As
 flextable::flextable(blueprey[,c('PREY', 'COMMON', 'NEFSC', 'NEAMAP', 'total')]) %>%
   flextable::set_header_labels(PREY = "Prey",
                                COMMON = "Prey common name",
-                               total = "Bluefish stomachs (n)") %>%
-  flextable::set_caption("Prey identified in bluefish stomachs, NEFSC (1973-2021) and NEAMAP (2007-2021) diet databases.") %>%
+                               total = "Total bluefish stomachs (n) with prey") %>%
+  flextable::set_caption("Prey identified in bluefish stomachs, Northeast Fisheries Science Center (NEFSC, years 1973-2021) and Northeast Area Monitoring and Assessment Program (NEAMAP, years 2007-2021) databases.") %>%
   flextable::width(width=c(1.5,1.5,1,1,1))
 
 
@@ -776,7 +776,7 @@ flextable::flextable(piscall %>% dplyr::select(-c(NEFSC, NEAMAP))) %>%
                                mincm = "Minimum length (cm)",
                                maxcm = "Maximum length (cm)",
                                survey = "Survey") %>%
-  flextable::set_caption("Predators with highest diet similarity to Bluefish, NEFSC and NEAMAP diet databases") %>%
+  flextable::set_caption("Predators with highest diet similarity to Bluefish, Northeast Fisheries Science Center (NEFSC, years 1973-2021) and Northeast Area Monitoring and Assessment Program (NEAMAP, years 2007-2021) databases.") %>%
   #flextable::align_text_col(j=survey, align = "right", header = TRUE, footer = TRUE) %>%
   #flextable::autofit()
   flextable::width(width = c(3, 1, 1, 1))
@@ -957,7 +957,7 @@ flextable::flextable(preycolcode %>%
   flextable::set_header_labels(bluepynam = 'Prey name', 
                                group = "Prey group", 
                                managed = "Managed species?") %>%
-  flextable::set_caption("Prey species names in NEFSC stomach contents and survey data mapped to groups and management categories.") %>%
+  flextable::set_caption("Prey species names in Northeast Fisheries Science Center (NEFSC) stomach contents and survey data with corresponding prey groups and management categories used in analysis.") %>%
   #flextable::autofit()
   flextable::width(width = c(3, 2, 1))
 
@@ -982,7 +982,7 @@ compwhamtab <- as.data.frame(compwham$tab) |>
   tibble::rownames_to_column(var = "model")
 
 flextable::flextable(compwhamtab) |>
-  flextable::set_caption("Stock assessment model fit and retrospective diagnostics with (model = ecov_on) and without (model = ecov_off) the fall StateWaters forage index included as a catchability covariate on the recreational fishery catch per unit effort index. Mohn's rho values (rho) indicate retrospective performance for recruitment (R), spawning stock biomass (SSB) and fully selected fishing mortality (Fbar).")
+  flextable::set_caption("Bluefish stock assessment model fit and retrospective diagnostics with (model = ecov_on) and without (model = ecov_off) the fall StateWaters forage index included as a catchability covariate on the recreational fishery catch per unit effort index. Mohn's rho values (rho) indicate retrospective performance for recruitment (R), spawning stock biomass (SSB) and fully selected fishing mortality (Fbar).")
 
 ```
 
@@ -1050,7 +1050,7 @@ fedwatersgrid <- fedwaters %>%
 
 ```
 
-```{r maps, crop=TRUE, fig.cap="Maps of (a) Northeast US Atlantic coastal features, (b) areas corresponding to ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in (c) bottom trawl survey index strata (SurveyBluefish), and (d) state waters within 3 miles of shore (StateWaters) within the combined Mid Atlantic Bight and Georges Bank (MABGB) region. The full VAST model grid is shown in brown. ", fig.height=9}
+```{r maps, crop=TRUE, fig.cap="Maps of (a) Northeast USA states (ME = Maine, NH = New Hampshire, MA = Massachusetts, RI = Rhode Island, CT = Connecticut, NY = New York, NJ = New Jersey, DE = Delaware, MD = Maryland, VA = Virginia) and Atlantic coastal features, (b) areas corresponding to ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in (c) bottom trawl survey index strata (SurveyBluefish), and (d) state waters within 3 miles of shore (StateWaters) within the combined Mid Atlantic Bight and Georges Bank (MABGB) region. The full VAST model grid is shown in brown. ", fig.height=9}
 
 theme_set(theme_bw())
 
@@ -1091,33 +1091,33 @@ base <- ggplot(data = ecodata::coast) +
 EPUs <- ggplot(data = ecodata::coast) +
   geom_sf() + 
   geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
-  geom_point(data = MABgrid, aes(x = Lon, y = Lat), colour = "yellow", size=0.05, alpha=0.1) +
+  geom_point(data = MABgrid, aes(x = Lon, y = Lat), colour = "green", size=0.05, alpha=0.1) +
   geom_point(data = GBgrid, aes(x = Lon, y = Lat), colour = "orange", size=0.05, alpha=0.1) +
   geom_point(data = GOMgrid, aes(x = Lon, y = Lat), colour = "red", size=0.05, alpha=0.1) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) + #full extent of VAST model
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) + #zoomed to Hatteras and N
-  ggtitle("b. MAB (yellow), GB (orange), GOM (red)")
+  ggtitle("b. MAB (green), GB (orange), GOM (red)")
 
 
 BFsurv <- ggplot(data = ecodata::coast) +
   geom_sf() + 
   geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
-  geom_point(data = MABGBgrid, aes(x = Lon, y = Lat), size=0.05, colour = "green",  alpha=0.1) +
+  geom_point(data = MABGBgrid, aes(x = Lon, y = Lat), size=0.05, colour = "yellow",  alpha=0.1) +
   #geom_point(data = albinshoregrid, aes(x = Lon, y = Lat), size=0.03, colour = "blue") +
   geom_point(data = bfinshoregrid, aes(x = Lon, y = Lat), size=0.05, colour = "blue") +
   #geom_point(data = bfoffshoregrid, aes(x = Lon, y = Lat), size=0.05, colour = "orange",  alpha=0.3) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) +
-  ggtitle("c. Bluefish survey (blue) in MABGB (green)")
+  ggtitle("c. Bluefish survey (blue) in MABGB (yellow)")
 
 SWaters <- ggplot(data = ecodata::coast) +
   geom_sf() + 
   geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
-  geom_point(data = MABGBgrid, aes(x = Lon, y = Lat), size=0.05, colour = "green",  alpha=0.1) +
+  geom_point(data = MABGBgrid, aes(x = Lon, y = Lat), size=0.05, colour = "yellow",  alpha=0.1) +
   geom_point(data = statewatersgrid, aes(x = Lon, y = Lat), size=0.03, colour = "purple",  alpha=0.5) +
   #coord_sf(xlim = c(-79, -65.5), ylim = c(33, 45)) +
   coord_sf(xlim =c(-78, -65.5), ylim = c(35, 45)) +
-  ggtitle("d. State waters (purple), in MABGB (green)")
+  ggtitle("d. State waters (purple), in MABGB (yellow)")
 
 base + EPUs + BFsurv + SWaters + plot_layout(nrow = 2)
 
@@ -1253,7 +1253,7 @@ stratlook <- data.frame(Stratum = c("Stratum_1",
 ```
 
 
-```{r fallall, fig.cap="Fall forage indices scaled to the maximum value (Mid Atlantic 1985) for ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in state waters within 3 miles of shore (StateWaters) and bottom trawl survey index strata (SurveyBluefish)."}
+```{r fallall, fig.cap="Fall forage indices scaled to the maximum value (Mid Atlantic, 1985) for Ecoregions: Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and Bluefish assessment index areas: state waters within 3 miles of shore (StateWaters), and bottom trawl survey index strata (SurveyBluefish)."}
 splitout <- read.csv("pyindex/allagg_fall_500_lennosst_ALLsplit_biascorrect/Index.csv")
 
 splitoutput <- splitout %>%
@@ -1267,10 +1267,13 @@ splitoutput <- splitout %>%
 foragemax <- max(splitoutput$Estimate)
 
 ggplot(splitoutput, aes(x=Time, y=Estimate, colour=Region)) +
-  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
-  geom_point()+
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=Region), linetype = 0, alpha = 0.15)+
+  geom_point(aes(shape=Region))+
   geom_line()+
-  facet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  scale_color_manual(values=c("orange", "red", "green3", "purple", "blue")) +
+  scale_fill_manual(values=c("orange", "red", "green3", "purple", "blue")) +
+  facet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y", ncol = 1) +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
   ylab("Relative forage biomass scaled to maximum")  
   
@@ -1713,8 +1716,8 @@ compgroup <- foragegroupprop %>%
   dplyr::select(-groupsum) %>%
   dplyr::rename(dietgroupprop = groupprop) %>%
   dplyr::left_join(survforagegroupprop) %>%
-  dplyr::select(Time=year, Season=season_ng, EPU, group, diet=dietgroupprop, survey=groupprop) %>%
-  tidyr::pivot_longer(c(diet, survey), names_to = "source", values_to = "proportion")
+  dplyr::select(Time=year, Season=season_ng, EPU, group, stomach=dietgroupprop, survey=groupprop) %>%
+  tidyr::pivot_longer(c(stomach, survey), names_to = "source", values_to = "proportion")
 
 aggprop <- compgroup %>%
   dplyr::filter(!is.na(group)) %>%
@@ -1802,8 +1805,8 @@ compmanaged <- foragemanagedprop %>%
   dplyr::select(-mgtsum) %>%
   dplyr::rename(dietmgtprop = mgtprop) %>%
   dplyr::left_join(survforagemanagedprop) %>%
-  dplyr::select(Time=year, Season=season_ng, EPU, managed, diet=dietmgtprop, survey=mgtprop) %>%
-  tidyr::pivot_longer(c(diet, survey), names_to = "source", values_to = "proportion")
+  dplyr::select(Time=year, Season=season_ng, EPU, managed, stomach=dietmgtprop, survey=mgtprop) %>%
+  tidyr::pivot_longer(c(stomach, survey), names_to = "source", values_to = "proportion")
 
 ggplot2::ggplot(compmanaged %>% dplyr::filter(managed==FALSE), 
                 aes(x=Time, y=proportion, colour=source)) +
@@ -1819,9 +1822,69 @@ ggplot2::ggplot(compmanaged %>% dplyr::filter(managed==FALSE),
 ```
 
 
-```{r WHAM, fig.cap="Fall state waters forage index fit as a catchabilty covariate within the bluefish assessment model"}
 
-knitr::include_graphics("images/ecov_comp2.png")
+```{r WHAMq, fig.cap="Fall state waters forage index fit as a catchabilty covariate within the bluefish assessment model (top), with resulting catchability, q, for the recreational fishery catch per unit effort (MRIP) index (bottom)."}
 
+StateWaters <- splitoutput |>
+  dplyr::filter(Region == "StateWaters") |>
+  dplyr::mutate(logStateW = log(Estimate)) |>
+  dplyr::select(year = Time, logStateW, SE = Std..Error.for.ln.Estimate.)
+
+forageobs <- ecov_on$input$data$Ecov_obs
+forageest <- ecov_on$rep$Ecov_out[,,1][,3]
+forageestse <- ecov_on$rep$Ecov_obs_sigma
+
+StateWatersWHAM <- StateWaters |>
+  bind_cols(forageobs=forageobs, 
+            forageest=forageest, 
+            forageestse=forageestse)
+
+foragefit <- ggplot(StateWatersWHAM, aes(x=year, y=forageobs, color="ln_StateWaters")) + #y=logStateW
+  geom_point() +
+  geom_ribbon(aes(ymin=forageobs-(1.96*SE), ymax=forageobs+(1.96*SE), fill="ln_StateWaters"),  linetype = 0, alpha = 0.15) +
+  geom_line(aes(x=year, y=forageest, color="WHAM_fit"))+
+  geom_ribbon(aes(ymin=forageest-(forageestse), ymax=forageest+(forageestse), 
+                  fill="WHAM_fit"),  linetype = 0, alpha = 0.15) +
+  scale_color_manual(name='Forage Index',
+                     breaks=c('WHAM_fit', 'ln_StateWaters'),
+                     values=c('ln_StateWaters'='purple', 'WHAM_fit'="indianred"),
+                     aesthetics = c("colour", "fill")) +
+  xlab("Year") +
+  ylab("ln(State Waters fall forage)")
+
+
+forageqMRIP <- ecov_on$rep$q[,3]
+noqMRIP <- ecov_off$rep$q[,3]
+assyear <- 1985:2021
+
+se <- summary(ecov_on$sdrep)
+se <- matrix(se[rownames(se) == "logit_q_mat",2], length(ecov_on$years))
+forageqMRIPse <- se[,3]
+
+WHAMq <- data.frame(year=assyear, ecovq=forageqMRIP, se=forageqMRIPse, qbase=noqMRIP)
+
+WHAMfit <- ggplot(WHAMq, aes(x=year, y=ecovq, color='ecov_on'))+
+  geom_line()+ #color="indianred"
+  geom_ribbon(aes(ymin=ecovq*exp(-1.96*se), ymax=ecovq*exp(1.96*se), fill='ecov_on'),  linetype = 0, alpha = 0.15)+ 
+  geom_line(aes(x=year, y=qbase, color='ecov_off')) +
+  scale_color_manual(name='MRIP Catchability',
+                     breaks=c('ecov_off', 'ecov_on'),
+                     values=c('ecov_on'='indianred', 'ecov_off'="black"),
+                     aesthetics = c("colour", "fill")) +
+  xlab("Year") +
+  ylab("Estimated catchability, q")
+
+foragefit + WHAMfit + plot_layout(ncol = 1)
+
+```
+
+
+```{r WHAMcomp, fig.cap="Bluefish assessment results with (ecov_on) and without (ecov_off) the fall StateWaters forage index as a catchabilty covariate on recreational fishery catch per unit effort. Estimated fishing mortality (F, top), recruitment (center), and spawning stock biomass (SSB, bottom)."}
+
+#knitr::include_graphics("images/ecov_comp2.png")
+
+plotwham <- wham::compare_wham_models(mods, do.table = F)
+
+plotwham$g[[1]] + scale_color_manual(values = c("black", "indianred")) + scale_fill_manual(values = c("black", "indianred"))
 ```
 
