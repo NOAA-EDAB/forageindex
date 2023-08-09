@@ -1054,7 +1054,7 @@ fedwatersgrid <- fedwaters %>%
 
 ```
 
-```{r maps, crop=TRUE, fig.cap="Maps of (a) Northeast USA states (ME = Maine, NH = New Hampshire, MA = Massachusetts, RI = Rhode Island, CT = Connecticut, NY = New York, NJ = New Jersey, DE = Delaware, MD = Maryland, VA = Virginia) and Atlantic coastal features, (b) areas corresponding to ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in (c) bottom trawl survey index strata (SurveyBluefish), and (d) state waters within 3 miles of shore (StateWaters) within the combined Mid Atlantic Bight and Georges Bank (MABGB) region. The full VAST model grid is shown in brown.", fig.dim=c(10,7)}
+```{r maps, crop=TRUE, fig.cap="Maps of (a) Northeast USA states (ME = Maine, NH = New Hampshire, MA = Massachusetts, RI = Rhode Island, CT = Connecticut, NY = New York, NJ = New Jersey, DE = Delaware, MD = Maryland, VA = Virginia) and Atlantic coastal features, (b) areas corresponding to ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in (c) bottom trawl survey index strata (SurveyBluefish), and (d) state waters within 3 miles of shore (StateWaters) within the combined Mid Atlantic Bight and Georges Bank (MABGB) region. The full VAST model grid is shown in brown.", out.width='100%'}
 
 theme_set(theme_bw())
 
@@ -1133,7 +1133,11 @@ SWaters <- ggplot(data = ecodata::coast) +
   ggtitle("d. State waters (purple), in MABGB (yellow)")+
   theme(plot.margin = margin(0, 0, 0, 0, "cm"))
 
-base + EPUs + BFsurv + SWaters + plot_layout(nrow = 2) 
+map4 <- base + EPUs + BFsurv + SWaters + plot_layout(nrow = 2)
+
+ggsave("fig1maps.pdf", map4, device="pdf", width = 9, height = 12, units = "in")
+
+knitr::include_graphics("fig1maps.pdf")
 
 ```
 
@@ -1897,7 +1901,9 @@ foragefit + WHAMfit + plot_layout(ncol = 1)
 
 #knitr::include_graphics("images/ecov_comp2.png")
 
-plotwham <- wham::compare_wham_models(mods, do.table = F)
+plotwham <- wham::compare_wham_models(mods, do.table = F, plot.opts=list(kobe.prob=FALSE,
+                                                                         which=1),
+                                      fdir=here::here("WHAMoutput"))
 
 plotwham$g[[1]] + 
   scale_color_manual(values = c("black", "indianred")) + 
