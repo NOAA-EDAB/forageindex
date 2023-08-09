@@ -975,7 +975,7 @@ ecov_on <- readRDS(here::here("WHAMoutput/BF28C_m7_ecov_on.rds"))
 mods <- list(ecov_off, ecov_on)
 names(mods) <- c("ecov_off", "ecov_on")
 
-compwham <- wham::compare_wham_models(mods, do.plot = F)
+compwham <- wham::compare_wham_models(mods, do.plot = F, fdir = here::here("WHAMoutput"))
 
 ```
 
@@ -1798,6 +1798,13 @@ pherrings <- ggplot2::ggplot(compgroup %>% dplyr::filter(group=="herrings"),
   facet_grid(fct_relevel(EPU,  "GOM", "GB", "MAB")~
                fct_relevel(Season, "SPRING", "FALL")) 
 
+corrgroup <- foragegroupprop %>%
+  dplyr::filter(year > 1984) %>%
+  dplyr::select(-groupsum) %>%
+  dplyr::rename(dietgroupprop = groupprop) %>%
+  dplyr::left_join(survforagegroupprop) %>%
+  dplyr::select(Time=year, Season=season_ng, EPU, group, stomach=dietgroupprop, survey=groupprop)
+
 
 ```
 
@@ -1809,11 +1816,65 @@ psilverhake
 ```
 
 
+
 ```{r sandlance, fig.cap="Proportion of sandlance species in stomach contents data (red) compared with survey biomass sampling (black) over time by region and season."}
 
 psandlances
 
 ```
+
+```{r propcorr, eval=FALSE}
+
+#fig.cap="Correlations of forage group proportions in stomachs and survey data."
+
+corrsubgroup <- corrgroup %>% dplyr::filter(group %in% c("silverhake",
+                                                         "herrings",
+                                                         "squids",
+                                                         "mackerel",
+                                                         "butterfish",
+                                                         "sandlances")) |>
+  group_by(EPU, Season, group) |>
+  summarise(cor_coef = cor.test(stomach, survey)$estimate,
+            p_val = cor.test(stomach, survey)$p.value)
+  #correlation::correlation(method="pearson") |>
+  #dplyr::filter(Parameter1 == "stomach",
+   #             p<0.05,
+   #             r>0) 
+
+corrsubgroupsig <- corrgroup %>% dplyr::filter(group %in% c("silverhake",
+                                                         "herrings",
+                                                         "squids",
+                                                         "mackerel",
+                                                         "butterfish",
+                                                         "sandlances")) |>
+  left_join(corrsubgroup) |>
+  ungroup() |>
+  dplyr::filter(p_val < 0.05)
+
+propcorr <- ggplot2::ggplot(corrgroup %>% dplyr::filter(group %in% c("silverhake",
+                                                         "herrings",
+                                                         "squids",
+                                                         "mackerel",
+                                                         "butterfish",
+                                                         "sandlances")), 
+                aes(x=stomach, y=survey, colour=group)) +
+  ggplot2::geom_point() +
+  geom_abline(intercept = 0, slope = 1, lty=3) +
+  #geom_smooth(method=lm) +
+  #stat_cor(method="pearson") +
+  ggplot2::ylab(expression("Survey proportion")) +
+  ggplot2::xlab(expression("Stomach proportion")) +
+  #ggplot2::scale_color_manual(values = c("indianred", "black"), aesthetics = "color")+
+  #ggplot2::scale_fill_manual(values = c("indianred", "black"), aesthetics = "fill")+
+  ecodata::theme_facet() +
+  facet_grid(fct_relevel(EPU,  "GOM", "GB", "MAB")~
+               fct_relevel(Season, "SPRING", "FALL"))
+
+propcorr + geom_smooth(data=corrsubgroupsig, method=lm, aes(fill=group)) #+
+  #stat_cor(data=corrsubgroupsig, method="pearson", )
+
+```
+
 
 
 ```{r unmanagedprop, fig.cap="Proportion of unmanaged forage species in stomach contents data (red) compared with survey biomass sampling (black) over time by region and season."}
