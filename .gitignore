@@ -8,5 +8,11 @@
 *.docx
 *.html
 
+# interim files
+*.log
+*.upa
+*.upb
+
 # local folders
 WHAMoutput/compare_png
+pyindex_modsel2depth
