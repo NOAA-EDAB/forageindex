@@ -5,7 +5,7 @@ author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng,
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   bookdown::word_document2:
-    toc: false
+    toc: true
   bookdown::html_document2: 
     toc: true
     toc_float: true
@@ -27,6 +27,14 @@ library(tidyverse)
 theme_set(theme_bw())
 library(here)
 
+library(officedown)
+library(officer)
+library(flextable)
+op_section <- prop_section(type = "continuous")
+close_section <- prop_section(
+    page_size = page_size(orient = "landscape"), 
+    type = "continuous")
+
 ```
 
 # Forage index sensitivity to included prey species {-}
@@ -37,9 +45,9 @@ Two methods were applied to derive the bluefish prey list. Initially, a cut-off 
 
 The second method (the one used for this paper) first combined the prey observations across NEFSC and NEAMAP food habits datasets and then applied a cutoff of 25 observations of a prey item to the combined dataset. This ensured that a consistent set of prey were used across predators for both datasets. The advantage of this approach is that any Atlantic herring, Atlantic mackerel, and silver hake seen in non-bluefish predator stomachs in the NEAMAP dataset would still be included in the prey index to reflect these prey nearshore. Further, categories reflecting different survey naming conventions for the same prey were combined using this approach (e.g., *Illex illecebrosus* and *Illex* sp.)
 
-While the second method used in this paper is appealing in its consistent treatment of prey items across the two datasets, the resulting index showed extremely low sensitivity to changing the prey cutoff (Fig. \@ref(fig:preycut)). This suggests that the index is primarily driven by the most commonly identified prey items across the datasets.  
+While the second method used in this paper is appealing in its consistent treatment of prey items across the two datasets, the resulting index showed extremely low sensitivity to changing the prey cutoff (Figs. \@ref(fig:preycut1)-\@ref(fig:preycut2)). This suggests that the index is primarily driven by the most commonly identified prey items across the datasets.  
 
-```{r preycut, fig.show='hold', fig.cap="Trend and scale comparison between forage indices using different bluefish prey cut-offs: 10 or more observations by survey and 25 observations combined across surveys (current method).", fig.height=9}
+```{r preycut1, fig.cap="Trend comparison between fall forage indices using different bluefish prey cut-offs: 10 or more observations by survey and 25 observations combined across surveys (current method).", fig.height=8}
 # compare 2022 prey list to paper update preylist for indices
 
 stratlook <- data.frame(Stratum = c("Stratum_1",
@@ -122,6 +130,10 @@ ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
 
+```
+
+```{r preycut2, fig.cap="Scale comparison between fall forage indices using different bluefish prey cut-offs: 10 or more observations by survey and 25 observations combined across surveys (current method).", fig.height=8}
+
 ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=modname)) +
   #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
   geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=modname), linetype = 0, alpha = 0.15)+
@@ -182,12 +194,12 @@ While the index is not sensitive to slight changes in the cut-off for including 
 
 The NEAMAP dataset had few of these three species observed in predator stomach contents sampled nearshore in the Mid-Atlantic bight, therefore we hypothesized that the index might be less sensitive to inclusion or exclusion at the scale of the bluefish assessment indices in state waters and bluefish survey strata.
 
-As hypothesized, there are differences in both scale and trend for prey indices estimated by VAST for the Gulf of Maine and Georges Bank when excluding assessed prey species (Fig. \@ref(fig:noassessedprey)). There is a difference in scale for the Mid Atlantic, but index trends correspond better in that region.
+As hypothesized, there are differences in both scale and trend for prey indices estimated by VAST for the Gulf of Maine and Georges Bank when excluding assessed prey species (Figs. \@ref(fig:noassessedprey1)-\@ref(fig:noassessedprey2)). There is a difference in scale for the Mid Atlantic, but index trends correspond better in that region.
 
 Estimated indices at the bluefish assessment scale (state waters and bluefish inshore survey strata) have remarkably similar trends, although leaving out the three assessed prey species reduces the scale of the index.
 
 
-```{r noassessedprey, fig.show='hold', fig.cap="Trend and scale comparison between forage indices using different prey groups: exclude assessed prey (Atlantic herring, silver hake and Atlantic mackerel) and all bluefish prey (current method).", fig.height=9}
+```{r noassessedprey1, fig.cap="Trend comparison between fall forage indices using different prey groups: exclude assessed prey (Atlantic herring, silver hake and Atlantic mackerel) vs. all bluefish prey (current method).", fig.height=8}
 splitoutunmod <- read.csv("pyindex/unmod/allagg_fall_500_lennosst_ALLsplit_biascorrect/Index.csv")
 
 splitoutputunmod <- splitoutunmod %>%
@@ -224,6 +236,10 @@ ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/
         legend.text = element_text(size=rel(0.5)),
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
+
+```
+
+```{r noassessedprey2, fig.cap="Scale comparison between fall forage indices using different prey groups: exclude assessed prey (Atlantic herring, silver hake and Atlantic mackerel) vs. all bluefish prey (current method).", fig.height=8}
 
 ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=modname)) +
   #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
@@ -377,10 +393,76 @@ flextable::flextable(stomcount) %>%
   flextable::autofit()
 ```
 
-The number of stomachs by year for each predator show general stability that seem unlikely to explain fluctuations in the index. Table \@ref(tab:nstom) shows number of stomachs by predator included from both the NEFSC and NEAMAP datasets. While there was more sampling overall during the 1990s relative to other portions of the time series, variation in the full Northeast US annual forage index does not correspond to higher or lower numbers of predator stomachs included as input data (Fig. \@ref(fig:nstom)).
+The number of stomachs by year for each predator show general stability that seem unlikely to explain fluctuations in the index. Tables \@ref(tab:nstom1) - \@ref(tab:nstom11) show number of stomachs by predator included from both the NEFSC and NEAMAP datasets. While there was more sampling overall during the 1990s relative to other portions of the time series, variation in the full Northeast US annual forage index does not correspond to higher or lower numbers of predator stomachs included as input data (Fig. \@ref(fig:nstom2)).
 
-```{r nstom, fig.cap="Full Northeast US shelf annual forage index compared with total number of stomachs used as input."}
-stomcountyr <- fh.nefsc.pisc.pisccomplete |> 
+```{r}
+block_section(op_section)
+```
+
+
+```{r nstom1, ft.arraystretch = 1}
+stomcountyr1 <- fh.nefsc.pisc.pisccomplete |>
+  mutate(year = as.numeric(year)) |>
+  filter(year %in% c(1984:2001)) |>
+  group_by(cruise6, year, pdcomnam, station, pdid) |> 
+  summarise(pycount = n()) |>
+  group_by(pdcomnam, year) |>
+  summarise(pdcount = n()) |>
+  #bind_rows(NEAMAPstomn |> select(-comnam)) |>
+  group_by(pdcomnam, year) |>
+  summarize(pdcount = sum(pdcount, na.rm = T)) |>
+  arrange(year, pdcomnam) |>
+  pivot_wider(names_from = year, values_from = pdcount)
+
+flextable::flextable(stomcountyr1) %>%
+  flextable::set_header_labels(pdcomnam = "predator") |>
+  flextable::set_caption("Number of stomachs for each predator and year included in analysis, 1985-2001") %>%
+  #flextable::rotate(j = 2:ncol_keys(.), align = "bottom", rotation = "btlr", part = "header") |>
+  #flextable::height(height = 1.2, part = "header") |>
+  flextable::padding(padding = 0, part = "all") %>%
+  flextable::fontsize(size = 7, part = "all") %>%
+  #flextable::width(width = dim_pretty((.), part = "all", unit = "in", hspans = "none")) 
+  flextable::set_table_properties(layout = "autofit", width = 1) |>
+  flextable::theme_zebra()
+
+```
+
+```{r nstom11, ft.arraystretch = 1}
+stomcountyr2 <- fh.nefsc.pisc.pisccomplete |>
+  mutate(year = as.numeric(year)) |>
+  filter(year > 2001) |>
+  group_by(cruise6, year, pdcomnam, station, pdid) |> 
+  summarise(pycount = n()) |>
+  group_by(pdcomnam, year) |>
+  summarise(pdcount = n()) |>
+  bind_rows(NEAMAPstomn |> select(-comnam)) |>
+  group_by(pdcomnam, year) |>
+  summarize(pdcount = sum(pdcount, na.rm = T)) |>
+  arrange(year, pdcomnam) |>
+  pivot_wider(names_from = year, values_from = pdcount)
+
+flextable::flextable(stomcountyr2) %>%
+  flextable::set_header_labels(pdcomnam = "predator") |>
+  flextable::set_caption("Number of stomachs for each predator and year included in analysis, 2002-2021") %>%
+  #flextable::rotate(j = 2:ncol_keys(.), align = "bottom", rotation = "btlr", part = "header") |>
+  #flextable::height(height = 1.2, part = "header") |>
+  flextable::padding(padding = 0, part = "all") %>%
+  flextable::fontsize(size = 7, part = "all") %>%
+  #flextable::width(width = dim_pretty((.), part = "all", unit = "in", hspans = "none")) 
+  flextable::set_table_properties(layout = "autofit", width = 1) |>
+  flextable::theme_zebra()
+
+```
+
+
+```{r}
+block_section(close_section)
+```
+
+
+```{r nstom2, fig.cap="Full Northeast US shelf annual forage index compared with total number of stomachs used as input."}
+
+stomcountyr <- fh.nefsc.pisc.pisccomplete |>
   filter(year > 1984) |>
   group_by(cruise6, year, pdcomnam, station, pdid) |> 
   summarise(pycount = n()) |>
@@ -392,10 +474,6 @@ stomcountyr <- fh.nefsc.pisc.pisccomplete |>
   arrange(year, pdcomnam) |>
   pivot_wider(names_from = year, values_from = pdcount)
 
-flextable::flextable(stomcountyr) %>%
-  flextable::set_caption("Number of stomachs for each predator and year included in analysis, 1985-2021") %>%
-  flextable::fontsize(size = 9, part = "all") %>%
-  flextable::autofit()
 
 outann <- read.csv("pyindex/allagg_annual_500_lennosst_ALLsplit_biascorrect/Index.csv")
 
@@ -446,6 +524,7 @@ stackbar <- stomcountyr |>
   guides(fill = guide_legend(ncol = 1)) +
   viridis::scale_fill_viridis(option="turbo", discrete=TRUE) +
   ggtitle("Number of stomachs included in dataset by year")
+
 
 stomtotyr <- stomcountyr |>
   pivot_longer(-pdcomnam, names_to = "year", values_to = "pdcount") |>
@@ -737,9 +816,9 @@ flextable::flextable(modsense) %>%
 
 ## Impact of removing predators contributing fewer stomachs {-}
 
-Removing fourspot flounder (demersal predator, small sample) and longfin squid (pelagic predator, small sample) resulted in the same or a similar number of survey stations included in analysis, with almost no change to the fall and spring indices trends (Fig. \@ref(fig:comptrend1)) or scale (Fig. \@ref(fig:compscale1)). Squid stomachs were sampled only prior to the year 2000, but no change for the early portion of the index is apparent when leaving this predator out.
+Removing fourspot flounder (demersal predator, small sample) and longfin squid (pelagic predator, small sample) resulted in the same or a similar number of survey stations included in analysis, with almost no change to the fall and spring indices trends (Figs. \@ref(fig:comptrend1)-\@ref(fig:comptrend2)) or scale (Figs. \@ref(fig:compscale1)-\@ref(fig:compscale2)). Squid stomachs were sampled only prior to the year 2000, but no change for the early portion of the index is apparent when leaving this predator out.
 
-```{r comptrend1, fig.cap="", fig.height=9}
+```{r comptrend1, fig.cap="Trend comparison between fall forage indices using different predator groups: exclude predators with low sampling (fourspot flounder, longfin squid) vs. full predator list (current method).", fig.height=8}
 splitoutput <- modcompareindex %>%
   dplyr::mutate(Season = modname |> map(str_split, pattern = "_") |> map_chr(c(1,2))) %>%
   dplyr::mutate(Data = modname |> map(str_split, pattern = "_") |> map_chr(c(1,7), .default = "allpreds")) %>%
@@ -779,6 +858,10 @@ ggplot(foragetsmean |> filter(Season =="fall",
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
 
+```
+
+```{r comptrend2, fig.cap="Trend comparison between spring forage indices using different predator groups: exclude predators with low sampling (fourspot flounder, longfin squid) vs. full predator list (current method).", fig.height=8}
+
 ggplot(foragetsmean |> filter(Season =="spring",
                              Data %in% c("allpreds",
                                          "no4spot",
@@ -803,7 +886,7 @@ ggplot(foragetsmean |> filter(Season =="spring",
 
 ```
 
-```{r compscale1, fig.cap="", fig.height=9}
+```{r compscale1, fig.cap="Scale comparison between fall forage indices using different predator groups: exclude predators with low sampling (fourspot flounder, longfin squid) vs. full predator list (current method).", fig.height=8}
 
 
 ggplot(splitoutput |> filter(Season =="fall",
@@ -826,6 +909,10 @@ ggplot(splitoutput |> filter(Season =="fall",
         legend.text = element_text(size=rel(0.5)),
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
+
+```
+
+```{r compscale2, fig.cap="Scale comparison between spring forage indices using different predator groups: exclude predators with low sampling (fourspot flounder, longfin squid) vs. full predator list (current method).", fig.height=8}
   
 
 ggplot(splitoutput |> filter(Season =="spring",
@@ -854,15 +941,14 @@ ggplot(splitoutput |> filter(Season =="spring",
 
 ## Impact of removing predators contributing many stomachs {-}
 
-Removing a predator with more stomachs contributing to the input data, white hake, made small changes in the index, but well within the error bars of the original. Changes in trend were most apparent in the Gulf of Maine.
+Removing a predator with more stomachs contributing to the input data, white hake, made small changes in the index, but well within the error bars of the original (Figs. \@ref(fig:comptrend3)-\@ref(fig:comptrend4), \@ref(fig:compscale3)-\@ref(fig:compscale4)). Changes in trend were most apparent in the Gulf of Maine.
 
 Removing spiny dogfish, which contributes over 25% of stomachs in the analysis, has the largest impact on the index, as predicted. The primary impact is on index scale, which is lower when excluding spiny dogfish.
 
 However, the forage index trend across multiple scales is remarkably robust to removing both white hake and spiny dogfish individually.
 
 
-```{r comptrend2, fig.cap="", fig.height=9}
-
+```{r comptrend3, fig.cap="Trend comparison between fall forage indices using different predator groups: exclude predators with high sampling (white hake, spiny dogfish) vs. full predator list (current method).", fig.height=8}
 
 
 ggplot(foragetsmean |> filter(Season =="fall",
@@ -877,14 +963,19 @@ ggplot(foragetsmean |> filter(Season =="fall",
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
   facet_wrap(~Region, scales = "free_y", ncol = 1) +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
-  ylab("Relative forage biomass scaled to maximum")  +
-  ggtitle("Fall models: scale comparison")+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Fall models: trend comparison")+
   theme(#legend.position = c(1, 0),
         #legend.justification = c(1, 0)
         legend.position = "bottom",
         legend.text = element_text(size=rel(0.5)),
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
+
+```
+
+
+```{r comptrend4, fig.cap="Trend comparison between spring forage indices using different predator groups: exclude predators with high sampling (white hake, spiny dogfish) vs. full predator list (current method).", fig.height=8}
   
 
 ggplot(foragetsmean |> filter(Season =="spring",
@@ -899,8 +990,8 @@ ggplot(foragetsmean |> filter(Season =="spring",
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
   facet_wrap(~Region, scales = "free_y", ncol = 1) +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
-  ylab("Relative forage biomass scaled to maximum")  +
-  ggtitle("Spring models: scale comparison")+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Spring models: trend comparison")+
   theme(#legend.position = c(1, 0),
         #legend.justification = c(1, 0)
         legend.position = "bottom",
@@ -912,7 +1003,7 @@ ggplot(foragetsmean |> filter(Season =="spring",
 ```
 
 
-```{r compscale2, fig.cap="", fig.height=9}
+```{r compscale3, fig.cap="Scale comparison between fall forage indices using different predator groups: exclude predators with high sampling (white hake, spiny dogfish) vs. full predator list (current method).", fig.height=8}
 
 ggplot(splitoutput |> filter(Season =="fall",
                              Data %in% c("allpreds",
@@ -934,7 +1025,10 @@ ggplot(splitoutput |> filter(Season =="fall",
         legend.text = element_text(size=rel(0.5)),
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
-  
+
+```
+
+```{r compscale4, fig.cap="Scale comparison between spring forage indices using different predator groups: exclude predators with high sampling (white hake, spiny dogfish) vs. full predator list (current method).", fig.height=8}
 
 ggplot(splitoutput |> filter(Season =="spring",
                              Data %in% c("allpreds",
@@ -983,7 +1077,7 @@ modcompare <- purrr::map_dfr(moddirs, getmodinfo)
 ```
 
 
-For model comparisons with different combinations of catchability covariates, "modname" in \@ref(tab:modsel2) follows a similar pattern as in Supplement 2, with  all prey aggregated ("allagg" for all models), season ("spring" for models of months 1-6, "fall" for models of months 7-12), number of knots (500 for all models), and which covariates were included. The names for model options and associated VAST model settings are: 
+For model comparisons with different combinations of catchability covariates, "modname" in Table \@ref(tab:modsel2) follows a similar pattern as in Supplement 2, with  all prey aggregated ("allagg" for all models), season ("spring" for models of months 1-6, "fall" for models of months 7-12), number of knots (500 for all models), and which covariates were included. The names for model options and associated VAST model settings are: 
 
 Model covariates sensitivity options, FieldConfig default (all IID), with anisotropy:
 
