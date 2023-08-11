@@ -552,7 +552,7 @@ NEAMAP survey stations with diet collections for piscivores (n = `r neamap_npisc
 
 The annual number of stomachs included in the dataset averaged 5932, ranging from a low of 1547 in 2020 (due to Covid-19 driven survey cancellations) to a high of 9361 in 1995.  The annual stomach numbers were highest during the 1990s, below average during the mid-2000s, and around the average during the 2010s.  Aside from 2020, there were not large year to year variations in the number of stomachs going into the index (Supplement 4). 
 
-The number of survey stations missing surface temperature data varied considerably by decade. A large percentage of survey stations lacked in-situ temperature measurements between 1985 and 1990, while the percentage of stations missing temperature was generally below 10% (with a few exceptions) from 1991-2021 (Supplement 1 Table 1). Therefore, OISST temperature estimates were more commonly substituted early in the time series. While there is strong overall agreement between OISST and survey in-situ surface temperatures where both measurements exist (Supplement 1 Fig. 3), there are mismatches near Cape Hatteras and in areas of the continental slope where the OI SST resolution is unable to capture steep temperature gradients associated with the Gulf Stream (Supplement 1 Figs 4a-h).  
+The number of survey stations missing surface temperature data varied considerably by decade. A large percentage of survey stations lacked in-situ temperature measurements between 1985 and 1990, while the percentage of stations missing temperature was generally below 10% (with a few exceptions) from 1991-2021 (Supplement 1 Table 1). Therefore, OISST temperature estimates were more commonly substituted early in the time series. While there is strong overall agreement between OISST and survey in-situ surface temperatures where both measurements exist (Supplement 1 Fig. 3), there are mismatches near Cape Hatteras and in areas of the continental slope where the OI SST resolution is unable to capture steep temperature gradients associated with the Gulf Stream (Supplement 1 Figs 4-7).  
 
 
 ## VAST model selection  
@@ -724,7 +724,7 @@ The stomach based forage index includes unmanaged species that are not well samp
 
 ## Index sensitivity
 
-Index trends were not sensitive to OI SST substitution. Despite potential mismatches between in-situ temperature and OI SST in certain locations (Supplement 1, Figs 4 a-e), substituting the OI SST when in-situ survey temperature was missing did not affect the estimated index early in the time series. Index trends estimated with and without SST as a covariate were nearly identical (Supplement 1 Fig.6) and showed no divergence early in the time series where more OI SST information is included.
+Index trends were not sensitive to OI SST substitution. Despite potential mismatches between in-situ temperature and OI SST in certain locations (Supplement 1, Figs 4-7), substituting the OI SST when in-situ survey temperature was missing did not affect the estimated index early in the time series. Index trends estimated with and without SST as a covariate were nearly identical (Supplement 1 Figs. 8-9) and showed no divergence early in the time series where more OI SST information is included.
 
 Index trends were not sensitive to prey cut-offs (inclusion or exclusion of rarely observed bluefish prey items, (Supplement 4, Fig 1)) or to the exclusion of predators with small sample sizes (Supplement 4, Fig 6). 
 

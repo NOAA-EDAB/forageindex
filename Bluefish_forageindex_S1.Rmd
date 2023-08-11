@@ -21,13 +21,13 @@ bibliography: FishDiet_EcoIndicators.bib
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
                       message = FALSE,
-                      warning = FALSE,
-                      fig.align = 'center')
+                      warning = FALSE)
 
 library(tidyverse)
 theme_set(theme_bw())
 library(here)
 library(FishStatsUtils)
+library(patchwork)
 
 ```
 
@@ -171,25 +171,48 @@ yrmap <- function(mapyr){
 ```
 
 
-In the following maps of survey station locations by SST match/mismatch for each year, yellow points indicate missing data that would be filled by OISST, and the color range shows how different in situ and OISST temperature is for stations with both values (Fig. \@ref(fig:matchmaps)).
+In the following maps of survey station locations by SST match/mismatch for each year, yellow points indicate missing data that would be filled by OISST, and the color range shows how different in situ and OISST temperature is for stations with both values (Figs. \@ref(fig:matchmaps1) - \@ref(fig:matchmaps4)).
 
 Most mismatches were near Cape Hatteras where the temperature gradient from the nearby Gulf Stream is not well captured by the resolution of OISST. Others were similarly near the continental slope.
 
-```{r matchmaps,  results='asis', fig.cap="Comparison of in-situ survey surface temperature and OISST for selected years."}
+```{r matchmaps1, fig.cap="a-b. Comparison of in-situ survey surface temperature and OISST for selected years.", out.width='100%'}
 #fig.show='hold',
 
-i=1
+#i=1
+p <- list()
 
-for(mapyr in c(1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020)){
+mapyr  <-  c(1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020)
   
-    cat("  \n",  letters[i],"  \n")
-    print(yrmap(mapyr)) 
-    cat("  \n") 
-    i <- i+1
+p <- purrr::map(mapyr, yrmap)
+
+p41 <- p[[1]] + p [[2]] +  plot_layout(nrow = 2)
+   
+p42 <- p[[3]] + p [[4]] + plot_layout(nrow = 2)
+
+p43 <- p[[5]] + p [[6]] + plot_layout(nrow = 2)
+
+p44 <- p[[7]] + p [[8]] + plot_layout(nrow = 2)
+
+ggsave("supp1maps1.png", p41, device="png", width = 9, height = 12, units = "in")
+ggsave("supp1maps2.png", p42, device="png", width = 9, height = 12, units = "in")
+ggsave("supp1maps3.png", p43, device="png", width = 9, height = 12, units = "in")
+ggsave("supp1maps4.png", p44, device="png", width = 9, height = 12, units = "in")
+
+knitr::include_graphics("supp1maps1.png")
     
-  }
 ```
 
+```{r matchmaps2, fig.cap="a-b. Comparison of in-situ survey surface temperature and OISST for selected years.", out.width='100%'}
+knitr::include_graphics("supp1maps2.png")
+```
+
+```{r matchmaps3, fig.cap="a-b. Comparison of in-situ survey surface temperature and OISST for selected years.", out.width='100%'}
+knitr::include_graphics("supp1maps3.png")
+```
+
+```{r matchmaps4, fig.cap="a-b. Comparison of in-situ survey surface temperature and OISST for selected years.", out.width='100%'}
+knitr::include_graphics("supp1maps4.png")
+```
 
 Despite some mismatches, we felt substituting OISST temperature to retain the stomach samples at stations with missing temperature data was preferable to leaving stomach data out due to missing covariate information.
 
@@ -197,7 +220,7 @@ Despite some mismatches, we felt substituting OISST temperature to retain the st
 
 The two best fitting models both include mean predator length and number of predator species as covariates; adding sea surface temperature to these covariates resulted in the best fitting model in both seasons. To evaluate the overall impact of SST as a covariate, we first compare the indices with and without this covariate (best and second best fit to the data, respectively, although in fall the difference in AIC was small). These indices are not bias corrected.
 
-Index trends estimated by both models are nearly identical (\@ref(fig:trendcomp)). Including SST slightly increased index scale relative to the second best fitting model in fall, but had the opposite effect in spring (\@ref(fig:scalecomp)). Therefore, including OISST to fill in missing in-situ temperature data seems to have no impact on index trend (as the sst covariate itself has no impact on index trend). 
+Index trends estimated by both models are nearly identical (Figs. \@ref(fig:trendcompfall), \@ref(fig:trendcompspring)). Including SST slightly increased index scale relative to the second best fitting model in fall, but had the opposite effect in spring (Figs. \@ref(fig:scalecompfall), \@ref(fig:scalecompspring)). Therefore, including OISST to fill in missing in-situ temperature data seems to have no impact on index trend (as the sst covariate itself has no impact on index trend). 
 
 ```{r}
 stratlook <- data.frame(Stratum = c("Stratum_1",
