@@ -1,20 +1,20 @@
 ---
 title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents:  Supplement 3, Model results"
-author: "Sarah Gaichas, James Gartland, Brian Smith, Elizabeth Ng, Michael Celestino,
-  Anthony Wood, Katie Drew, Abigail Tyrell, and James Thorson"
+author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
+  Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  bookdown::pdf_document2:
-    includes: 
-       in_header: latex/header1.tex
-    keep_tex: true
+  bookdown::word_document2:
+    toc: true
     number_sections: false
   bookdown::html_document2: 
     toc: true
     toc_float: true
     number_sections: false
-  bookdown::word_document2:
-    toc: false
+  bookdown::pdf_document2:
+    includes: 
+       in_header: latex/header1.tex
+    keep_tex: true
     number_sections: false
 link-citations: yes
 csl: "canadian-journal-of-fisheries-and-aquatic-sciences.csl"
@@ -100,7 +100,7 @@ for(p in diagplots){
 
 The VAST model predicts density of forage fish across the entire model domain for each year (Fig. \@ref(fig:springdens)). 
 
-```{r springdens, fig.cap="Yearly maps of VAST model estimated forage fish density for Spring (months 1-6)."}
+```{r springdens, fig.cap="Yearly maps of VAST model estimated forage fish density for Spring (months 1-6).", out.width='99%'}
 knitr::include_graphics("pyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/ln_density-predicted.png")
 ```
 
@@ -151,13 +151,15 @@ splitoutput <- splitout %>%
 foragemax <- max(splitoutput$Estimate)
 
 ggplot(splitoutput, aes(x=Time, y=Estimate, colour=Region)) +
-  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
-  geom_point()+
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=Region), linetype = 0, alpha = 0.15)+
+  geom_point(aes(shape=Region))+
   geom_line()+
-  facet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  scale_color_manual(values=c("orange", "red", "green3", "purple", "blue")) +
+  scale_fill_manual(values=c("orange", "red", "green3", "purple", "blue")) +
+  facet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y", ncol = 1) +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
   ylab("Relative forage biomass scaled to maximum")  
-  
 
 ```
 
@@ -166,7 +168,7 @@ ggplot(splitoutput, aes(x=Time, y=Estimate, colour=Region)) +
 
 The VAST model predicts density of forage fish across the entire model domain for each year (Fig. \@ref(fig:annualdens)). 
 
-```{r annualdens, fig.cap="Yearly maps of VAST model estimated annual forage fish density (months 1-12)."}
+```{r annualdens, fig.cap="Yearly maps of VAST model estimated annual forage fish density (months 1-12).", out.width='99%'}
 knitr::include_graphics("pyindex/allagg_annual_500_lennosst_ALLsplit_biascorrect/ln_density-predicted.png")
 ```
 
@@ -174,7 +176,7 @@ knitr::include_graphics("pyindex/allagg_annual_500_lennosst_ALLsplit_biascorrect
  
 ### Annual Diagnostics {.tabset} 
 
-Diagnostics shown for the annual model are as described above for the falland spring models. 
+Diagnostics shown for the annual model are as described above for the fall and spring models. 
 
 ```{r, results='asis'}
 
@@ -205,7 +207,7 @@ for(p in diagplots){
 
 The Annual forage index uses data from all months each year (1-12). The same plots are presented as those above for Fall and Spring indices. Fig. \@ref(fig:annualall) shows all annual forage index time series with standard errors.
 
-```{r annualall, fig.cap="All Annual forage indices"}
+```{r annualall, fig.cap="Annual (month 1-12) forage indices scaled to the maximum value for ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in state waters within 3 miles of shore (StateWaters) and bottom trawl survey index strata (SurveyBluefish)."}
 splitoutput <- read.csv("pyindex/allagg_annual_500_lennosst_ALLsplit_biascorrect/Index.csv")
 
 splitoutput <- splitout %>%
@@ -219,15 +221,18 @@ splitoutput <- splitout %>%
 foragemax <- max(splitoutput$Estimate)
 
 ggplot(splitoutput, aes(x=Time, y=Estimate, colour=Region)) +
-  geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
-  geom_point()+
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=Region), linetype = 0, alpha = 0.15)+
+  geom_point(aes(shape=Region))+
   geom_line()+
-  facet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  scale_color_manual(values=c("orange", "red", "green3", "purple", "blue")) +
+  scale_fill_manual(values=c("orange", "red", "green3", "purple", "blue")) +
+  facet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y", ncol = 1) +
   scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
   ylab("Relative forage biomass scaled to maximum")  
 
 ```
 
 
-The full results of all models are archived on [google drive](https://drive.google.com/drive/folders/1S-G7QBPq6sUT6dbbf3u9k6k2K46ehDOM?usp=share_link).
+The full results of all models are archived on google drive at [this link](https://drive.google.com/drive/folders/1S-G7QBPq6sUT6dbbf3u9k6k2K46ehDOM?usp=drive_link), with access available upon request.
 
