@@ -1,7 +1,7 @@
 ---
 title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 2, Model selection"
-author: "Sarah Gaichas, James Gartland, Brian Smith, Elizabeth Ng, Michael Celestino,
-  Anthony Wood, Katie Drew, Abigail Tyrell, and James Thorson"
+author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
+  Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   bookdown::word_document2:
@@ -21,7 +21,8 @@ bibliography: FishDiet_EcoIndicators.bib
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
                       message = FALSE,
-                      warning = FALSE)
+                      warning = FALSE,
+                      ft.arraystretch = 1)
 
 library(tidyverse)
 theme_set(theme_bw())
@@ -31,12 +32,12 @@ library(here)
 
 # VAST model selection {-}
 
-Comparisons of AIC are presented for both the first (spatial and spatio-temporal random effects, Table \@ref(tab:modsel1)) and second (catchability covariates, Table \@ref(tab:modsel2)) rounds of model selection. 
+Comparisons of AIC are presented for both the first (spatial and spatio-temporal random effects, Table \@ref(tab:modsel1)) and second (catchability covariates, Table \@ref(tab:modsel2)) steps of model selection. 
 
 ```{r}
 
 # from each output folder in pyindex, 
-outdir <- here("pyindex_modsel1")
+outdir <- here::here("pyindex_modsel1")
 moddirs <- list.dirs(outdir) 
 moddirs <- moddirs[-1]
 # keep folder name
@@ -129,7 +130,7 @@ getmodinfo <- function(d.name){
 modcompare <- purrr::map_dfr(moddirs, getmodinfo)
 ```
 
-Models compared using REML are identified by model name ("modname" in Tables \@ref(tab:modsel1)) which includes all prey aggregated ("allagg" for all models), season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which fixed and random spatial and spatio-temporal effects were included in which linear predictor (1 or 2). The names for model options and associated VAST model settings are:
+Models compared using REML are identified by model name ("modname" in Table \@ref(tab:modsel1)) which always includes all prey aggregated, season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which fixed and random spatial and spatio-temporal effects were included in which linear predictor (1 or 2). The names for model options and associated VAST model settings are:
 
 Model selection 1 (spatial, spatio-temporal effects, no covariates) options (following @ng_predator_2021) and naming:
 *  All models set Use_REML = TRUE in fit_model specifications.  
@@ -154,6 +155,7 @@ modselect <- modcompare %>%
   dplyr::mutate(converged2 = case_when(str_detect(converged, "no evidence") ~ "likely",
                                 str_detect(converged, "is likely not") ~ "unlikely",
                                 TRUE ~ as.character(NA))) %>%
+  dplyr::mutate(modname = str_extract(modname, '(?<=allagg_).*')) |>
   dplyr::group_by(season) %>%
   dplyr::mutate(deltaAIC = AIC-min(AIC)) %>%
   dplyr::select(modname, season, deltaAIC, fixedcoeff,
@@ -170,14 +172,21 @@ flextable::flextable(modselect %>%
                        dplyr::select(-c(use_anisotropy, 
          omega1, omega2, epsilon1, epsilon2, 
          beta1, beta2))) %>%
-  flextable::set_caption("Comparison of delta AIC values using Restricted Maxiumum Likelihood (REML) for alternative fixed and random effects model structures. See text for model descriptions.") %>%
+  flextable::set_header_labels(modname = "Model name",
+                               season = "Season",
+                               deltaAIC = "dAIC",
+                               fixedcoeff = "N fixed",
+                               randomcoeff = "N random",
+                               converged2 = "Convergence") |>
+  flextable::set_caption("Comparison of delta AIC (dAIC) values using Restricted Maxiumum Likelihood (REML) for alternative fixed and random effects model structures, with number of fixed (N fixed) and random (N random) coefficients. See text for model descriptions associated with each model name.") %>%
   flextable::fontsize(size = 9, part = "all") %>%
-  flextable::autofit()
+  flextable::colformat_double(digits = 2) |>
+  flextable::set_table_properties(layout = "autofit", width = 1)
 ```
 
 Using REML, models including spatial and spatio-temporal random effects as well as anisotropy were best supported by the data. This was true for the spring dataset, the fall dataset, and the annual (seasons combined) dataset. 
 
-For the second round of model selection with different combinations of vessel effects and or catchability covariates, "modname" in \@ref(tab:modsel2) follows a similar pattern as above, with  all prey aggregated ("allagg" for all models), season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which vessel effects or covariates were included. The names for model options and associated VAST model settings are: 
+For the second step of model selection with different combinations of vessel effects and or catchability covariates, "modname" in Table \@ref(tab:modsel2) follows a similar pattern as above, with  all prey aggregated ("allagg" for all models), season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which vessel effects or covariates were included. The names for model options and associated VAST model settings are: 
 
 Model selection 2 (covariates) options, FieldConfig default (all IID), with anisotropy:
 
@@ -227,9 +236,16 @@ flextable::flextable(modselect2%>%
                        dplyr::select(-c(use_anisotropy, 
          omega1, omega2, epsilon1, epsilon2, 
          beta1, beta2))) %>%
-  flextable::set_caption("Comparison of delta AIC values for alternative vessel effects and catchability covariates. See text for model descriptions.") %>%
+  flextable::set_header_labels(modname = "Model name",
+                               season = "Season",
+                               deltaAIC = "dAIC",
+                               fixedcoeff = "N fixed coefficients",
+                               randomcoeff = "N random coefficients",
+                               converged2 = "Convergence") |>
+  flextable::set_caption("Comparison of delta AIC (dAIC) values for alternative vessel effects and catchability covariates. See text for model descriptions associated with each model name.") %>%
   flextable::fontsize(size = 9, part = "all") %>%
-  flextable::autofit()
+  flextable::colformat_double(digits = 2) |>
+  flextable::set_table_properties(layout = "autofit", width = .9)
 
 
 ```
