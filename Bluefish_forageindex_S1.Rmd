@@ -21,7 +21,8 @@ bibliography: FishDiet_EcoIndicators.bib
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
                       message = FALSE,
-                      warning = FALSE)
+                      warning = FALSE,
+                      fig.align = 'center')
 
 library(tidyverse)
 theme_set(theme_bw())
@@ -233,14 +234,18 @@ stratlook <- data.frame(Stratum = c("Stratum_1",
 
 ```
 
-```{r trendcomp, fig.cap="Trend comparisons between forage indices estimated with and without SST as a catchability covariate.", fig.show='hold', fig.height=9}
+```{r trendcompfall, fig.cap="Trend comparisons between fall forage indices estimated with and without SST as a catchability covariate.",  fig.height=8}
 
 # from each output folder in pyindex, 
 outdir <- here("pyindex_modsel2")
 moddirs <- list.dirs(outdir) 
 moddirs <- moddirs[-1]
 # keep folder name
-modnames <- list.dirs(outdir, full.names = FALSE)
+#modnames <- list.dirs(outdir, full.names = FALSE)
+
+#hack to get only lennum and lennumsst
+moddirs <- moddirs[stringr::str_detect(moddirs, "lennum")]
+
 
 # function to apply extracting info
 getmodindex <- function(d.name){
@@ -292,6 +297,11 @@ ggplot(foragetsmean |> filter(Season =="fall"), aes(x=Time, y=((Estimate-fmean)/
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
 
+```
+
+```{r trendcompspring, fig.cap="Trend comparisons between spring forage indices estimated with and without SST as a catchability covariate.",  fig.height=8}
+
+
 ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean)/fmean), colour=modname)) +
   #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
   #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
@@ -311,7 +321,7 @@ ggplot(foragetsmean |> filter(Season =="spring"), aes(x=Time, y=((Estimate-fmean
 ```
 
 
-```{r scalecomp, fig.cap="Scale comparisons between forage indices estimated with and without SST as a catchability covariate.", fig.show='hold', fig.height=9}
+```{r scalecompfall, fig.cap="Scale comparisons between fall forage indices estimated with and without SST as a catchability covariate.",  fig.height=8}
 # from each output folder in pyindex, 
 
 ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=modname)) +
@@ -330,6 +340,10 @@ ggplot(splitoutput |> filter(Season =="fall"), aes(x=Time, y=Estimate, colour=mo
         legend.text = element_text(size=rel(0.5)),
         legend.key.size = unit(0.5, 'lines'),
         legend.title = element_text(size=rel(0.5)))
+
+```
+
+```{r scalecompspring, fig.cap="Scale comparisons between spring forage indices estimated with and without SST as a catchability covariate.",  fig.height=8}
 
 ggplot(splitoutput |> filter(Season =="spring"), aes(x=Time, y=Estimate, colour=modname)) +
   #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
