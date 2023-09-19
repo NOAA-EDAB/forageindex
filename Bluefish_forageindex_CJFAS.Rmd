@@ -88,26 +88,31 @@ library(forcats)
 #   code: group6
 
 ```
-S.K. Gaichas (corresponding author): NOAA Fisheries, Northeast Fisheries Science Center. 166 Water St. Woods Hole MA. 02543. USA.  https://orcid.org/0000-0002-5788-3073 Sarah.Gaichas@noaa.gov; tel: (508) 495-2016 
-<!---Oh god this is such a hack! -->
+S.K. Gaichas$^{1}$, James Gartland$^{2}$, Brian E. Smith$^{1}$, Anthony D. Wood$^{1}$, Elizabeth L. Ng$^{3}$,  Michael Celestino$^{4}$, Katie Drew$^{5}$, Abigail S. Tyrell$^{1,ptio6}$, and James T. Thorson$^{7}$
 
-James Gartland: Virginia Institute of Marine Science, William & Mary, Gloucester Point, VA, USA. https://orcid.org/000-0003-1436-2291 jgartlan@vims.edu; tel: (804) 684-7546
+$^{1}$NOAA Fisheries, Northeast Fisheries Science Center, 166 Water St., Woods Hole MA, USA.  
 
-Brian E. Smith: NOAA Fisheries, Northeast Fisheries Science Center. 166 Water St. Woods Hole MA. 02543. USA. https://orcid.org/0000-0002-7792-520X brian.smith@noaa.gov; tel: (508) 495-2020
+$^{2}$Virginia Institute of Marine Science, William & Mary, Gloucester Point, VA, USA. 
 
-Elizabeth L. Ng: Four Peaks Environmental Science & Data Solutions, Wenatchee, WA USA. https://orcid.org/0000-0002-5833-4914
+$^{3}$Four Peaks Environmental Science & Data Solutions, Wenatchee, WA USA. 
 
-Michael Celestino: New Jersey Department of Environmental Protection, Port Republic, NJ USA.
-  
-Anthony D. Wood: NOAA Fisheries, Northeast Fisheries Science Center. 166 Water St. Woods Hole MA. 02543 USA.
+$^{4}$New Jersey Department of Environmental Protection, Port Republic, NJ USA.  
 
-Katie Drew: Atlantic States Marine Fisheries Commission, 1050 N. Highland St., Arlington, VA 22201, kdrew@asmfc.org, tel: (703) 842-0740
+$^{5}$Atlantic States Marine Fisheries Commission, 1050 N. Highland St., Arlington, VA, USA.  
 
-Abigail S. Tyrell: IBSS Corporation, 1110 Bonifant St Suite 501, Silver Spring, MD, 20910, USA. https://orcid.org/0000-0002-6656-8470  abigail.tyrell@noaa.gov; tel: (508) 645-6483
+$^{6}$IBSS Corporation, 1110 Bonifant St Suite 501, Silver Spring, MD, USA. 
 
-James T. Thorson: Resource Ecology and Fisheries Management, Alaska Fisheries Science Center, National Marine Fisheries Service, NOAA, Seattle, WA, USA. https://orcid.org/0000-0001-7415-1010
+$^{7}$NOAA Fisheries, Alaska Fisheries Science Center, Seattle, WA, USA.  
 
-**Competing interests:** The authors declare there are no competing interests.
+Corresponding author: Sarah.Gaichas@noaa.gov  
+
+ORCID  
+Gaichas: https://orcid.org/0000-0002-5788-3073  
+Gartland: https://orcid.org/000-0003-1436-2291  
+Smith: https://orcid.org/0000-0002-7792-520X  
+Ng: https://orcid.org/0000-0002-5833-4914  
+Tyrell: https://orcid.org/0000-0002-6656-8470  
+Thorson:  https://orcid.org/0000-0001-7415-1010  
 
 \newpage
   
@@ -770,9 +775,21 @@ Finally, while aggregate indices of forage fish should in theory be inherently m
 # Acknowledgements
 The authors are grateful for the support of the Bluefish Research Track Stock Assessment working group during the development of this index. Working group members included four of the authors (MC, ADW, KD, AST) as well as Karson Cisneros (Mid-Atlantic Fishery Management Council), Sam Truesdell (Massachusetts Department of Marine Fisheries), Jessica Valenti (NMFS NEFSC and Rutgers University), and Samantha Werner (NMFS NEFSC). The insightful and constructive suggestions of three anonymous reviewers and the associate editor improved this work.
 
+# Competing interest statement
+
+The authors declare there are no competing interests.
+
 # Author contribution statement
 
 
+
+# Funding statement
+
+
+
+# Data availability statement
+
+Data generated or analyzed during this study are available in the public forageindex github repository, https://github.com/NOAA-EDAB/forageindex.
 
 # References
 
