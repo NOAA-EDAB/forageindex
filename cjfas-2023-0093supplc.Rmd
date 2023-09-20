@@ -1,5 +1,5 @@
 ---
-title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents:  Supplement 3, Model results"
+title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents:  Supplement c, Model results"
 author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
   Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -98,7 +98,7 @@ for(p in diagplots){
 
 ### Spring predicted ln-density {-}
 
-The VAST model predicts density of forage fish across the entire model domain for each year (Fig. \@ref(fig:springdens)). 
+The VAST model predicts density of forage fish across the entire model domain for each year (Fig. Sc\@ref(fig:springdens)). 
 
 ```{r springdens, fig.cap="Yearly maps of VAST model estimated forage fish density for Spring (months 1-6).", out.width='99%'}
 knitr::include_graphics("pyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/ln_density-predicted.png")
@@ -135,7 +135,7 @@ for(p in diagplots){
 
 ### Spring Index {-}
 
-Spring indices (Fig. \@ref(fig:springall)) for the full spatial domain (AllEPU) through smaller strata were produced.
+Spring indices (Fig. Sc\@ref(fig:springall)) for the full spatial domain (AllEPU) through smaller strata were produced.
 
 ```{r springall, fig.cap="Spring forage indices scaled to the maximum value for ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in state waters within 3 miles of shore (StateWaters) and bottom trawl survey index strata (SurveyBluefish)."}
 splitout <- read.csv("pyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/Index.csv")
@@ -166,7 +166,7 @@ ggplot(splitoutput, aes(x=Time, y=Estimate, colour=Region)) +
 
 ### Annual predicted ln-density {-}
 
-The VAST model predicts density of forage fish across the entire model domain for each year (Fig. \@ref(fig:annualdens)). 
+The VAST model predicts density of forage fish across the entire model domain for each year (Fig. Sc\@ref(fig:annualdens)). 
 
 ```{r annualdens, fig.cap="Yearly maps of VAST model estimated annual forage fish density (months 1-12).", out.width='99%'}
 knitr::include_graphics("pyindex/allagg_annual_500_lennosst_ALLsplit_biascorrect/ln_density-predicted.png")
@@ -205,7 +205,7 @@ for(p in diagplots){
 
 ### Annual Index {-}
 
-The Annual forage index uses data from all months each year (1-12). The same plots are presented as those above for Fall and Spring indices. Fig. \@ref(fig:annualall) shows all annual forage index time series with standard errors.
+The Annual forage index uses data from all months each year (1-12). The same plots are presented as those above for Fall and Spring indices. Fig. Sc\@ref(fig:annualall) shows all annual forage index time series with standard errors.
 
 ```{r annualall, fig.cap="Annual (month 1-12) forage indices scaled to the maximum value for ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in state waters within 3 miles of shore (StateWaters) and bottom trawl survey index strata (SurveyBluefish)."}
 splitoutput <- read.csv("pyindex/allagg_annual_500_lennosst_ALLsplit_biascorrect/Index.csv")
