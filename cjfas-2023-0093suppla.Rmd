@@ -1,5 +1,5 @@
 ---
-title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 1, SST Covariate Data and Index Sensitivity"
+title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement a, SST Covariate Data and Index Sensitivity"
 author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
   Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -31,7 +31,7 @@ library(patchwork)
 
 ```
 
-The number of survey stations missing surface temperature data varied considerably by decade. A large percentage of survey stations lacked in-situ temperature measurements between 1985 and 1990, while the percentage of stations missing temperature was generally below 10% (with a few exceptions) from 1991-2021 (Table \@ref(tab:sstdat)). Therefore, OISST temperature estimates were more commonly substituted early in the time series. 
+The number of survey stations missing surface temperature data varied considerably by decade. A large percentage of survey stations lacked in-situ temperature measurements between 1985 and 1990, while the percentage of stations missing temperature was generally below 10% (with a few exceptions) from 1991-2021 (Table Sa\@ref(tab:sstdat)). Therefore, OISST temperature estimates were more commonly substituted early in the time series. 
 
 ```{r sstdat}
 #[add stuff about how many SST values were missing and which years got substituted]
@@ -69,7 +69,7 @@ flextable::flextable(stnsummary) %>%
 
 For stations with in-situ surface temperature measurements, we compared these to OISST from the area and date of each survey station. The spatial resolution of the OISST dataset is 25 km, so survey stations anywhere within the 25 km block would be assigned the same temperature. 
 
-Spatial resolution is visible in a sample plot of OISST from March 15, 2021 (Fig. \@ref(fig:sampleOISST)).
+Spatial resolution is visible in a sample plot of OISST from March 15, 2021 (Fig. Sa\@ref(fig:sampleOISST)).
 
 ```{r sampleOISST,  fig.cap="March 15 2021 OISST for the Northeast US Shelf."}
 #fig.show='hold', out.width='49%',
@@ -115,7 +115,7 @@ dailysstplot(mar15)
 #dailysstplot(nov15)
 ```
 
-The range of temperatures observed on surveys differs by season (Fig. \@ref(fig:temprange)). 
+The range of temperatures observed on surveys differs by season (Fig. Sa\@ref(fig:temprange)). 
 
 ```{r temprange, fig.cap = "Range of in-situ surface temperatures from the NEFSC bottom trawl surveys by season, 1985-2021."}
 
@@ -131,7 +131,7 @@ ggplot2::ggplot(insitusst, aes(x=surftemp)) +
 ```
 
 
-In situ survey surface temperatures compare well with OISST where there are both available over a wide range of temperatures, with some exceptions (Fig. \@ref(fig:comparestations)). 
+In situ survey surface temperatures compare well with OISST where there are both available over a wide range of temperatures, with some exceptions (Fig. Sa\@ref(fig:comparestations)). 
 
 ```{r comparestations, fig.cap="Comparison of NEFSC in situ surface temperature measurements (surftemp) with OISST temperatures (oisst) for the same date and 25 km grid cell. The blue line is a smooth through the data, the black line is the desired 1:1 relationship where temperatures match."}
 
@@ -171,7 +171,7 @@ yrmap <- function(mapyr){
 ```
 
 
-In the following maps of survey station locations by SST match/mismatch for each year, yellow points indicate missing data that would be filled by OISST, and the color range shows how different in situ and OISST temperature is for stations with both values (Figs. \@ref(fig:matchmaps1) - \@ref(fig:matchmaps4)).
+In the following maps of survey station locations by SST match/mismatch for each year, yellow points indicate missing data that would be filled by OISST, and the color range shows how different in situ and OISST temperature is for stations with both values (Figs. Sa\@ref(fig:matchmaps1) - Sa\@ref(fig:matchmaps4)).
 
 Most mismatches were near Cape Hatteras where the temperature gradient from the nearby Gulf Stream is not well captured by the resolution of OISST. Others were similarly near the continental slope.
 
@@ -220,7 +220,7 @@ Despite some mismatches, we felt substituting OISST temperature to retain the st
 
 The two best fitting models both include mean predator length and number of predator species as covariates; adding sea surface temperature to these covariates resulted in the best fitting model in both seasons. To evaluate the overall impact of SST as a covariate, we first compare the indices with and without this covariate (best and second best fit to the data, respectively, although in fall the difference in AIC was small). These indices are not bias corrected.
 
-Index trends estimated by both models are nearly identical (Figs. \@ref(fig:trendcompfall), \@ref(fig:trendcompspring)). Including SST slightly increased index scale relative to the second best fitting model in fall, but had the opposite effect in spring (Figs. \@ref(fig:scalecompfall), \@ref(fig:scalecompspring)). Therefore, including OISST to fill in missing in-situ temperature data seems to have no impact on index trend (as the sst covariate itself has no impact on index trend). 
+Index trends estimated by both models are nearly identical (Figs. Sa\@ref(fig:trendcompfall), Sa\@ref(fig:trendcompspring)). Including SST slightly increased index scale relative to the second best fitting model in fall, but had the opposite effect in spring (Figs. Sa\@ref(fig:scalecompfall), Sa\@ref(fig:scalecompspring)). Therefore, including OISST to fill in missing in-situ temperature data seems to have no impact on index trend (as the sst covariate itself has no impact on index trend). 
 
 ```{r}
 stratlook <- data.frame(Stratum = c("Stratum_1",
