@@ -781,11 +781,21 @@ The authors declare there are no competing interests.
 
 # Author contribution statement
 
-
+Conceptualization: SKG, ADW, MC
+Data curation: SKG, JG, BES
+Formal analysis: SKG, JG, BES
+Investigation: SKG, JG, ADW
+Methodology: SKG, JG, BES, ADW, ELN, MC, KD, AST, JTT
+Project administration: SKG, MC
+Software: JTT
+Validation:
+Visualization: SKG, JTT
+Writing – original draft: SKG, ADW
+Writing – review & editing: SKG, JG, BES, ADW, ELN, MC, KD, AST, JTT 
 
 # Funding statement
 
-
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
 
 # Data availability statement
 
