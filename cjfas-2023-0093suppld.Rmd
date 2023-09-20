@@ -1,5 +1,5 @@
 ---
-title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 4, Sensitivities"
+title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement d, Sensitivities"
 author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
   Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -45,7 +45,7 @@ Two methods were applied to derive the bluefish prey list. Initially, a cut-off 
 
 The second method (the one used for this paper) first combined the prey observations across NEFSC and NEAMAP food habits datasets and then applied a cutoff of 25 observations of a prey item to the combined dataset. This ensured that a consistent set of prey were used across predators for both datasets. The advantage of this approach is that any Atlantic herring, Atlantic mackerel, and silver hake seen in non-bluefish predator stomachs in the NEAMAP dataset would still be included in the prey index to reflect these prey nearshore. Further, categories reflecting different survey naming conventions for the same prey were combined using this approach (e.g., *Illex illecebrosus* and *Illex* sp.)
 
-While the second method used in this paper is appealing in its consistent treatment of prey items across the two datasets, the resulting index showed extremely low sensitivity to changing the prey cutoff (Figs. \@ref(fig:preycut1)-\@ref(fig:preycut2)). This suggests that the index is primarily driven by the most commonly identified prey items across the datasets.  
+While the second method used in this paper is appealing in its consistent treatment of prey items across the two datasets, the resulting index showed extremely low sensitivity to changing the prey cutoff (Figs. Sd\@ref(fig:preycut1)-Sd\@ref(fig:preycut2)). This suggests that the index is primarily driven by the most commonly identified prey items across the datasets.  
 
 ```{r preycut1, fig.cap="Trend comparison between fall forage indices using different bluefish prey cut-offs: 10 or more observations by survey and 25 observations combined across surveys (current method).", fig.height=8}
 # compare 2022 prey list to paper update preylist for indices
@@ -194,7 +194,7 @@ While the index is not sensitive to slight changes in the cut-off for including 
 
 The NEAMAP dataset had few of these three species observed in predator stomach contents sampled nearshore in the Mid-Atlantic bight, therefore we hypothesized that the index might be less sensitive to inclusion or exclusion at the scale of the bluefish assessment indices in state waters and bluefish survey strata.
 
-As hypothesized, there are differences in both scale and trend for prey indices estimated by VAST for the Gulf of Maine and Georges Bank when excluding assessed prey species (Figs. \@ref(fig:noassessedprey1)-\@ref(fig:noassessedprey2)). There is a difference in scale for the Mid Atlantic, but index trends correspond better in that region.
+As hypothesized, there are differences in both scale and trend for prey indices estimated by VAST for the Gulf of Maine and Georges Bank when excluding assessed prey species (Figs. Sd\@ref(fig:noassessedprey1)-Sd\@ref(fig:noassessedprey2)). There is a difference in scale for the Mid Atlantic, but index trends correspond better in that region.
 
 Estimated indices at the bluefish assessment scale (state waters and bluefish inshore survey strata) have remarkably similar trends, although leaving out the three assessed prey species reduces the scale of the index.
 
@@ -393,7 +393,7 @@ flextable::flextable(stomcount) %>%
   flextable::autofit()
 ```
 
-The number of stomachs by year for each predator show general stability that seem unlikely to explain fluctuations in the index. Tables \@ref(tab:nstom1) - \@ref(tab:nstom11) show number of stomachs by predator included from both the NEFSC and NEAMAP datasets. While there was more sampling overall during the 1990s relative to other portions of the time series, variation in the full Northeast US annual forage index does not correspond to higher or lower numbers of predator stomachs included as input data (Fig. \@ref(fig:nstom2)).
+The number of stomachs by year for each predator show general stability that seem unlikely to explain fluctuations in the index. Tables Sd\@ref(tab:nstom1) - Sd\@ref(tab:nstom11) show number of stomachs by predator included from both the NEFSC and NEAMAP datasets. While there was more sampling overall during the 1990s relative to other portions of the time series, variation in the full Northeast US annual forage index does not correspond to higher or lower numbers of predator stomachs included as input data (Fig. Sd\@ref(fig:nstom2)).
 
 ```{r}
 block_section(op_section)
@@ -775,7 +775,7 @@ modcompareindex <- purrr::map_dfr(moddirs, getmodindex)
 
 ```
 
-All of the models converged with alternative predator inputs. We report the total number of stations included for each model (nstations) and the number of stations lost relative to the full dataset with all predators (stationloss; Table \@ref(tab:altpreds)). The input datasets differ, so comparing AIC across these models is not appropriate, but we report AIC by model for information.
+All of the models converged with alternative predator inputs. We report the total number of stations included for each model (nstations) and the number of stations lost relative to the full dataset with all predators (stationloss; Table Sd\@ref(tab:altpreds)). The input datasets differ, so comparing AIC across these models is not appropriate, but we report AIC by model for information.
 
 ```{r altpreds}
 
@@ -816,7 +816,7 @@ flextable::flextable(modsense) %>%
 
 ## Impact of removing predators contributing fewer stomachs {-}
 
-Removing fourspot flounder (demersal predator, small sample) and longfin squid (pelagic predator, small sample) resulted in the same or a similar number of survey stations included in analysis, with almost no change to the fall and spring indices trends (Figs. \@ref(fig:comptrend1)-\@ref(fig:comptrend2)) or scale (Figs. \@ref(fig:compscale1)-\@ref(fig:compscale2)). Squid stomachs were sampled only prior to the year 2000, but no change for the early portion of the index is apparent when leaving this predator out.
+Removing fourspot flounder (demersal predator, small sample) and longfin squid (pelagic predator, small sample) resulted in the same or a similar number of survey stations included in analysis, with almost no change to the fall and spring indices trends (Figs. Sd\@ref(fig:comptrend1)-Sd\@ref(fig:comptrend2)) or scale (Figs. Sd\@ref(fig:compscale1)-Sd\@ref(fig:compscale2)). Squid stomachs were sampled only prior to the year 2000, but no change for the early portion of the index is apparent when leaving this predator out.
 
 ```{r comptrend1, fig.cap="Trend comparison between fall forage indices using different predator groups: exclude predators with low sampling (fourspot flounder, longfin squid) vs. full predator list (current method).", fig.height=8}
 splitoutput <- modcompareindex %>%
@@ -941,7 +941,7 @@ ggplot(splitoutput |> filter(Season =="spring",
 
 ## Impact of removing predators contributing many stomachs {-}
 
-Removing a predator with more stomachs contributing to the input data, white hake, made small changes in the index, but well within the error bars of the original (Figs. \@ref(fig:comptrend3)-\@ref(fig:comptrend4), \@ref(fig:compscale3)-\@ref(fig:compscale4)). Changes in trend were most apparent in the Gulf of Maine.
+Removing a predator with more stomachs contributing to the input data, white hake, made small changes in the index, but well within the error bars of the original (Figs. Sd\@ref(fig:comptrend3)-Sd\@ref(fig:comptrend4), Sd\@ref(fig:compscale3)-Sd\@ref(fig:compscale4)). Changes in trend were most apparent in the Gulf of Maine.
 
 Removing spiny dogfish, which contributes over 25% of stomachs in the analysis, has the largest impact on the index, as predicted. The primary impact is on index scale, which is lower when excluding spiny dogfish.
 
@@ -1077,7 +1077,7 @@ modcompare <- purrr::map_dfr(moddirs, getmodinfo)
 ```
 
 
-For model comparisons with different combinations of catchability covariates, "modname" in Table \@ref(tab:modsel2) follows a similar pattern as in Supplement 2, with  all prey aggregated ("allagg" for all models), season ("spring" for models of months 1-6, "fall" for models of months 7-12), number of knots (500 for all models), and which covariates were included. The names for model options and associated VAST model settings are: 
+For model comparisons with different combinations of catchability covariates, "modname" in Table Sd\@ref(tab:modsel2) follows a similar pattern as in Supplement 2, with  all prey aggregated ("allagg" for all models), season ("spring" for models of months 1-6, "fall" for models of months 7-12), number of knots (500 for all models), and which covariates were included. The names for model options and associated VAST model settings are: 
 
 Model covariates sensitivity options, FieldConfig default (all IID), with anisotropy:
 
