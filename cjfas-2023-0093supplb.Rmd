@@ -1,5 +1,5 @@
 ---
-title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement 2, Model selection"
+title: "Assessing small pelagic fish trends in space and time using piscivore stomach contents: Supplement b, Model selection"
 author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
   Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -32,7 +32,7 @@ library(here)
 
 # VAST model selection {-}
 
-Comparisons of AIC are presented for both the first (spatial and spatio-temporal random effects, Table \@ref(tab:modsel1)) and second (catchability covariates, Table \@ref(tab:modsel2)) steps of model selection. 
+Comparisons of AIC are presented for both the first (spatial and spatio-temporal random effects, Table Sb\@ref(tab:modsel1)) and second (catchability covariates, Table Sb\@ref(tab:modsel2)) steps of model selection. 
 
 ```{r}
 
@@ -130,7 +130,7 @@ getmodinfo <- function(d.name){
 modcompare <- purrr::map_dfr(moddirs, getmodinfo)
 ```
 
-Models compared using REML are identified by model name ("modname" in Table \@ref(tab:modsel1)) which always includes all prey aggregated, season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which fixed and random spatial and spatio-temporal effects were included in which linear predictor (1 or 2). The names for model options and associated VAST model settings are:
+Models compared using REML are identified by model name ("modname" in Table Sb\@ref(tab:modsel1)) which always includes all prey aggregated, season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which fixed and random spatial and spatio-temporal effects were included in which linear predictor (1 or 2). The names for model options and associated VAST model settings are:
 
 Model selection 1 (spatial, spatio-temporal effects, no covariates) options (following @ng_predator_2021) and naming:
 *  All models set Use_REML = TRUE in fit_model specifications.  
@@ -186,7 +186,7 @@ flextable::flextable(modselect %>%
 
 Using REML, models including spatial and spatio-temporal random effects as well as anisotropy were best supported by the data. This was true for the spring dataset, the fall dataset, and the annual (seasons combined) dataset. 
 
-For the second step of model selection with different combinations of vessel effects and or catchability covariates, "modname" in Table \@ref(tab:modsel2) follows a similar pattern as above, with  all prey aggregated ("allagg" for all models), season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which vessel effects or covariates were included. The names for model options and associated VAST model settings are: 
+For the second step of model selection with different combinations of vessel effects and or catchability covariates, "modname" in Table Sb\@ref(tab:modsel2) follows a similar pattern as above, with  all prey aggregated ("allagg" for all models), season ("all" for annual models of months 1-12, "fall" for models of months 7-12, and "spring" for models of months 1-6), number of knots (500 for all models), and which vessel effects or covariates were included. The names for model options and associated VAST model settings are: 
 
 Model selection 2 (covariates) options, FieldConfig default (all IID), with anisotropy:
 
