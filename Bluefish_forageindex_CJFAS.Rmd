@@ -781,17 +781,19 @@ The authors declare there are no competing interests.
 
 # Author contribution statement
 
-Conceptualization: SKG, ADW, MC
+Conceptualization: SKG, ADW, ELN, MC, JTT
 Data curation: SKG, JG, BES
-Formal analysis: SKG, JG, BES
+Formal analysis: SKG, JG, BES, ADW
 Investigation: SKG, JG, ADW
 Methodology: SKG, JG, BES, ADW, ELN, MC, KD, AST, JTT
-Project administration: SKG, MC
-Software: JTT
-Validation:
-Visualization: SKG, JTT
+Project administration: MC
+Software: ELN, JTT
+Resources: JG, BES
+Validation; SKG, JG
+Visualization: SKG, BES, ADW, JTT
 Writing – original draft: SKG, ADW
 Writing – review & editing: SKG, JG, BES, ADW, ELN, MC, KD, AST, JTT 
+
 
 # Funding statement
 
