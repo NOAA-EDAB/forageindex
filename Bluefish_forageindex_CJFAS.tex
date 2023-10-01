@@ -46,7 +46,7 @@
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
 % Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+%\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
@@ -174,10 +174,10 @@
 \usepackage{array}
 \usepackage{hyperref}
 \ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
+%  \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+%\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
   pdftitle={Assessing small pelagic fish trends in space and time using piscivore stomach contents},
