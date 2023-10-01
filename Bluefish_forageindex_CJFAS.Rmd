@@ -256,7 +256,7 @@ Predators were selected to balance the tradeoff between increasing sample size a
 
 For bluefish forage index modeling, we selected a set of predators that have high diet similarity to bluefish. @garrison_dietary_2000 evaluated similarity of predator stomach contents on the Northeast US shelf from NEFSC bottom trawl surveys to develop foraging guilds, and this analysis was updated using all stomach contents data collected aboard the NEFSC surveys through 2020 [@smith_fish_2022; [web dataset](https://fwdp.shinyapps.io/tm2020/#4_DIET_OVERLAP_AND_TROPHIC_GUILDS)]. The Schoener index [@schoener_nonsynchronous_1970] was used to characterize the overlap in diet, $D_{ij}$, between paired predators:
 
-$$ D_{i,j} = 1 – 0.5 (\sum |p_{i,k} – p_{j,k}|) $$
+$$ D_{i,j} = 1-0.5 (\sum \lvert p_{i,k}-p_{j,k} \rvert) $$
 
 with $p_{i,k}$ = the mean proportion (by volume) of prey group $k$ in the diet of predator $i$ and $p_{i,k}$ = the mean proportion (by volume) of prey group $k$ in the diet of predator $j$ [@garrison_dietary_2000]. Higher values indicate greater similarity in diet; 0 indicates no similarity, while 1 indicates identical diet. Mean similarity across all predator/size combinations in the stomach contents database with bluefish ranged from 0.13 for small bluefish to 0.17 for large bluefish.  
 

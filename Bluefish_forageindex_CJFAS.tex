@@ -1,0 +1,1380 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+% Set up the fonts
+\usepackage[urw-palatino]{mathdesign}
+\usepackage[T1]{fontenc}
+
+
+% Set the language for 508
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle = {title},
+  pdflang = en-US}
+
+% Add accessibility support from http://www.richschwinn.com/accessibility
+\RequirePackage{accsupp}
+\RequirePackage{pdfcomment}
+\newcommand{\AccTool}[2]{\BeginAccSupp{method=pdfstringdef,unicode,Alt={{#1}}}\pdftooltip{{#2}}{{#1}}\EndAccSupp{}}
+
+
+% Set up the headers and footers
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{ifthen}
+%\usepackage{everypage-1x}
+\usepackage{float}
+%\usepackage{subfig}
+%\usepackage{subcaption}
+
+% Avoid struggling over figure and table float in Rmarkdown
+\let\origfigure\figure
+\let\endorigfigure\endfigure
+\renewenvironment{figure}[1][2] {
+    \expandafter\origfigure\expandafter[H]
+} {
+    \endorigfigure
+}
+
+\let\origtable\table
+\let\endorigtable\endtable
+\renewenvironment{table}[1][2] {
+    \expandafter\origtable\expandafter[H]
+} {
+    \endorigtable
+}
+
+% First page has the large title and NOAA logo
+%\pagestyle{fancy}
+%\fancyhf{}
+%\setlength\headheight{40pt}
+%\fancyheadoffset[L]{0.5cm}
+%\cfoot{\thepage}
+%
+%\fancyheadinit{%
+%   \ifthenelse{\value{page}=4}%
+%      {\fancyhead[R]{\includegraphics[width=40pt]{images/NOAA_logo.png} \\ \textsf{\emph{March 17, 2022}}}
+%       \fancyhead[L]{\textsf{\LARGE State of the Ecosystem 2022: Mid-Atlantic}}
+%      }%
+%      {\fancyhead[R]{}
+%       \fancyhead[L]{\textsf{\emph{State of the Ecosystem 2022: Mid-Atlantic}}}
+%      }
+%}
+
+
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Make caption fonts a bit smaller
+\usepackage[font={small}]{caption}
+
+
+% Change section labels to san serif
+\usepackage{sectsty}
+\allsectionsfont{\normalfont\sffamily\bfseries}
+
+\usepackage{lineno}
+\linenumbers
+
+\usepackage{setspace}
+\doublespacing
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{hhline}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Assessing small pelagic fish trends in space and time using piscivore stomach contents},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Assessing small pelagic fish trends in space and time using piscivore stomach contents}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+S.K. Gaichas\(^{1}\), James Gartland\(^{2}\), Brian E. Smith\(^{1}\), Anthony D. Wood\(^{1}\), Elizabeth L. Ng\(^{3}\), Michael Celestino\(^{4}\), Katie Drew\(^{5}\), Abigail S. Tyrell\(^{1,ptio6}\), and James T. Thorson\(^{7}\)
+
+\(^{1}\)NOAA Fisheries, Northeast Fisheries Science Center, 166 Water St., Woods Hole MA, USA.
+
+\(^{2}\)Virginia Institute of Marine Science, William \& Mary, Gloucester Point, VA, USA.
+
+\(^{3}\)Four Peaks Environmental Science \& Data Solutions, Wenatchee, WA USA.
+
+\(^{4}\)New Jersey Department of Environmental Protection, Port Republic, NJ USA.
+
+\(^{5}\)Atlantic States Marine Fisheries Commission, 1050 N. Highland St., Arlington, VA, USA.
+
+\(^{6}\)IBSS Corporation, 1110 Bonifant St Suite 501, Silver Spring, MD, USA.
+
+\(^{7}\)NOAA Fisheries, Alaska Fisheries Science Center, Seattle, WA, USA.
+
+Corresponding author: \href{mailto:Sarah.Gaichas@noaa.gov}{\nolinkurl{Sarah.Gaichas@noaa.gov}}
+
+ORCID\\
+Gaichas: \url{https://orcid.org/0000-0002-5788-3073}\\
+Gartland: \url{https://orcid.org/000-0003-1436-2291}\\
+Smith: \url{https://orcid.org/0000-0002-7792-520X}\\
+Ng: \url{https://orcid.org/0000-0002-5833-4914}\\
+Tyrell: \url{https://orcid.org/0000-0002-6656-8470}\\
+Thorson: \url{https://orcid.org/0000-0001-7415-1010}
+
+\newpage
+
+\hypertarget{abstract}{%
+\section*{Abstract}\label{abstract}}
+\addcontentsline{toc}{section}{Abstract}
+
+Changing distribution and abundance of small pelagic fishes may drive changes in predator distributions, affecting predator availability to fisheries and surveys. However, small pelagics are difficult to survey directly, so we developed a novel method of assessing the aggregate abundance of 21 small pelagic forage taxa via predator stomach contents. We used stomach contents collected from 22 piscivore species captured by multiple bottom trawl surveys within a Vector Autoregressive Spatio-Temporal (VAST) model to assess trends of small pelagics on the Northeast US shelf. The goal was to develop a spatial ``forage index'' to inform survey and/or fishery availability in the western North Atlantic bluefish (\emph{Pomatomus saltatrix}) stock assessment. This spatially-resolved index compared favorably with more traditional design-based survey biomass indices for forage species well sampled by surveys. However, our stomach contents-based index better represented smaller unmanaged forage species that surveys are not designed to capture. The stomach-based forage index helped explain bluefish availability to the recreational fishery for stock assessment, and provided insight into pelagic forage trends throughout the regional ecosystem.
+
+\hypertarget{keywords}{%
+\section{Keywords}\label{keywords}}
+
+Forage species, Stomach content analysis, Vector autoregressive spatio-temporal model, Bluefish, Stock assessment, Integrated ecosystem assessment
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+Small pelagics are widely recognized for their critical function as forage, supporting human populations as well as harvested fish and protected species in ecosystems worldwide (\protect\hyperlink{ref-alder_forage_2008}{Alder et al. 2008}; \protect\hyperlink{ref-pikitch_global_2014}{Pikitch et al. 2014}). In some ecosystems, one or two small pelagic species may dominate as forage (\protect\hyperlink{ref-chavez_northern_2008}{Chavez et al. 2008}), while in others a wide variety of small pelagic species fill this role together (\protect\hyperlink{ref-garrison_dietary_2000}{Garrison and Link 2000}; \protect\hyperlink{ref-engelhard_forage_2014}{Engelhard et al. 2014}). In both instances, understanding fluctuations in small pelagics is an important component of an ecosystem approach to management: low abundance of small pelagics can have implications for both directed small pelagic fisheries and management of their predators (\protect\hyperlink{ref-cury_small_2000}{Cury et al. 2000}). Conversely, high aggregate abundance of small pelagics can provide a robust forage supply for generalist predators even if individual small pelagic species are depleted. Fish predators generally select the most abundant prey in the environment, so as individual prey populations vary, fish predators respond by switching prey (\protect\hyperlink{ref-smith_multispecies_2020}{Smith and Smith 2020}).
+
+In addition to abundance, spatial distribution of small pelagics has clear implications for both predators and fisheries. Central place foragers such as seabirds require small pelagics close to breeding colonies during the breeding season (\protect\hyperlink{ref-koehn_structured_2021}{Koehn et al. 2021}), while free ranging highly mobile fish predators can follow small pelagics if their distributions shift further offshore. Similarly, fisheries prosecuted on large vessels are better equipped to follow mobile predators offshore (\protect\hyperlink{ref-bertrand_interactions_2004}{Bertrand et al. 2004}), while shore based artisanal and recreational fisheries may lose access to mobile predators that follow prey offshore. Changing spatial distribution can also impact stock assessments if changing availability of assessed fish cannot be incorporated into assessment models (\protect\hyperlink{ref-oleary_adapting_2020}{O'Leary et al. 2020}).
+
+Many exploited small pelagic populations have a long history of scientific assessment, providing insight into long term and short term fluctuations relevant to both the fishery and the wider ecosystem (\protect\hyperlink{ref-boerema_stock_1973}{Boerema and Gulland 1973}; \protect\hyperlink{ref-sydeman_sixty-five_2020}{Sydeman et al. 2020}; \protect\hyperlink{ref-kuriyama_assessment_2022}{Kuriyama 2022}). However, spatial shifts within a small pelagic stock's range affecting different predator populations and distributions are difficult to track using conventional spatially aggregated stock assessment approaches. In addition, for ecosystems where small pelagics represent a mix of managed and unmanaged species, information on unmanaged species is often lacking, hindering assessment of the status of the full forage base supporting predators and other fisheries.
+
+The objective of this work was to create a ``forage index'' to evaluate changes in small pelagics over time and in space in the Northeast US continental shelf ecosystem, where a diverse mix of managed and unmanaged small pelagic species support a wide range of predators (\protect\hyperlink{ref-link_does_2002}{Link 2002}; \protect\hyperlink{ref-link_response_2009}{Link et al. 2009}). This ecosystem has a long history of fishery-independent sampling for demersal species, but sparse directed sampling for small pelagics. Developing an index of small pelagics in this ecosystem was a high priority for two applications: addressing uncertainty in the stock assessment for a key predator species, bluefish (\emph{Pomatomus saltatrix}), and describing aggregate forage species trends for integrated ecosystem assessment.
+
+Bluefish are medium-sized, rapidly growing pelagic piscivores known to prey on a wide variety of small pelagics and to target areas of dense prey (\protect\hyperlink{ref-buckel_foraging_1999}{Buckel et al. 1999}; \protect\hyperlink{ref-collette_bigelow_2002}{Collette and Klein-Macphee 2002}; \protect\hyperlink{ref-sanchez-jerez_interactions_2008}{Sanchez-Jerez et al. 2008}). Writing in the 1950s, Bigelow and Schroeder described bluefish as ``perhaps the most ferocious and bloodthirsty fish in the sea, leaving in its wake a trail of dead and mangled mackerel, menhaden, herring, alewives, and other species on which it preys.'' Participants in the US bluefish fishery have raised concerns that changes in prey distribution may change bluefish availability to surveys and recreational fisheries, creating uncertainty in stock assessments and subsequent fishery management (\href{https://www.mafmc.org/s/8_BF-FPR-2021.pdf}{MAFMC Fishery performance report, 2021}). Therefore, spatial and temporal trends in the small pelagic prey of bluefish needed to be characterized to address this concern.
+
+Our approach was patterned on Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}), which used predator stomach data to create a biomass index for a single prey, Atlantic herring, using Vector Autoregressive Spatio-Temporal modeling (VAST; Thorson and Barnett (\protect\hyperlink{ref-thorson_comparing_2017}{2017}); Thorson (\protect\hyperlink{ref-thorson_guidance_2019}{2019})). Our approach has two main differences from that of Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) First, we generate an index for small pelagics or ``bluefish prey'' in aggregate rather than a single prey species. Second, the index is intended to inform variation in bluefish availability, rather than to directly estimate the scale of prey biomass or consumption. A relative index of aggregate prey is our goal. Further, we include inshore and offshore regions by combining data from two regional bottom trawl surveys as was done for summer flounder biomass in Perretti and Thorson (\protect\hyperlink{ref-perretti_spatio-temporal_2019}{2019}). Finally, since our goal was to characterize the small pelagic prey field potentially driving bluefish availability, and bluefish themselves are somewhat sparsely sampled by the surveys, we characterize this prey field in space and time by expanding our range of piscivore samplers. We aggregate small pelagic bluefish prey observed from all predators that have similar diet composition to bluefish to better represent small pelagic prey density and distribution in the ecosystem. Although this forage fish index was designed to reflect a range of bluefish prey, due to the inclusion of additional piscivore stomach data, the forage fish index is broadly representative of trends that may affect multiple pelagic predators. This approach is generalizable to any spatial subset of the full VAST spatial domain, such that small pelagic forage indices for each ecoregion on the Northeast US continental shelf can also be generated for use in integrated ecosystem assessment.
+
+\hypertarget{methods}{%
+\section{Methods}\label{methods}}
+
+We characterize mean weight per stomach of bluefish prey from all piscivores caught at each survey location and model that over time and space. Hypothesized covariates potentially affecting perceived patterns in the bluefish prey index include number of predators, size composition of predators, and sea surface temperature (SST) at each survey location.
+
+Therefore, the steps involved to estimate the forage index included defining the input dataset, running multiple configurations of the VAST model, and generating bias corrected indices using the selected model. Steps involved in defining the dataset included identifying ``bluefish prey'', defining a set of piscivore predators with similar food habits to bluefish to include bluefish prey from a larger sample of predator stomachs, integrating diet data from two regional surveys, and integrating supplementary SST data to fill gaps in in-situ temperature data measurements. Steps involved in running the VAST model included decisions on spatial footprint, model structure, model selection to determine if spatial and spatio-temporal random effects were supported by the data, and further model selection to determine which catchability covariates were best supported by the data (\protect\hyperlink{ref-thorson_guidance_2019}{Thorson 2019}). Finally, subsets of the spatial domain were defined to be consistent with broad ecosystem reporting regions as well as bluefish assessment inputs for NEFSC survey indices and recreational fishery CPUE. A bias-corrected (\protect\hyperlink{ref-thorson_implementing_2016}{Thorson and Kristensen 2016}) forage index for each spatial subset was then generated. We compared the resulting stomach based prey index to survey design based biomass estimates for the same group of species at broad ecosystem and seasonal scales to gain insight into the differences between the approaches. Index sensitivity to inclusion of minor and major prey, and to the exclusion of predators with lower and higher sample sizes was evaluated. We then explored the indices generated at stock assessment scales as catchability covariates within the framework of a state-space stock assessment model. Each step is detailed below. All analyses were completed in R (\protect\hyperlink{ref-r_core_team_r_2022}{Team 2022}).
+
+\hypertarget{input-dataset}{%
+\subsection{Input dataset}\label{input-dataset}}
+
+Fish food habits data are collected aboard several regional fishery independent surveys in the Northeast US. The longest time series of stomach contents has been collected by the Northeast Fisheries Science Center (NEFSC) bottom trawl survey (\protect\hyperlink{ref-smith_trophic_2010}{Smith and Link 2010}) from south of Cape Hatteras, NC to the Scotian Shelf at the US/Canada border since the early 1970s, which represents the bulk of the data for this analysis. The NEFSC survey changed vessels and stopped sampling the shallowest inshore strata in 2008. Using similar survey protocols to the NEFSC survey, the Northeast Area Monitoring and Assessment Program (NEAMAP) survey has collected fish stomach contents from these inshore strata between Cape Hatteras, NC and Cape Cod, MA since 2007 (\protect\hyperlink{ref-northeast_area_monitoring__assessment_program_neamap_monitoring_2021}{Northeast Area Monitoring \& Assessment Program (NEAMAP) et al. 2021}). The full survey dataset included all years from 1973-2021. The bluefish assessment begins in 1985, so we included only data from 1985-2021 for estimating forage indices.
+
+\hypertarget{defining-bluefish-prey}{%
+\subsubsection{Defining bluefish prey}\label{defining-bluefish-prey}}
+
+Neither bluefish themselves nor the small pelagics they eat are well sampled by bottom trawl surveys. Nevertheless, the stomach samples collected for bluefish indicate that anchovies, herrings, squids, butterfish, scup, and small hakes are important prey.
+
+Using all sampled bluefish stomachs included in both food habits databases, NEFSC (1973-2021), and NEAMAP (2007-2021), we created a list of all pelagic nekton bluefish prey. Prey types encountered in at least 25 bluefish stomachs across both datasets were included in the development of the index (Table \ref{tab:preylist}). Atlantic mackerel, while only encountered in 14 stomachs, are known to be an important prey of bluefish historically (\protect\hyperlink{ref-collette_bigelow_2002}{Collette and Klein-Macphee 2002}), and thus were also included in the development of this index. Index sensitivity to changes in the prey cutoff and to the exclusion of assessed forage species (Atlantic herring,
+Atlantic mackerel, and silver hake) was explored using alternative input datasets as detailed below and in Supplement d.
+
+\hypertarget{defining-piscivore-predators}{%
+\subsubsection{Defining piscivore predators}\label{defining-piscivore-predators}}
+
+Predators were selected to balance the tradeoff between increasing sample size and decreasing similarity to bluefish foraging. One extreme assumption would be to include only bluefish as predators, but there are relatively few bluefish stomach samples due to incomplete availability to bottom trawl surveys. This would miss prey available to bluefish because we have not sampled bluefish adequately. The opposite extreme assumption would be to include all stomachs that contain any bluefish prey, regardless of which species ate the prey. This would include predators that do not forage similarly to bluefish and might therefore ``count'' prey that are not actually available to bluefish due to habitat differences. The intermediate approach, which selects a group of piscivores that forage similarly to bluefish, both increases sample size and screens out the most dissimilar predators to bluefish. The input data includes only the prey items identified above as ``bluefish prey'' across all predators identified as piscivores.
+
+For bluefish forage index modeling, we selected a set of predators that have high diet similarity to bluefish. Garrison and Link (\protect\hyperlink{ref-garrison_dietary_2000}{2000}) evaluated similarity of predator stomach contents on the Northeast US shelf from NEFSC bottom trawl surveys to develop foraging guilds, and this analysis was updated using all stomach contents data collected aboard the NEFSC surveys through 2020 {[}Smith and Rowe (\protect\hyperlink{ref-smith_fish_2022}{2022}); \href{https://fwdp.shinyapps.io/tm2020/\#4_DIET_OVERLAP_AND_TROPHIC_GUILDS}{web dataset}{]}. The Schoener index (\protect\hyperlink{ref-schoener_nonsynchronous_1970}{Schoener 1970}) was used to characterize the overlap in diet, \(D_{ij}\), between paired predators:
+
+\[ D_{i,j} = 1-0.5 (\sum \lvert p_{i,k}-p_{j,k} \rvert) \]
+
+with \(p_{i,k}\) = the mean proportion (by volume) of prey group \(k\) in the diet of predator \(i\) and \(p_{i,k}\) = the mean proportion (by volume) of prey group \(k\) in the diet of predator \(j\) (\protect\hyperlink{ref-garrison_dietary_2000}{Garrison and Link 2000}). Higher values indicate greater similarity in diet; 0 indicates no similarity, while 1 indicates identical diet. Mean similarity across all predator/size combinations in the stomach contents database with bluefish ranged from 0.13 for small bluefish to 0.17 for large bluefish.
+
+The resulting diet overlap matrix was used to identify similar groups of predators using cluster analysis. We used R package \texttt{dendextend} (\protect\hyperlink{ref-galili_dendextend_2015}{Galili 2015}) to transform the similarity matrix into a distance matrix (\texttt{stats::dist}) and then to categorize similarly feeding piscivores using hierarchical clustering based on the ``complete'' algorithm with k=6 clusters (\texttt{dendextend::hclust}). All sizes of bluefish clustered together using these criteria, indicating piscivorous feeding habits as juveniles and adults. The resulting piscivore list included the size classes of species that clustered with all 3 sizes of bluefish (Table \ref{tab:pisclist}). Mean similarity of piscivores clustered with bluefish ranged from 0.24 for small bluefish to 0.37 for large bluefish. Generally low diet similarity has been noted on the Northeast US continental shelf (\protect\hyperlink{ref-smith_trophic_2010}{Smith and Link 2010}), which is why the index includes only the portion of each piscivore's stomach contents matching the bluefish prey groups defined above. While these piscivores have relatively high diet similarity, they do not all overlap spatially. We are interested in a forage index for the full region that can be tailored to the spatial footprint of the bluefish stock assessment indices. Therefore, the additional spatial coverage provided by the full piscivore list is an advantage.
+
+This piscivore dataset better captured predators that feed similarly to bluefish (e.g.~striped bass), and has a higher proportion of stations with bluefish prey than a dataset based on the Garrison and Link (\protect\hyperlink{ref-garrison_dietary_2000}{2000}) piscivore definition. We also evaluated a piscivore definition using only the predators that always cluster with bluefish no matter what hierarchical clustering algorithm is applied (``ward.D'', ``single'', ``complete'', ``average'', ``mcquitty'', ``median'', ``centroid'', ``ward.D2''). However, a dataset based on that limited piscivore list excluded predators highlighted by bluefish experts (e.g., striped bass) and resulted in lower geographic data coverage than either of the above piscivore definitions, with a lower proportion of included stations with small pelagic bluefish prey.
+
+The NEAMAP survey overlaps most of the historical NEFSC survey footprint, but operates with a higher sampling density and closer to shore than the current NEFSC survey. While both surveys capture many of the same predators, some are not available close to shore and others are more available close to shore. Due to logistical difficulties of combining the raw NEFSC and NEAMAP datasets, we assumed the set of piscivores identified by clustering the full NEFSC food habits dataset also applied to the NEAMAP survey, which covers a subset of the same geographic region and years as NEFSC. We included all predators from NEAMAP within the size ranges identified as piscivores in the larger NEFSC dataset (Table \ref{tab:pisclist}). NEAMAP samples two nearshore predator species, Spanish mackerel and spotted sea trout, that are not captured by the NEFSC survey offshore. Both species feed on the same schooling prey as bluefish Murdy et al. (\protect\hyperlink{ref-murdy_fishes_1997}{1997}), so stomach contents of these two predators were included from NEAMAP in the absence of a formal diet similarity analysis. Index sensitivity to changes in the predators included in the dataset was explored with four alternative datasets: one each excluding predators with low sample size (fourspot flounder and longfin squid) and predators with high sample size (white hake and spiny dogfish), as detailed below and in Supplement d.~
+
+\hypertarget{integrating-regional-surveys}{%
+\subsubsection{Integrating regional surveys}\label{integrating-regional-surveys}}
+
+For each survey dataset, the full food habits database was filtered to include only predators on the list of piscivores with the most diet similarity to bluefish (Table \ref{tab:pisclist}). Then, the list of bluefish prey (Table \ref{tab:preylist}) was used to categorize prey items for each predator as ``bluefish prey'' or ``other prey''. Each station was given a unique station identifier (cruise and station number), and the total weight (g) of bluefish prey at each station was summed. Total bluefish prey weight was divided by the total number of stomachs across all piscivore predators at the station to get mean bluefish prey weight per stomach (g) at each station. In addition, the number of piscivore species and the mean size (total length, cm) across all piscivores was calculated at each station. Seasons were identified as ``Spring'' (collection months January - June) and ``Fall'' (collection months July-December) to align with the seasonal stratification of data used in the bluefish stock assessment. Vessel identifiers were assigned based on years and survey, with two vessels used for the NEFSC survey (R/V Albatross prior to 2009 and R/V Bigelow 2009 to present) and a single vessel used for the NEAMAP survey 2007-present. These identifiers were used to evaluate vessel effects. Variable names were reconciled between NEFSC and NEAMAP, and the datasets were appended into a single dataset with one row per sampling event including station ID, year, season, date, latitude, longitude, vessel, mean bluefish prey weight, mean piscivore length, number of piscivore species, and sea surface temperature (degrees C).
+
+\hypertarget{filling-gaps-in-sea-surface-temperature-sst-data}{%
+\subsubsection{Filling gaps in sea surface temperature (SST) data}\label{filling-gaps-in-sea-surface-temperature-sst-data}}
+
+Approximately 10\% of survey stations were missing in-situ sea water temperature measurements. Gaps in temperature information were more prevalent early in the time series (1980s and early 1990s), although stations without temperature data were found in nearly all years (see Table Sa1). Rather than truncate the dataset to only those stations with in-situ temperature measurements, we investigated other sources of SST data to fill gaps.
+
+Two SST data sources were investigated, both based on satellite data: the National Oceanic and Atmospheric Administration Optimum Interpolation Sea Surface Temperature (NOAA OI SST) V2 High Resolution Dataset (\protect\hyperlink{ref-reynolds_daily_2007}{Reynolds et al. 2007}), and the higher resolution source data for the OI SST, the \href{https://www.ncei.noaa.gov/products/avhrr-pathfinder-sst}{AVHRR Pathfinder SST data linked here} (\protect\hyperlink{ref-saha_avhrr_2018}{Saha et al. 2018}). Both sources provide global daily SST at different spatial resolutions (OI SST uses a 25 km grid, and AVHRR uses a 4 km grid) from 1981-present. Although the higher resolution of the AVHRR dataset was desirable, there was too much missing data within the Northeast US continental shelf survey domain due to cloud cover, so it was not pursued further for this analysis.
+
+The OI SST data are provided by the NOAA PSL, Boulder, Colorado, USA, from their website at \url{https://psl.noaa.gov} as global files for each year. Files for years 1985-2021 were downloaded from \url{https://downloads.psl.noaa.gov/Datasets/noaa.oisst.v2.highres/sst.day.mean}.{[}year{]}.v2.nc as rasters using code developed by Kim Bastille and Abigail Tyrell for Northeast US ecosystem reporting, cropped to the Northeast US spatial extent, and converted to R dataframe objects where the temperature of a grid cell is associated with the coordinates at the center of the grid cell. Then, OI SST temperature was matched to the survey data using year, month, day and spatial nearest neighbor matches to survey station locations.
+
+For survey stations with in-situ temperature measurements, the in-situ measurement was retained. For survey stations with missing temperature data (\textasciitilde10\% of all stations), OI SST was substituted for input into VAST models. In-situ SST and OI SST were compared for stations with both values. Index sensitivity to the SST covariate was explored by comparing un-bias corrected runs with and without this covariate.
+
+\hypertarget{vast-modeling}{%
+\subsection{VAST modeling}\label{vast-modeling}}
+
+We used VAST (\protect\hyperlink{ref-thorson_comparing_2017}{Thorson and Barnett 2017}; \protect\hyperlink{ref-thorson_guidance_2019}{Thorson 2019}) to evaluate changes in bluefish prey biomass and distribution over time. Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) provide a detailed overview of the VAST biomass index estimation approach used in our study, which we briefly review here. Generally, VAST is structured to estimate fixed and random effects across two linear predictors, the first for encounter rate and the second for amount, which are then multiplied to estimate an index of the quantity of interest. Spatial random effects in the linear predictors represent latent processes contributing to variation in space that is constant over time, while spatio-temporal random effects represent latent processes contributing to spatial variations that change over time.
+
+Using notation from Thorson (\protect\hyperlink{ref-thorson_guidance_2019}{2019}), a full model for the first linear predictor \(\rho_1\) for each observation (\(i\)) can include fixed intercepts (\(\beta\)) for each category (\(c\)) and time (\(t\)), spatial random effects (\(\omega\)) for each location (\(s\)) and category, spatio-temporal random effects (\(\varepsilon\)) for each location, category, and time, fixed vessel effects (\(\eta\)) by vessel (\(v\)) and category, and fixed catchability impacts (\(\lambda\)) of covariates (\(Q\)) for each observation and variable (\(k\)):
+
+\[ \rho_1(i) = \beta_1(c_i, t_i) + \omega_1^*(s_i, c_i) + \varepsilon_1^*(s_i, c_i, t_i) + \eta_1(v_i, c_i) + \sum_{k=1}^{n_k} \lambda_1(k) Q(i,k)\]
+
+The full model for the second linear predictor \(\rho_2\) has the same structure, estimating \(\beta_2\), \(\omega_2\), \(\varepsilon_2\), \(\eta_2\), and \(\lambda_2\) using the observations, categories, locations, times, and covariates. VAST then predicts density based on temporal variation (intercepts), spatial variation (spatial random effects), and spatio-temporal variation (spatio-temporal random effects), with vessel and catchability effects ``filtered out'' prior to constructing an abundance index.
+
+\hypertarget{structural-decisions}{%
+\subsubsection{Structural decisions}\label{structural-decisions}}
+
+Thorson (\protect\hyperlink{ref-thorson_guidance_2019}{2019}) lists 15 major decisions for constructing a VAST model. Here we outline the decisions made in developing the forage index.
+
+\hypertarget{spatial-domain}{%
+\paragraph{Spatial domain}\label{spatial-domain}}
+
+Models were run using the full Northwest Atlantic spatial grid built into VAST (Fig. \ref{fig:maps}b-d, brown background). Specific strata sets were used from this full model to develop indices matching the spatial extent of different assessment inputs and for broad ecoregions used in ecosystem reporting.
+
+\hypertarget{categories-data-type-and-link-function}{%
+\paragraph{Categories, data type, and link function}\label{categories-data-type-and-link-function}}
+
+We model all bluefish prey biomass in aggregate as a single category. Each biomass observation in the model was represented by the mean weight of bluefish prey in a stomach at each location. Therefore, VAST applies a delta model where the first linear predictor models encounter rate and the second linear predictor models amount of prey (equivalent to positive catch rates on a survey). Following Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) and Thorson (\protect\hyperlink{ref-thorson_guidance_2019}{2019}), we apply a Poisson-link delta model to estimate expected prey mass per predator stomach.
+
+\hypertarget{spatial-variation-resolution-response-type-and-temporal-correlation}{%
+\paragraph{Spatial variation, resolution, response type, and temporal correlation}\label{spatial-variation-resolution-response-type-and-temporal-correlation}}
+
+We included spatial and spatio-temporal variation in both linear predictors, but tested whether the data support these effects using model selection (see below). Similar to Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) we used the default spatial smoother in VAST, the stochastic partial differential equation (SPDE) approximation to the Mat\textquotesingle ern correlation function (method = ``mesh''; Thorson (\protect\hyperlink{ref-thorson_guidance_2019}{2019})). Because directional correlation (anisotropy) can be common in fishery collections with depth gradients along a continental shelf (\protect\hyperlink{ref-thorson_guidance_2019}{Thorson 2019}), we tested whether the inclusion of anisotropy as a fixed effect was supported using model selection (see below). We used a spatial resolution of 500 ``knots'' or standardized locations optimally allocated among all observed survey stations in the full dataset as estimated by k-means clustering of the data, to define the spatial dimensions of each seasonal model and the annual model.
+
+We modeled all bluefish prey in aggregate with a univariate model, producing a single forage index which is most easily integrated into the bluefish assessment model. We did not include temporal correlation in fixed intercepts to maintain independence of forage abundance in each modeled year so that it could be used as an index within a stock assessment model (\protect\hyperlink{ref-thorson_guidance_2019}{Thorson 2019}), (although we used it as a covariate rather than an index). We did not include temporal correlation in spatio-temporal random effects because most survey areas were sampled each year, so projecting forage ``hotspots'' between years using temporal correlation was not necessary for this application.
+
+\hypertarget{including-covariates-vessel-effects-area-swept-and-other-decisions}{%
+\paragraph{Including covariates, vessel effects, area swept, and other decisions}\label{including-covariates-vessel-effects-area-swept-and-other-decisions}}
+
+We explored multiple combinations of catchability covariates and vessel effects. Surveys were conducted aboard multiple vessels over time and between NEFSC and NEAMAP, so we investigated vessel effects for the NEAMAP vessel and NEFSC vessels Albatross and Bigelow (vessel effects are commonly included in regional stock assessments when survey indices are not modeled separately). Catchability covariates explored included mean predator length at each station, number of predator species at each station, and sea surface temperature (SST) at each station.
+
+The predator length covariate may better capture variability in stomach contents than a vessel covariate, since Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) found that larger predators were more likely to have more prey in stomachs. Number of predator species was included as a catchability covariate because more species ``sampling'' the prey field at a particular station may result in a higher encounter rate (more stations with positive bluefish prey in stomachs). Water temperature was also evaluated as a catchability covariate, because temperature affects predator feeding rate.
+
+The effective foraging area and attack rate for each predator is not known. This area and rate combine to generate the ``thinning rate'' in a thinned and marked point process for predator foraging (\protect\hyperlink{ref-thorson_diet_2022}{Thorson et al. 2022}). Without this information, it is not possible to predict the absolute scale of prey abundance from predator consumption data. However, we here assume that this ``thinning rate'' is approximately constant across space and time, such that spatial and temporal variation in predicted stomach contents is treated as proportional to prey density. If this assumption is met, the resulting prey index will still be proportional to prey abundance, but with an unknown ``catchability coefficient''.
+
+The derived quantity of interest here is a biomass index for each of the spring, fall, and annual datasets for bluefish prey species. We have also included supplementary plots of the center of gravity for each seasonal model and the annual model.
+
+Bias correction of the forage fish biomass index for each model (and spatial subdivisions, see below) is based on Thorson and Kristensen (\protect\hyperlink{ref-thorson_implementing_2016}{2016}), as implemented in the VAST latest release 3.10.0 (\url{https://github.com/James-Thorson-NOAA/VAST/tree/dev}).
+
+\hypertarget{model-selection}{%
+\subsubsection{Model selection}\label{model-selection}}
+
+We first compared the Akaike Information Criterion (AIC) to see if including the spatial and spatio-temporal random effects in the first and second linear predictors improved the model fit. Model structures tested include those with and without anisotropy (2 variance fixed effects parameters), and with and without spatial and spatio-temporal random effects in the second linear predictor or both linear predictors. This follows the model selection process outlined in Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) using restricted maximum likelihood (REML; Zuur et al. (\protect\hyperlink{ref-zuur_mixed_2009}{2009})).
+
+Next we examined catchability covariates within the model structure selected by the REML model selection. We evaluated vessel effects (overdispersion) and a range of potential catchability covariates using maximum likelihood to calculate AIC instead of REML, because all models have similarly structured random effects. The AIC was used to determine which vessel effects or catchability covariates were best supported by the data.
+
+Our two-step model selection (1: spatial and spatio-temporal random effects, 2: catchability covariates) was completed using the script \texttt{VASTunivariate\_bfp\_modselection.R} \href{https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_bfp_modselection.R}{at this link}.
+
+\hypertarget{spatial-definitions}{%
+\subsection{Spatial definitions}\label{spatial-definitions}}
+
+Our main goals were to evaluate changes in forage for large ecoregions, as well as to determine whether bluefish prey availability has changed in bluefish assessment survey strata or inshore waters where the recreational fishery primarily operates. Our food habits datasets do not extend into inland waters such as bays and sounds, with the exception of Cape Cod Bay Fig. \ref{fig:maps}a). However, there are data from both historical NEFSC surveys and NEAMAP in state coastal waters, 0-5.556 km (3 nautical miles) from shore, and offshore across the continental shelf.
+
+The model outputs have been partitioned into several regional production units for ecosystem reporting, as well as areas matching survey and fishery areas for bluefish stock assessment inputs. The Gulf of Maine (GOM), Georges Bank (GB), and Mid Atlantic Bight (MAB) areas for ecosystem reporting (Fig. \ref{fig:maps}b) cover more of the model domain than the bluefish assessment areas (Fig. \ref{fig:maps}c-d). The combined MAB and GB ecosystem reporting areas are relevant to the bluefish assessment. Within the combined MABGB area, bluefish assessment partitions include NEFSC bottom trawl survey (FSV Bigelow) inshore bluefish index stations to evaluate availability to the survey, and shoreline to 3 miles out (State waters) to evaluate availability to the recreational fishery Marine Recreational Information Program (\href{https://www.fisheries.noaa.gov/recreational-fishing-data/about-marine-recreational-information-program}{MRIP}) bluefish recreational catch per unit effort (CPUE) index.
+
+NEFSC survey strata definitions are built into the VAST \texttt{northwest-atlantic} extrapolation grid. We defined additional new strata to address the recreational fishery inshore-offshore 3 mile boundary. The area within and outside 3 miles of shore was defined using the \texttt{sf} R package (\protect\hyperlink{ref-pebesma_simple_2018}{Pebesma 2018}; \protect\hyperlink{ref-bivand_spatial_2023}{Bivand 2023}) as a 3 nautical mile (approximated as 5.556 km) buffer from a high resolution coastline from the \texttt{rnaturalearth} R package (\protect\hyperlink{ref-massicotte_rnaturalearth_2023}{Massicotte and South 2023}). This buffer was then intersected with the current \texttt{FishStatsUtils::northwest\_atlantic\_grid} built into VAST and saved, and the new full set of strata were used along with a modified function from \texttt{FishStatsUtils::Prepare\_NWA\_Extrapolation\_Data\_Fn} to build a custom extrapolation grid for VAST. All strata were applied in both seasonal and annual models.
+
+Seasonal models were run using the script \texttt{VASTunivariate\_bfp\_allsurvs\_lencovSST\_ALLinoffsplits.R} at \href{https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_bfp_allsurvs_lencovSST_ALLinoffsplits.R}{this link}, which contains all stratum definitions. The annual model was run using the script \texttt{VASTunivariate\_bfp\_allsurvsANNUAL\_lencovSST\_ALLinoffsplits.R} at \href{https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_bfp_allsurvsANNUAL_lencovSST_ALLinoffsplits.R}{this link}.
+
+The final model runs included all selected covariates, stratum definitions, and bias correction for the biomass index.
+
+\hypertarget{comparisons-with-survey-design-based-forage-biomass}{%
+\subsection{Comparisons with survey-design based forage biomass}\label{comparisons-with-survey-design-based-forage-biomass}}
+
+VAST-derived spring and fall forage indices for ecosystem reporting regions (GOM, GB, and MAB) were standardized by centering on the time series mean and dividing by the time series standard deviation. Aggregate design-based survey biomass for the same species included in the forage index was estimated using the \href{https://noaa-edab.github.io/survdat/}{\texttt{survdat}} R package (\protect\hyperlink{ref-lucey_survdat_2022}{Lucey and Beet 2022}) and additional code developed by Sean Lucey for ecosystem reporting. Design-based survey aggregate forage biomass was similarly standardized, and the correlation between the VAST stomach based and survey biomass based indices was calculated for each region and season. Raw species composition of the diet based and biomass based forage datasets were compared to evaluate whether the proportion of managed to unmanaged species and individual dominant species were similar. We grouped prey into taxonomic groupings as well as management groupings (managed/unmanaged) to characterize similarities and differences between small pelagic forage composition in the forage index and the composition directly sampled by the survey (Table \ref{tab:groups}).
+
+\hypertarget{index-sensitivity}{%
+\subsection{Index sensitivity}\label{index-sensitivity}}
+
+Datasets were constructed as noted above to evaluate sensitivity to prey cut-offs, inclusion of assessed prey species, and exclusion of predators with small and large sample sizes. The VAST model configuration selected by methods above for the full dataset was used with each of the prey and predator sensitivity datasets, and all results were bias corrected for comparison with the full forage index. Index sensitivity to the SST covariate required comparisons with models less preferred in model selection, and used un-bias corrected model results from the model selection process to streamline computation.
+
+For our application of the index as a catchability covariate for a stock assessment, forage index trend is more important than index scale. We evaluated sensitivity of index trend by comparing indices scaled to their respective time series means. Additional examination of impacts to index scale are included in Supplement d by comparing indices scaled to the maximum value across the compared indices.
+
+\hypertarget{incorporation-into-stock-assessment-model}{%
+\subsection{Incorporation into stock assessment model}\label{incorporation-into-stock-assessment-model}}
+
+The bluefish stock assessment uses an age-structured population dynamics model to estimate historical and current
+stock size, recruitment, and fishing mortality. The model is fit to multiple indices of abundance and age composition
+data from both fishery dependent and fishery independent sources in an integrated analysis (\protect\hyperlink{ref-maunder_review_2013}{Maunder and Punt 2013}).Bluefish are captured in both commercial and recreational fisheries along the U.S. East Coast, with the majority of catch coming from recreational fisheries. The bluefish assessment includes abundance indices from inshore strata of the NEFSC bottom trawl survey, the full NEAMAP survey, and several other surveys, as well as a Marine Recreational Information Program (\href{https://www.fisheries.noaa.gov/recreational-fishing-data/about-marine-recreational-information-program}{MRIP}) bluefish recreational catch per unit effort (CPUE) index. These indices are assumed to be related to stock size using a proportional catchability coefficient, \(q\) (\protect\hyperlink{ref-wilberg_incorporating_2009}{Wilberg et al. 2009}). Movement of bluefish in and out of areas
+covered by surveys and fisheries can change availability to surveys, which can alter catchability over time.
+
+VAST derived forage fish indices were explored as environmental covariates on the catchability (\(q\)) of NEFSC bluefish survey indices and the MRIP bluefish recreational CPUE index within the Woods Hole Assessment Model (WHAM) (\protect\hyperlink{ref-stock_woods_2021}{Stock and Miller 2021}), a state-space assessment model framework (\url{https://timjmiller.github.io/wham/}). Assessment models were first developed without environmental covariates to evaluate performance across a range of alternative fixed and random effects structures for recruitment and numbers at age (see Supplement e for details). A full state space model treating survival of all ages as random effects with autoregressive deviations by age and year was selected based on AIC, convergence properties, one-step-ahead residuals, and retrospective performance. The analysis of this same assessment model structure was then repeated using WHAM's ``Ecov'' option, which includes an environmental covariate as input data for fitting the model, but evaluates the AIC with (``ecov\_on'') and without (``ecov\_off'') the covariate linked to population dynamics. The forage fish indices matching the spatial footprint of the NEFSC survey indices (``SurveyBluefish'') and the state waters recreational fishery (``StateWaters'') were explored as environmental covariates on the corresponding assessment indices assuming both random walk and auto-regressive processes. For each index, alternative estimates of standard error around the covariate were explored using both VAST-estimated standard errors as input standard error, or allowing WHAM to estimate the standard error of the covariate. Then, model convergence and other diagnostics were compared with the covariates included, and finally, AIC and retrospective performance were compared between ``ecov\_on'' and ``ecov\_off'' models. For full stock assessment methods, please see Supplement e (exerpted from the December 2022 bluefish research track assessment report at \href{https://apps-nefsc.fisheries.noaa.gov/saw/sasi_files.php?year=2022\&species_id=32\&stock_id=6\&review_type_id=5\&info_type_id=-1\&map_type_id=\&filename=Bluefish_SAW_SARC_2022_FINAL.pdf}{this link}.
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+\hypertarget{input-dataset-overview}{%
+\subsection{Input dataset overview}\label{input-dataset-overview}}
+
+The list of bluefish prey derived from the most common identifiable prey items in NEFSC and NEAMAP diet databases (Table \ref{tab:preylist}) includes the majority of bluefish diet composition by decade and season estimated by NEFSC stomach contents data (Fig. \ref{fig:seasondecade}). Bluefish diets varied by decade, but strong seasonal patterns were apparent, supporting the use of seasonally specific forage indices. Spring diets were consistently dominated by longfin squid (\emph{Loligo} sp) and other cephalopods (30-60\% of diet by weight across decades). Atlantic mackerel (\emph{Scomber scomber}) and butterfish (\emph{Peprilus triacanthus}) accounted for 5-10\% of spring diet by weight in some decades. Fall bluefish diets were more diverse and fish dominated than spring diets, with squids comprising 4-10\% of diet by weight across decades, and intermittent dominance of anchovies (Engraulidae 1-33\%, \emph{Anchoa mitchilli} 0-15\%, and \emph{Anchoa hepsetus} 0-6\% of fall diet across decades) and sandlances (0-28\% across decades). Butterfish and silver hake (\emph{Merluccius bilinearis}) were found in consistent proportions of fall diets across decades (7-11\% and 2-4 \%, respectively)), while Atlantic herring (\emph{Clupea harengus}) and likely Atlantic herring (Clupeidae) proportions fluctuated across decades (1-11\% and 0-10\%, respectively). This high diet variability supports the inclusion of a wide range of forage species in a forage index intended to reflect the prey field available to bluefish, which may in turn affect bluefish availability in space and time.
+
+The full NEFSC food habits database 1985-2021 contains 25634 survey stations with stomach contents collections. When including only piscivores feeding similarly to bluefish, the survey stations with diet collections in this time period is 22751. Of these piscivore diet stations, 8869 included our defined bluefish prey, or 39\%. For comparison, 1814 stations have diet samples for bluefish alone, with 907 or 50\% including our defined bluefish prey.
+
+NEAMAP survey stations with diet collections for piscivores (n = 3838) had a higher proportion with our defined bluefish prey (n = 2369, 61.7\%).
+
+The annual number of stomachs included in the dataset averaged 5932, ranging from a low of 1547 in 2020 (due to Covid-19 driven survey cancellations) to a high of 9361 in 1995. The annual stomach numbers were highest during the 1990s, below average during the mid-2000s, and around the average during the 2010s. Aside from 2020, there were not large year to year variations in the number of stomachs going into the index (Supplement d).
+
+The number of survey stations missing surface temperature data varied considerably by decade. A large percentage of survey stations lacked in-situ temperature measurements between 1985 and 1990, while the percentage of stations missing temperature was generally below 10\% (with a few exceptions) from 1991-2021 (Table Sa1). Therefore, OISST temperature estimates were more commonly substituted early in the time series. While there is strong overall agreement between OISST and survey in-situ surface temperatures where both measurements exist (Fig. Sa3), there are mismatches near Cape Hatteras and in areas of the continental slope where the OI SST resolution is unable to capture steep temperature gradients associated with the Gulf Stream (Figs Sa4-Sa7).
+
+\hypertarget{vast-model-selection}{%
+\subsection{VAST model selection}\label{vast-model-selection}}
+
+In the first step of model selection using REML, models including spatial and spatio-temporal random effects as well as anisotropy were best supported by the data. This was true for the spring dataset, the fall dataset, and the annual (seasons combined) dataset. This result was robust across several modifications to the datasets, including changes to the selected set of predators (see Supplement d). In the second step of model selection using maximum likelihood, catchability covariates were better supported by the data than vessel effects. These comparisons led us to the best model fit using mean predator length, number of predator species, and SST at a survey station as catchability covariates. Full results of model selection are available in Supplement b.
+
+\hypertarget{bias-corrected-spatial-forage-indices}{%
+\subsection{Bias-corrected spatial forage indices}\label{bias-corrected-spatial-forage-indices}}
+
+Forage density estimated within Fall (Fig. \ref{fig:falldens}), Spring, and Annual models was used to derive forage indices at multiple spatial scales. Here we focus on results for Fall models, which most closely match the timing of bluefish assessment inputs. Spring and Annual model outputs and all diagnostics for Fall, Spring, and Annual models are available in Supplement c.~We also focus on results at the ecoregion and assessment scales as shown in Fig. \ref{fig:fallall}.
+
+\hypertarget{fall-diagnostics}{%
+\subsubsection{Fall Diagnostics}\label{fall-diagnostics}}
+
+Quantile residual plots and residuals plotted in space showed no patterns. Supplement c includes all basic VAST diagnostics: maps of the spatial grid knot placement (``Data\_and\_knots''), maps of included station locations for each year (``Data\_by\_year''), residual plots (``quantile residuals''), maps of residuals for each station (``quantile\_residuals\_on\_map''), an anisotropy plot indicating directional correlation (``Aniso''), and a plot of the estimated change in forage fish center of gravity over time (``center\_of\_gravity'').
+
+\hypertarget{fall-predicted-ln-density}{%
+\subsubsection{Fall Predicted ln-density}\label{fall-predicted-ln-density}}
+
+The VAST model predicts density of forage fish across the entire model domain for each year (Fig. \ref{fig:falldens}). Fall forage density as estimated by piscivore stomach contents has varied over space between 1985 and 2021. However, some spatially and temporally coherent patterns are apparent. Predicted fall forage densities were higher in the Mid-Atlantic Bight south of Long Island, NY both inshore and offshore in most years, with a persistent lower density region in between. High densities of forage appeared on the northwestern portion of Georges Bank east of Cape Cod and Nantucket in fall in most years. Predicted forage density adjacent to the coast in fall was highest early in the time series, but variable thereafter, with low densities predicted adjacent to Delaware Bay and the Virginia coast in 2018-2019. Gulf of Maine fall forage densities were most variable in offshore areas over time, with more consistent forage densities in the western Gulf of Maine near shore.
+
+\hypertarget{fall-index}{%
+\subsubsection{Fall Index}\label{fall-index}}
+
+The fall forage index shows more forage fish biomass distributed in the Mid Atlantic ecoregion relative to Georges Bank and Gulf of Maine, and more forage in state waters relative to bluefish survey index areas (Fig. \ref{fig:fallall}). This ranking roughly corresponds to the area of each region in square kilometers (MAB = 111884; GOM = 78078; GB = 55055; state waters = 11368; bluefish survey area = 10398). Forage was highest in the mid-1980s in the Mid Atlantic ecoregion and in the bluefish assessment areas (SurveyBluefish and StateWaters), dropping to lower levels in the mid-1990s. Indices at the smaller scale of the bluefish assessment areas show more interannual variability than those at the larger ecoregion scales, as might be expected for mobile pelagic species moving in and out
+of these smaller areas. However, the assessment scale indices show coherent temporal patterns with each other in these adjacent nearshore areas (Fig \ref{fig:fallall}, lower panel), suggesting the forage indices reflect temporal signals more than noise.
+
+\hypertarget{comparisons-with-design-based-survey-biomass}{%
+\subsection{Comparisons with design-based survey biomass}\label{comparisons-with-design-based-survey-biomass}}
+
+The standardized stomach based forage index and survey biomass based index trends compared well in some seasons and regions, but differed in others (Fig. \ref{fig:tscomp}). The indices were well correlated in the Gulf of Maine during spring, weakly correlated on Georges Bank during spring, and uncorrelated during fall in all regions and in both seasons in the Mid-Atlantic (Fig. \ref{fig:corr}). These patterns of agreement and disagreement are consistent with the distribution of different forage species across regions combined with their relative contribution to stomach contents and survey indices, which sample the environment differently.
+
+We examined patterns in the raw species composition over time in each dataset: the stomach contents data that were input to the VAST model and the trawl catch weight used to calculate the design based aggregate survey index, by region and season to show which species are detected by the two approaches prior to estimating the aggregate forage indices.
+
+When aggregated across years, seasons, and regions, it is clear that some small pelagic forage species groups are roughly equally sampled by piscivores and the trawl survey, while others are sampled differently. Anchovies, herrings, menhaden, and sandlances had higher proportions in stomach contents than in trawl surveys, while butterfish, mackerel, scup, and weakfish had higher proportions in trawl surveys than in stomach contents (Fig. \ref{fig:sppprop}). Silver hake and squids were roughly equally sampled by both methods.
+
+Patterns in the raw species composition over time in each dataset also differ by region and season. Based on the correlations between the indices (Fig. \ref{fig:corr}), we expected to find similar species compositions or a shared dominant species in Gulf of Maine during spring, and possibly on Georges Bank during spring between the stomach contents and the survey sampling.
+
+Silver hake, which are roughly equally present in stomach contents and in survey trawls (Fig. \ref{fig:sppprop}), dominate the proportion input to the forage indices GOM spring in both datasets (Fig. \ref{fig:silver}). Silver hake also represent a large proportion in both datasets for GB in spring. The diet and survey based indices are highly correlated when the species composition is similar for the Gulf of Maine in spring, suggesting that the stomach based index has similar reliability as a survey biomass based index, given similar inputs.
+
+In contrast, sandlance species are found in much higher proportions in stomach contents than in survey trawls (Fig. \ref{fig:sppprop}), and are found in higher proportions on Georges Bank and in the Mid-Atlantic Bight during Fall (Fig. \ref{fig:sandlance}), when the forage indices are not correlated. Similar sandlance proportions in both input datasets for GOM spring contribute to higher correlation between the indices in that region and season.
+
+The stomach based forage index includes unmanaged species that are not well sampled by surveys, providing a more complete picture of the forage available to predators in space and time. We see a higher proportion of unmanaged forage species in the diet based raw data than we do the survey based raw data in all regions aside from the GOM (Fig. \ref{fig:unmanagedprop}), suggesting that the diet-based forage index better represents small pelagic forage species that the survey is not designed to sample directly. The proportion of unmanaged forage species contributing to the index is highest during fall in the MAB, and intermittently high in both seasons on GB. Bluefish are found mainly in the MAB, and to a lesser extent on GB, during the fall.
+
+\hypertarget{index-sensitivity-1}{%
+\subsection{Index sensitivity}\label{index-sensitivity-1}}
+
+Index trends were not sensitive to OI SST substitution. Despite potential mismatches between in-situ temperature and OI SST in certain locations (Figs Sa4-Sa7), substituting the OI SST when in-situ survey temperature was missing did not affect the estimated index early in the time series. Index trends estimated with and without SST as a covariate were nearly identical (Figs. Sa8-Sa9) and showed no divergence early in the time series where more OI SST information is included.
+
+Index trends were not sensitive to prey cut-offs (inclusion or exclusion of rarely observed bluefish prey items, (Fig Sd1)) or to the exclusion of predators with small sample sizes (Fig Sd6).
+
+Index trends were sensitive to the exclusion of major assessed prey species (Atlantic herring , silver hake, and Atlantic mackerel), as expected. However, sensitivity varied by region and scale. Fall GOM and GB forage trends were most sensitive to excluding these prey species, MAB had less sensitivity, and the fall state waters and survey bluefish indices applied as covariates in the bluefish assessment were least sensitive (Fig Sd3).
+
+Index trends were less sensitive to the removal of predators with large sample sizes than expected, especially for fall indices used as covariates in the bluefish assessment (bluefish survey strata and state waters). Index trend sensitivity appears to be more affected by the number of stations included than by the particular predators included. Removing spiny dogfish had more impact on index trend than removing white hake, and the impact was larger in spring than in fall (Fig Sd10). Spiny dogfish stomachs represent 25\% of the total stomachs included in analysis, but more importantly were the only predators sampled at 1,524 of 13,658 stations during spring and 320 of 12,942 stations during fall (Table Sd4). In contrast, white hake contribute about 10\% of stomachs in the analysis, and were the only predators sampled at 54 (fall) and 56 (spring) stations. Removing white hake (stations where only white hake stomachs were sampled) had little impact on index trend (Fig Sd10).
+
+\hypertarget{incorporation-into-stock-assessment-model-1}{%
+\subsection{Incorporation into stock assessment model}\label{incorporation-into-stock-assessment-model-1}}
+
+Two spatially distinct fall forage fish indices were evaluated as potential catchability covariates for two different bluefish stock assessment indices, with mixed results. Application of the forage fish index as a catchability covariate for the NEFSC Bigelow survey index had suitable convergence properties and model diagnostics when the forage fish index was fit assuming a random walk over the time-series, with a single estimated standard error for the covariate. However, while all model configurations converged with the covariate applied (``ecov\_on'' in WHAM), these models did not have an improved fit according to AIC when compared to the same model with no catchability covariate (``ecov\_off''). Therefore, the SurveyBluefish forage index/Bigelow survey assessment index combination was not evaluated further.
+
+In contrast, the application of the fall StateWaters forage fish index as a catchability covariate for the MRIP CPUE index was successful when implemented as an autoregressive process over the time-series with WHAM estimating the covariate standard error. The inclusion of the StateWaters forage fish index improved the fit of all model configurations investigated. The best fit model across configurations, a full state space model treating survival of all ages as random effects with autoregressive deviations by age and year, showed improved AIC as well as improved retrospective performance for SSB and F with the forage fish environmental covariate on (``ecov\_on'', Table \ref{tab:WHAMresults}). The application of the forage fish index to MRIP CPUE resulted in a decreasing trend in catchability over time (Fig. \ref{fig:WHAMq}). For the bluefish assessment, the MRIP CPUE index is important in scaling the biomass results, and the lower availability at the end of the time-series led to higher biomass estimates from the model including the forage fish index (Fig. \ref{fig:WHAMcomp}).
+
+For full assessment results, please see Supplement e (excerpted from the December 2022 bluefish research track assessment report at \href{https://apps-nefsc.fisheries.noaa.gov/saw/sasi_files.php?year=2022\&species_id=32\&stock_id=6\&review_type_id=5\&info_type_id=-1\&map_type_id=\&filename=Bluefish_SAW_SARC_2022_FINAL.pdf}{this link}).
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+Spatial and temporal changes in prey fields can drive mobile predator distributions (\protect\hyperlink{ref-astarloa_role_2021}{Astarloa et al. 2021}). Here, we developed a novel index of small pelagic forage abundance in space and time using piscivore stomach data as input observations to a VAST model. Our spatially resolved forage index was constructed to address a key uncertainty in stock assessment for a predator species, bluefish, as well as for integrated ecosystem assessment. Our VAST model-derived forage indices illustrate that aggregate forage fish biomass has fluctuated in both space and time in the Northeast US, especially in areas relevant to the bluefish assessment. We draw three main conclusions from this work, discussing each in detail below. First, the index is reliable: it reflects spatial and temporal patterns observed for assessed forage species on the Northeast US shelf, while integrating information on unassessed forage to provide a more complete understanding of the full forage base available to piscivores. Second, because the VAST model can estimate indices at multiple spatial scales for different applications, the index provides improved information for both predator stock assessment and integrated ecosystem assessment, including general assessment of forage species. Third, application of this spatial forage index as a catchability covariate for a predator stock index improved stock assessment model fits. To our knowledge, this is the first successful application of information on changes in a predator's prey field within a predator stock assessment. We discuss the robustness of the index for each of these applications below, along with potential next steps.
+
+While this index is novel, there are several lines of evidence supporting its reliability. The index shows similar temporal and spatial patterns to more traditional approaches where comparisons can be made. Our piscivore stomach VAST model-based forage index compared favorably to standard design based survey biomass estimates of aggregate forage species in regions and seasons where stomach contents and survey sampling included similar proportions of individual forage species. In the Gulf of Maine in spring, temporal trends in stomach based and survey design based indices agreed well (Figs. \ref{fig:tscomp}-\ref{fig:corr}) where silver hake are proportionally dominant forage species, and similar amounts of sandlance contributed to both datasets (Figs. \ref{fig:silver}-\ref{fig:sandlance}). Spatial patterns observed in the forage index also match those reported for individual forage species. Friedland et al. (\protect\hyperlink{ref-friedland_forage_2023}{2023}) (their Fig 4D-I) show patterns in forage fish habitat occupancy during fall with multiple species having high occupancy areas south of Long Island, NY nearshore and offshore with a mid shelf area of lower occupancy, as reflected in our aggregate forage fish density for fall (Fig. \ref{fig:falldens}). Similarly, the high density area on the northwestern portion of Georges Bank east of Cape Cod and higher density along the coastal Gulf of Maine identified in our aggregate forage index is reflected in fall habitat occupancy models for Atlantic herring, Atlantic mackerel, butterfish, sandlance, and river herrings (\protect\hyperlink{ref-goetsch_surface_2023}{Goetsch et al. 2023}).
+
+In the Northeast US, much previous work on distribution and abundance of forage species at the regional scale necessarily focused on the species most effectively sampled by the trawl survey. Here, stomach contents also provided information on species the trawl survey does not effectively sample. Differences between the stomach contents based index and the survey based index were mainly driven by smaller and unmanaged forage species such as anchovies and sandlances (Fig \ref{fig:unmanagedprop}), important forage species with considerable knowledge gaps in the Northeast US (\protect\hyperlink{ref-staudinger_role_2020}{Staudinger et al. 2020}). Stomach contents also had higher proportions of some managed species such as herrings and menhaden than NEFSC bottom trawl surveys, but lower proportions of others, such as butterfish. Bottom trawl survey based forage estimates can be problematic due to issues with poor sample size or missing data for small pelagic fish (anchovies, sandlance) and cephalopods (\protect\hyperlink{ref-mills_diets_2007}{Mills et al. 2007}; \protect\hyperlink{ref-rohan_spatial_2017}{Rohan and Buckley 2017}). Further, bottom trawl survey biomass time series for assessed forage species can be at odds with other assessment inputs and assessment-estimated biomass trends in the Northeast US. For example, Atlantic mackerel bottom trawl survey indices have generally increased while assessment estimated biomass, largely driven by an egg survey and information on catch, is decreasing (\protect\hyperlink{ref-nefsc_64th_2018}{NEFSC 2018}).
+
+Fish stomach data has been used to index prey abundance, especially for data-poor prey taxa poorly sampled by bottom trawls, in multiple ecosystems worldwide (\protect\hyperlink{ref-fahrig_predator_1993}{Fahrig et al. 1993}; \protect\hyperlink{ref-link_using_2004}{Link 2004}; \protect\hyperlink{ref-mills_diets_2007}{Mills et al. 2007}; \protect\hyperlink{ref-cook_use_2012}{Cook and Bundy 2012}; \protect\hyperlink{ref-lasley-rasher_it_2015}{Lasley-Rasher et al. 2015}; \protect\hyperlink{ref-rohan_spatial_2017}{Rohan and Buckley 2017}; \protect\hyperlink{ref-sydeman_integrating_2022}{Sydeman et al. 2022}). Reliability of a single prey forage index based on fish stomach contents using VAST was demonstrated in the Northeast US (\protect\hyperlink{ref-ng_predator_2021}{Ng et al. 2021}) using a subset of the data we used here. In particular, reasonable agreement was found between the Atlantic cod diet-derived Atlantic herring biomass index and Atlantic herring assessment biomass trends. However, herring indices based on stomach contents from other individual predators (e.g., silver hake) had poor agreement with herring assessment trends (\protect\hyperlink{ref-ng_predator_2021}{Ng et al. 2021}). Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) noted that decadal trends generally agreed across predators between diet-based and stock assessment Atlantic herring biomass indices, but that shorter term trends varied considerably by seasons and predators. Further, changes in spatial overlap between individual predators and prey over time was noted by Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) as a potential issue with using diet-based indices of Atlantic herring abundance.
+
+Our work differs from that of Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) in deriving an index of all major forage fish rather than just a single prey item, and in combining across piscivore predators to derive the forage index. In ecosystems with diverse small pelagic prey, changes in the aggregate prey field are important to generalist predators. Bluefish are generalist predators on many small pelagic prey species (\protect\hyperlink{ref-buckel_foraging_1999}{Buckel et al. 1999}; \protect\hyperlink{ref-collette_bigelow_2002}{Collette and Klein-Macphee 2002}). Understanding how bluefish availability may be affected by changes in their prey field requires looking across many potential prey species, including species not well sampled by bottom trawl surveys. Aggregation of predators and seasons was one recommendation for future work from Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021}) to address some of the issues with using predator stomach data to evaluate prey biomass. Our approach combining stomach data across multiple piscivore predators was intended to improve sample size for the aggregate prey index so that our results integrate across individual predator sampling variability and changes in predator-prey overlap, and perhaps clarify the longer term, decadal trends in the small pelagic prey field. Further, evaluating forage species in aggregate should also reduce issues of changing overlap of predators with individual prey species. We maintained separate seasonal indices to reflect the seasonally distinct diets of bluefish (Fig. \ref{fig:seasondecade}). Our index was robust to inclusion or exclusion of both relatively rare prey and predators with lower sampling (Supplement d). The observed sensitivity to the inclusion of major prey is a desired property of the index: it should change as more or less of the full forage base is included. Index trend sensitivity to exclusion of predators with high sample sizes and broad spatial and temporal distributions was less than expected, confirming Ng et al. (\protect\hyperlink{ref-ng_predator_2021}{2021})'s hypothesis that the aggregation of predators results in forage index robustness.
+
+While the spatial and temporal patterns in the index are consistent with patterns observed across individual forage species, some caveats remain. Inferring forage densities from their density in stomachs then requires additional assumptions, i.e., that thinning rates (representing predator foraging areas and attack rates) are approximately constant (\protect\hyperlink{ref-thorson_diet_2022}{Thorson et al. 2022}), and these latter assumptions cannot be evaluated using data available here. We also acknowledge that our predators include many demersal species, and that the surveys designed to capture them are bottom trawl surveys. Including the set of predator species/sizes with highest diet similarity to bluefish (a pelagic predator) and only the prey of bluefish was intended to constrain differences due to the habitat ``sampled'' by the predators. Further refinements could evaluate the effects of depth and other habitat covariates on the index. Nevertheless, the more complete accounting of prey from stomach contents, combined with good VAST model diagnostics and appropriate sensitivity to input data, leads us to conclude that this is currently the best available representation of aggregate forage fish trends in this region.
+
+Estimation of our piscivore stomach contents based forage index within the spatio-temporal VAST framework produced information useful across multiple management scales. Changes in forage fish are of interest across large regions and both seasons for ecosystem assessment, but changes in the fall index nearshore are most closely aligned with abundance indices used in the bluefish assessment. Bluefish migrate into northern coastal waters in spring and return south in late fall to overwinter (\protect\hyperlink{ref-collette_bigelow_2002}{Collette and Klein-Macphee 2002}). Although bluefish catch patterns vary by state, recreational fishing dominates coastwide bluefish landings, and most recreational fishing activity (nearly 70\% of landings) takes place in July-October (\href{https://apps-nefsc.fisheries.noaa.gov/saw/sasi_files.php?year=2022\&species_id=32\&stock_id=6\&review_type_id=5\&info_type_id=-1\&map_type_id=\&filename=Bluefish_SAW_SARC_2022_FINAL.pdf}{Bluefish Research Track Summary Report, 2022}), months included in the fall forage index (months 7-12). Further, northern states, included in the spatial extent of the forage index, see peak recreational fishing during these months. Therefore, our fall forage indices may provide a reasonable match to the recreational catch per unit effort index used in the assessment. Similarly, fall forage indices for fishery independent survey strata also temporally and spatially align with both the fall NEFSC bottom trawl survey and fall NEAMAP bottom trawl survey stratified mean catch-per-tow used in the bluefish assessment (\href{https://apps-nefsc.fisheries.noaa.gov/saw/sasi_files.php?year=2022\&species_id=32\&stock_id=6\&review_type_id=5\&info_type_id=-1\&map_type_id=\&filename=Bluefish_SAW_SARC_2022_FINAL.pdf}{Bluefish Research Track Summary Report, 2022}).
+
+The intended application of our index in stock assessment as a catchability covariate, rather than as an index of biomass, is another important difference from previous work (\protect\hyperlink{ref-ng_predator_2021}{Ng et al. 2021}). Many stock assessments lack information to evaluate or include time varying catchability, which can arise from multiple processes (\protect\hyperlink{ref-wilberg_incorporating_2009}{Wilberg et al. 2009}). Our VAST-derived small pelagic index provided information that has not been previously used in predator stock assessment, perhaps because information on aggregate prey fields is rarely available at appropriate scales. Even if surveys did capture all of the relevant small pelagic species, the stratified survey design limits the spatial domain of the survey estimates and does not allow for an estimate of forage in the bluefish recreational fishery footprint within 3 miles of shore. The forage index estimate of bluefish prey available over time in this nearshore region provided a quantitative link to time varying catchability, and also had the benefit of reflecting stakeholder ecological knowledge relating bluefish availability to prey. The bluefish research stock assessment model including the forage fish index was received positively by independent reviewers, who encouraged further work to integrate the forage index into the operational stock assessment for management (\href{https://www.mafmc.org/s/h_Final-review-summary-report_bluefish-and-spiny-dogfish-RT2022_AJD508-gwV2_may2023.pdf}{Center for Independent Experts Review Report, December 2022}).
+
+While the fall forage fish indices are already temporally aligned with bluefish assessment inputs and spatially aligned with two trawl survey indices used in the assessment, improvements in spatial overlap with recreational fisheries and other survey indices could be considered in the future. A large proportion (51\%) of bluefish recreational landings come from inland waters: bays and estuaries including Albemarle Sound, Chesapeake Bay, Delaware Bay, and Long Island Sound (Fig. \ref{fig:maps}a), with the next largest proportion (42\%) coming from state waters extending 3 nautical miles from the coastline (\href{https://apps-nefsc.fisheries.noaa.gov/saw/sasi_files.php?year=2022\&species_id=32\&stock_id=6\&review_type_id=5\&info_type_id=-1\&map_type_id=\&filename=Bluefish_SAW_SARC_2022_FINAL.pdf}{Bluefish Research Track Summary Report, 2022}). The current forage index does not cover inland waters, aside from coastal bays in Rhode Island and Massachusetts. Diet data are available for Chesapeake Bay from the Chesapeake Bay Multispecies Monitoring \& Assessment Program (ChesMMAP; Buchheister and Latour (\protect\hyperlink{ref-buchheister_diets_2015}{2015})) survey, which could be added to the VAST model in the future. Less diet information is available for the portion of the bluefish range south of Cape Hatteras, although some collections have taken place. Because the bluefish MRIP CPUE index used in the stock assessment includes data from Massachusetts through Florida, updating the VAST forage fish index with southern data would improve the compatibility with the bluefish stock assessment model. Investigation of sources of diet information, or possibly direct forage fish surveys for inland and southern areas would be worthwhile to see whether data are adequate to cover the full range of bluefish. In addition, it is worth exploring whether including indices as area-expanded estimates or as unexpanded forage density in each area of interest provides more information to the bluefish assessment model.
+
+The general method of using stomach content information to estimate prey indices can be extended to address other predators with different prey fields (e.g., benthic feeders; Link (\protect\hyperlink{ref-link_using_2004}{2004}); Lasley-Rasher et al. (\protect\hyperlink{ref-lasley-rasher_it_2015}{2015}); Rohan and Buckley (\protect\hyperlink{ref-rohan_spatial_2017}{2017})) or different spatial distributions. Including more information on the process of fish predation (which we somewhat controlled for as catchability covariates for number of predators, predator size, and temperature) may help to refine aggregate forage indices. For example, in this initial model we have not accounted for functional responses of predators, but new research may allow us to do so in future iterations (\protect\hyperlink{ref-smith_multispecies_2020}{Smith and Smith 2020}; \protect\hyperlink{ref-robertson_accounting_2022}{Robertson et al. 2022}; \protect\hyperlink{ref-thorson_diet_2022}{Thorson et al. 2022}). Predator behavior / thinning rates information could potentially supply information on ``area swept'' for the forage index, allowing more direct comparisons with survey sampling gear. Finally, integration of other survey types (e.g., small mesh nearshore surveys) is possible within VAST (\protect\hyperlink{ref-gruss_developing_2019}{Grüss and Thorson 2019}), and could be explored to extend the spatial domain to include bays and other inshore areas.
+
+Overall, this index provides insight into temporal and spatial variation at the forage fish community level, which is important both for individual predators and for ecosystem assessment. Forage fish link lower trophic level productivity with larger fish important for human consumption and recreation as well as for protected species, so understanding aggregate forage dynamics within an ecosystem may support analysis related to management for multiple living resources (\protect\hyperlink{ref-smith_impacts_2011}{Smith et al. 2011}; \protect\hyperlink{ref-essington_fishing_2015}{Essington et al. 2015}; \protect\hyperlink{ref-levin_thirty-two_2016}{Levin et al. 2016}; \protect\hyperlink{ref-punt_exploring_2016}{Punt et al. 2016}; \protect\hyperlink{ref-tommasi_improved_2017}{Tommasi et al. 2017}; \protect\hyperlink{ref-soudijn_harvesting_2021}{Soudijn et al. 2021}). Identifying predator responses to changes in individual prey can be challenging with multiple forage species; an aggregate forage index may have more power to explain predator trends (\protect\hyperlink{ref-koehn_developing_2016}{Koehn et al. 2016}; \protect\hyperlink{ref-deroba_dream_2018}{Deroba et al. 2018}). Aggregate forage indices may also contribute to ecosystem level analyses of productivity or management strategies as time series for driving or conditioning multispecies and ecosystem models (e.g., (\protect\hyperlink{ref-link_response_2009}{Link et al. 2009}; \protect\hyperlink{ref-punt_exploring_2016}{Punt et al. 2016}; \protect\hyperlink{ref-caracappa_northeast_2022}{Caracappa et al. 2022}). As a first step towards examining common patterns across aggregate prey and predators in the Northeast US, these forage indices for spring and fall in the GOM, GB, and MAB were included in 2023 ecosystem reporting in the region (\href{https://noaa-edab.github.io/ecodata/landing_page}{ecodata R package}; \href{https://noaa-edab.github.io/tech-doc/forage-fish-biomass-indices.html}{Technical Documentation, 2023}).
+
+Finally, while aggregate indices of forage fish should in theory be inherently more stable than individual forage species population trajectories (\protect\hyperlink{ref-fogarty_art_2014}{Fogarty 2014}), we still find substantial fluctuations in this forage index. There were no patterns in the annual number of stomachs that would lead to the observed variability (Supplement d), although we recognize that survey sampling of predator stomachs combined with complex predator prey interactions in space and time and highly dynamic, mobile forage populations may lead to high variability of the index. Investigation into drivers of forage fish (and predator) spatial and temporal shifts demonstrate substantial variability. Many factors influence forage distribution and abundance, including environmental drivers changing habitat and impacting species differently, resulting in often unclear or mixed signals across taxa, although general trends in the Northeast US are distribution shifts towards the northeast and into deeper water (\protect\hyperlink{ref-fredston_range_2021}{Fredston et al. 2021}; \protect\hyperlink{ref-suca_environmental_2021}{Suca et al. 2021}). This initial aggregate forage index provides the opportunity to investigate whether temporal and spatial trends are coherent with aggregate zooplankton indices and or spatial and temporal patterns in environmental drivers. Ongoing analyses of ecosystem linkages with the forage index may provide insight both for improving the index for future predator stock assessments and for ecosystem reporting in the Northeast US (\protect\hyperlink{ref-nefsc_2022_2022}{NEFSC 2022}).
+
+\hypertarget{acknowledgements}{%
+\section{Acknowledgements}\label{acknowledgements}}
+
+The authors are grateful for the support of the Bluefish Research Track Stock Assessment working group during the development of this index. Working group members included four of the authors (MC, ADW, KD, AST) as well as Karson Cisneros (Mid-Atlantic Fishery Management Council), Sam Truesdell (Massachusetts Department of Marine Fisheries), Jessica Valenti (NMFS NEFSC and Rutgers University), and Samantha Werner (NMFS NEFSC). The insightful and constructive suggestions of three anonymous reviewers and the associate editor improved this work.
+
+\hypertarget{competing-interest-statement}{%
+\section{Competing interest statement}\label{competing-interest-statement}}
+
+The authors declare there are no competing interests.
+
+\hypertarget{author-contribution-statement}{%
+\section{Author contribution statement}\label{author-contribution-statement}}
+
+Conceptualization: SKG, ADW, ELN, MC, JTT
+Data curation: SKG, JG, BES
+Formal analysis: SKG, JG, BES, ADW
+Investigation: SKG, JG, ADW
+Methodology: SKG, JG, BES, ADW, ELN, MC, KD, AST, JTT
+Project administration: MC
+Software: ELN, JTT
+Resources: JG, BES
+Validation; SKG, JG
+Visualization: SKG, BES, ADW, JTT
+Writing -- original draft: SKG, ADW
+Writing -- review \& editing: SKG, JG, BES, ADW, ELN, MC, KD, AST, JTT
+
+\hypertarget{funding-statement}{%
+\section{Funding statement}\label{funding-statement}}
+
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+
+\hypertarget{data-availability-statement}{%
+\section{Data availability statement}\label{data-availability-statement}}
+
+Data generated or analyzed during this study are available in the public forageindex github repository, \url{https://github.com/NOAA-EDAB/forageindex}.
+
+\hypertarget{references}{%
+\section{References}\label{references}}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-alder_forage_2008}{}}%
+Alder, J., Campbell, B., Karpouzi, V., Kaschner, K., and Pauly, D. 2008. Forage {Fish}: {From} {Ecosystems} to {Markets}. Annual Review of Environment and Resources \textbf{33}(1): 153--166. doi:\href{https://doi.org/10.1146/annurev.environ.33.020807.143204}{10.1146/annurev.environ.33.020807.143204}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-astarloa_role_2021}{}}%
+Astarloa, A., Louzao, M., Andrade, J., Babey, L., Berrow, S., Boisseau, O., Brereton, T., Dorémus, G., Evans, P.G.H., Hodgins, N.K., Lewis, M., Martinez-Cedeira, J., Pinsky, M.L., Ridoux, V., Saavedra, C., Santos, M.B., Thorson, J.T., Waggitt, J.J., Wall, D., and Chust, G. 2021. The {Role} of {Climate}, {Oceanography}, and {Prey} in {Driving} {Decadal} {Spatio}-{Temporal} {Patterns} of a {Highly} {Mobile} {Top} {Predator}. Frontiers in Marine Science \textbf{8}. Available from \url{https://www.frontiersin.org/articles/10.3389/fmars.2021.665474} {[}accessed 17 March 2023{]}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-bertrand_interactions_2004}{}}%
+Bertrand, S., Díaz, E., and Ñiquen, M. 2004. Interactions between fish and fisher's spatial distribution and behaviour: An empirical study of the anchovy ({Engraulis} ringens) fishery of {Peru}. ICES Journal of Marine Science \textbf{61}(7): 1127--1136. doi:\href{https://doi.org/10.1016/j.icesjms.2004.07.016}{10.1016/j.icesjms.2004.07.016}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-bivand_spatial_2023}{}}%
+Bivand, E.P., Roger. 2023. Spatial {Data} {Science}: {With} {Applications} in {R}. Chapman; Hall/CRC, New York. doi:\href{https://doi.org/10.1201/9780429459016}{10.1201/9780429459016}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-boerema_stock_1973}{}}%
+Boerema, L.K., and Gulland, J.A. 1973. Stock {Assessment} of the {Peruvian} {Anchovy} ( \emph{{Engraulis} ringens} ) and {Management} of the {Fishery}. Journal of the Fisheries Research Board of Canada \textbf{30}(12): 2226--2235. doi:\href{https://doi.org/10.1139/f73-351}{10.1139/f73-351}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-buchheister_diets_2015}{}}%
+Buchheister, A., and Latour, R.J. 2015. Diets and trophic-guild structure of a diverse fish assemblage in {Chesapeake} {Bay}, {U}.{S}.{A}. Journal of Fish Biology \textbf{86}(3): 967--992. doi:\href{https://doi.org/10.1111/jfb.12621}{10.1111/jfb.12621}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-buckel_foraging_1999}{}}%
+Buckel, J.A., Fogarty, M.J., and Conover, D.O. 1999. Foraging habits of bluefish, {Pomatomus} saltatrix, on the {U}.{S}. East coast continental shelf. Fishery Bulletin.
+
+\leavevmode\vadjust pre{\hypertarget{ref-caracappa_northeast_2022}{}}%
+Caracappa, J.C., Beet, A., Gaichas, S., Gamble, R.J., Hyde, K.J.W., Large, S.I., Morse, R.E., Stock, C.A., and Saba, V.S. 2022. A northeast {United} {States} {Atlantis} marine ecosystem model with ocean reanalysis and ocean color forcing. Ecological Modelling \textbf{471}: 110038. doi:\href{https://doi.org/10.1016/j.ecolmodel.2022.110038}{10.1016/j.ecolmodel.2022.110038}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-chavez_northern_2008}{}}%
+Chavez, F.P., Bertrand, A., Guevara-Carrasco, R., Soler, P., and Csirke, J. 2008. The northern {Humboldt} {Current} {System}: {Brief} history, present status and a view towards the future. Progress in Oceanography \textbf{79}(2): 95--105. doi:\href{https://doi.org/10.1016/j.pocean.2008.10.012}{10.1016/j.pocean.2008.10.012}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-collette_bigelow_2002}{}}%
+Collette, B.B., and Klein-Macphee, G. 2002. Bigelow and {Schroeder}'s {Fishes} of the {Gulf} of {Maine}, {Third} {Edition}. \emph{In} 3rd ed. edition. Smithsonian Books, Washington, DC.
+
+\leavevmode\vadjust pre{\hypertarget{ref-cook_use_2012}{}}%
+Cook, A.M., and Bundy, A. 2012. Use of fishes as sampling tools for understanding biodiversity and ecosystem functioning in the ocean. Marine Ecology Progress Series \textbf{454}: 1--18. doi:\href{https://doi.org/10.3354/meps09773}{10.3354/meps09773}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-cury_small_2000}{}}%
+Cury, P., Bakun, A., Crawford, R.J.M., Jarre, A., Quinones, R.A., Shannon, L.J., and Verheye, H.M. 2000. Small pelagics in upwelling systems: Patterns of interaction and structural changes in {``wasp-waist''} ecosystems. ICES Journal of Marine Science \textbf{57}(3): 603--618. doi:\href{https://doi.org/10.1006/jmsc.2000.0712}{10.1006/jmsc.2000.0712}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-deroba_dream_2018}{}}%
+Deroba, J.J., Gaichas, S.K., Lee, M.-Y., Feeney, R.G., Boelke, D.V., and Irwin, B.J. 2018. The dream and the reality: Meeting decision-making time frames while incorporating ecosystem and economic models into management strategy evaluation. Canadian Journal of Fisheries and Aquatic Sciences. doi:\href{https://doi.org/10.1139/cjfas-2018-0128}{10.1139/cjfas-2018-0128}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-engelhard_forage_2014}{}}%
+Engelhard, G.H., Peck, M.A., Rindorf, A., C. Smout, S., Deurs, M. van, Raab, K., Andersen, K.H., Garthe, S., Lauerburg, R.A.M., Scott, F., Brunel, T., Aarts, G., Kooten, T. van, and Dickey-Collas, M. 2014. Forage fish, their fisheries, and their predators: Who drives whom? ICES Journal of Marine Science \textbf{71}(1): 90--104. doi:\href{https://doi.org/10.1093/icesjms/fst087}{10.1093/icesjms/fst087}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-essington_fishing_2015}{}}%
+Essington, T.E., Moriarty, P.E., Froehlich, H.E., Hodgson, E.E., Koehn, L.E., Oken, K.L., Siple, M.C., and Stawitz, C.C. 2015. Fishing amplifies forage fish population collapses. Proceedings of the National Academy of Sciences \textbf{112}(21): 6648--6652. doi:\href{https://doi.org/10.1073/pnas.1422020112}{10.1073/pnas.1422020112}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-fahrig_predator_1993}{}}%
+Fahrig, L., Lilly, G.R., and Miller, D.S. 1993. Predator {Stomachs} as {Sampling} {Tools} for {Prey} {Distribution}: {Atlantic} {Cod} ( \emph{{Gadus} morhua} ) and {Capelin} ( \emph{{Mallotus} villosus} ). Canadian Journal of Fisheries and Aquatic Sciences \textbf{50}(7): 1541--1547. doi:\href{https://doi.org/10.1139/f93-175}{10.1139/f93-175}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-fogarty_art_2014}{}}%
+Fogarty, M.J. 2014. The art of ecosystem-based fishery management. Canadian Journal of Fisheries and Aquatic Sciences \textbf{71}(3): 479--490. doi:\href{https://doi.org/10.1139/cjfas-2013-0203}{10.1139/cjfas-2013-0203}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-fredston_range_2021}{}}%
+Fredston, A., Pinsky, M., Selden, R.L., Szuwalski, C., Thorson, J.T., Gaines, S.D., and Halpern, B.S. 2021. Range edges of {North} {American} marine species are tracking temperature over decades. Global Change Biology \textbf{27}(13): 3145--3156. doi:\href{https://doi.org/10.1111/gcb.15614}{10.1111/gcb.15614}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-friedland_forage_2023}{}}%
+Friedland, K.D., Adams, E.M., Goetsch, C., Gulka, J., Brady, D.C., Rzeszowski, E., Crear, D.P., Gaichas, S., Gill, A.B., McManus, M.C., Methratta, E.T., Morano, J.L., and Staudinger, M.D. 2023. Forage {Fish} {Species} {Prefer} {Habitat} within {Designated} {Offshore} {Wind} {Energy} {Areas} in the {U}.{S}. {Northeast} {Shelf} {Ecosystem}. Marine and Coastal Fisheries \textbf{15}(2): e10230. doi:\href{https://doi.org/10.1002/mcf2.10230}{10.1002/mcf2.10230}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-galili_dendextend_2015}{}}%
+Galili, T. 2015. Dendextend: An {R} package for visualizing, adjusting and comparing trees of hierarchical clustering. Bioinformatics \textbf{31}(22): 3718--3720. doi:\href{https://doi.org/10.1093/bioinformatics/btv428}{10.1093/bioinformatics/btv428}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-garrison_dietary_2000}{}}%
+Garrison, L., and Link, J. 2000. Dietary guild structure of the fish community in the {Northeast} {United} {States} continental shelf ecosystem. Marine Ecology Progress Series \textbf{202}: 231--240. doi:\href{https://doi.org/10.3354/meps202231}{10.3354/meps202231}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-goetsch_surface_2023}{}}%
+Goetsch, C., Gulka, J., Friedland, K.D., Winship, A.J., Clerc, J., Gilbert, A., Goyert, H.F., Stenhouse, I.J., Williams, K.A., Willmott, J.R., Rekdahl, M.L., Rosenbaum, H.C., and Adams, E.M. 2023. Surface and subsurface oceanographic features drive forage fish distributions and aggregations: {Implications} for prey availability to top predators in the {US} {Northeast} {Shelf} ecosystem. Ecology and Evolution \textbf{13}(7): e10226. doi:\href{https://doi.org/10.1002/ece3.10226}{10.1002/ece3.10226}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-gruss_developing_2019}{}}%
+Grüss, A., and Thorson, J.T. 2019. Developing spatio-temporal models using multiple data types for evaluating population trends and habitat usage. ICES Journal of Marine Science \textbf{76}(6): 1748--1761. doi:\href{https://doi.org/10.1093/icesjms/fsz075}{10.1093/icesjms/fsz075}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-koehn_developing_2016}{}}%
+Koehn, L.E., Essington, T.E., Marshall, K.N., Kaplan, I.C., Sydeman, W.J., Szoboszlai, A.I., and Thayer, J.A. 2016. Developing a high taxonomic resolution food web model to assess the functional role of forage fish in the {California} {Current} ecosystem. Ecological Modelling \textbf{335}: 87--100. doi:\href{https://doi.org/10.1016/j.ecolmodel.2016.05.010}{10.1016/j.ecolmodel.2016.05.010}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-koehn_structured_2021}{}}%
+Koehn, L.E., Siple, M.C., and Essington, T.E. 2021. A structured seabird population model reveals how alternative forage fish control rules benefit seabirds and fisheries. Ecological Applications \textbf{31}(7): e02401. doi:\href{https://doi.org/10.1002/eap.2401}{10.1002/eap.2401}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-kuriyama_assessment_2022}{}}%
+Kuriyama, P.T. 2022. Assessment of the {Northern} anchovy ({Engraulis} mordax) central subpopulation in 2021 for {U}.{S}. management. doi:\href{https://doi.org/10.25923/JV24-1539}{10.25923/JV24-1539}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-lasley-rasher_it_2015}{}}%
+Lasley-Rasher, R.S., Brady, D.C., Smith, B.E., and Jumars, P.A. 2015. It takes guts to locate elusive crustacean prey. Marine Ecology Progress Series \textbf{538}: 1--12. doi:\href{https://doi.org/10.3354/meps11481}{10.3354/meps11481}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-levin_thirty-two_2016}{}}%
+Levin, P.S., Francis, T.B., and Taylor, N.G. 2016. Thirty-two essential questions for understanding the social--ecological system of forage fish: The case of pacific herring. Ecosystem Health and Sustainability \textbf{2}(4): e01213. doi:\href{https://doi.org/10.1002/ehs2.1213}{10.1002/ehs2.1213}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-link_does_2002}{}}%
+Link, J. 2002. Does food web theory work for marine ecosystems? Marine Ecology Progress Series \textbf{230}: 1--9. doi:\href{https://doi.org/10.3354/meps230001}{10.3354/meps230001}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-link_response_2009}{}}%
+Link, J., Col, L., Guida, V., Dow, D., O'Reilly, J., Green, J., Overholtz, W., Palka, D., Legault, C., Vitaliano, J., Griswold, C., Fogarty, M., and Friedland, K. 2009. Response of balanced network models to large-scale perturbation: {Implications} for evaluating the role of small pelagics in the {Gulf} of {Maine}. Ecological Modelling \textbf{220}(3): 351--369. doi:\href{https://doi.org/10.1016/j.ecolmodel.2008.10.009}{10.1016/j.ecolmodel.2008.10.009}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-link_using_2004}{}}%
+Link, J.S. 2004. Using fish stomachs as samplers of the benthos: Integrating long-term and broad scales. Marine Ecology Progress Series \textbf{269}: 265--275. doi:\href{https://doi.org/10.3354/meps269265}{10.3354/meps269265}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-lucey_survdat_2022}{}}%
+Lucey, S., and Beet, A. 2022. Survdat: {Tools} for working with {NEFSC} survey data. Available from \href{https://github.com/NOAA-EDAB/survdat,\%20https://noaa-edab.github.io/survdat/}{https://github.com/NOAA-EDAB/survdat, https://noaa-edab.github.io/survdat/}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-massicotte_rnaturalearth_2023}{}}%
+Massicotte, P., and South, A. 2023. Rnaturalearth: {World} {Map} {Data} from {Natural} {Earth}. Available from \href{https://docs.ropensci.org/rnaturalearth/\%20https://github.com/ropensci/rnaturalearth}{https://docs.ropensci.org/rnaturalearth/ https://github.com/ropensci/rnaturalearth}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-maunder_review_2013}{}}%
+Maunder, M.N., and Punt, A.E. 2013. A review of integrated analysis in fisheries stock assessment. Fisheries Research \textbf{142}: 61--74. doi:\href{https://doi.org/10.1016/j.fishres.2012.07.025}{10.1016/j.fishres.2012.07.025}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-mills_diets_2007}{}}%
+Mills, K.L., Laidig, T., Ralston, S., and Sydeman, W.J. 2007. Diets of top predators indicate pelagic juvenile rockfish ({Sebastes} spp.) abundance in the {California} {Current} {System}. Fisheries Oceanography \textbf{16}(3): 273--283. doi:\href{https://doi.org/10.1111/j.1365-2419.2007.00429.x}{10.1111/j.1365-2419.2007.00429.x}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-murdy_fishes_1997}{}}%
+Murdy, E.O., Birdsong, R.S., and Musick, J.A. 1997. Fishes of {Chesapeake} {Bay}. Smithsonian Institution Press, Washington; London. Available from \url{https://www.amazon.com/Fishes-Chesapeake-Bay-Edward-Murdy/dp/1588340457} {[}accessed 11 August 2023{]}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-nefsc_64th_2018}{}}%
+NEFSC. 2018. 64th {Northeast} {Regional} {Stock} {Assessment} {Workshop} (64th {SAW}) {Assessment} {Report}. Northeast Fisheries Science Center (U.S.) reference document. doi:\href{https://doi.org/10.25923/SWK4-1E81}{10.25923/SWK4-1E81}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-nefsc_2022_2022}{}}%
+NEFSC. 2022. 2022 {State} of the {Ecosystem} {Mid}-{Atlantic}. Northeast Fisheries Science Center (U.S.): 48. Available from \url{https://apps-nefsc.fisheries.noaa.gov/rcb/publications/soe/SOE-MAFMC_2022_Final.pdf}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-ng_predator_2021}{}}%
+Ng, E.L., Deroba, J.J., Essington, T.E., Grüss, A., Smith, B.E., and Thorson, J.T. 2021. Predator stomach contents can provide accurate indices of prey biomass. ICES Journal of Marine Science \textbf{78}(3): 1146--1159. doi:\href{https://doi.org/10.1093/icesjms/fsab026}{10.1093/icesjms/fsab026}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-northeast_area_monitoring__assessment_program_neamap_monitoring_2021}{}}%
+Northeast Area Monitoring \& Assessment Program (NEAMAP), Assessment Program (VASMAP), V.S.M. \&, Latour, R.J., Gartland, J., and Bonzek, C.F. 2021. Monitoring {Living} {Marine} {Resources} in the {Mid}‐{Atlantic} {Bight}: Virginia Institute of Marine Science, William \& Mary. doi:\href{https://doi.org/10.25773/K5BV-PP81}{10.25773/K5BV-PP81}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-oleary_adapting_2020}{}}%
+O'Leary, C.A., Thorson, J.T., Ianelli, J.N., and Kotwicki, S. 2020. Adapting to climate-driven distribution shifts using model-based indices and age composition from multiple surveys in the walleye pollock ({Gadus} chalcogrammus) stock assessment. Fisheries Oceanography \textbf{29}(6): 541--557. doi:\href{https://doi.org/10.1111/fog.12494}{10.1111/fog.12494}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-pebesma_simple_2018}{}}%
+Pebesma, E. 2018. Simple {Features} for {R}: {Standardized} {Support} for {Spatial} {Vector} {Data}. The R Journal \textbf{10}(1): 439. doi:\href{https://doi.org/10.32614/RJ-2018-009}{10.32614/RJ-2018-009}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-perretti_spatio-temporal_2019}{}}%
+Perretti, C.T., and Thorson, J.T. 2019. Spatio-temporal dynamics of summer flounder ({Paralichthys} dentatus) on the {Northeast} {US} shelf. Fisheries Research \textbf{215}: 62--68. doi:\href{https://doi.org/10.1016/j.fishres.2019.03.006}{10.1016/j.fishres.2019.03.006}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-pikitch_global_2014}{}}%
+Pikitch, E.K., Rountos, K.J., Essington, T.E., Santora, C., Pauly, D., Watson, R., Sumaila, U.R., Boersma, P.D., Boyd, I.L., Conover, D.O., Cury, P., Heppell, S.S., Houde, E.D., Mangel, M., Plagányi, É., Sainsbury, K., Steneck, R.S., Geers, T.M., Gownaris, N., and Munch, S.B. 2014. The global contribution of forage fish to marine fisheries and ecosystems. Fish and Fisheries \textbf{15}(1): 43--64. doi:\href{https://doi.org/10.1111/faf.12004}{10.1111/faf.12004}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-punt_exploring_2016}{}}%
+Punt, A.E., MacCall, A.D., Essington, T.E., Francis, T.B., Hurtado-Ferro, F., Johnson, K.F., Kaplan, I.C., Koehn, L.E., Levin, P.S., and Sydeman, W.J. 2016. Exploring the implications of the harvest control rule for {Pacific} sardine, accounting for predator dynamics: {A} {MICE} model. Ecological Modelling \textbf{337}: 79--95. doi:\href{https://doi.org/10.1016/j.ecolmodel.2016.06.004}{10.1016/j.ecolmodel.2016.06.004}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-reynolds_daily_2007}{}}%
+Reynolds, R.W., Smith, T.M., Liu, C., Chelton, D.B., Casey, K.S., and Schlax, M.G. 2007. Daily {High}-{Resolution}-{Blended} {Analyses} for {Sea} {Surface} {Temperature}. Journal of Climate \textbf{20}(22): 5473--5496. doi:\href{https://doi.org/10.1175/2007JCLI1824.1}{10.1175/2007JCLI1824.1}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-robertson_accounting_2022}{}}%
+Robertson, M.D., Koen-Alonso, M., Regular, P.M., Cadigan, N., and Zhang, F. 2022. Accounting for a nonlinear functional response when estimating prey dynamics using predator diet data. Methods in Ecology and Evolution \textbf{13}(4): 880--893. doi:\href{https://doi.org/10.1111/2041-210X.13795}{10.1111/2041-210X.13795}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-rohan_spatial_2017}{}}%
+Rohan, S.K., and Buckley, T.W. 2017. Spatial and ontogenetic patterns of {Pacific} cod ({Gadus} macrocephalus {Tilesius}) predation on octopus in the eastern {Bering} {Sea}. Environmental Biology of Fishes \textbf{100}(4): 361--373. doi:\href{https://doi.org/10.1007/s10641-016-0561-2}{10.1007/s10641-016-0561-2}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-saha_avhrr_2018}{}}%
+Saha, S., Korak, Zhao, X., Zhang, H., Casey, K.S., Zhang, D., Baker-Yeboah, S., Kilpatrick, K.A., Evans, R.H., Ryan, T., and Relph, J.M. 2018. {AVHRR} {Pathfinder} version 5.3 level 3 collated ({L3C}) global 4km sea surface temperature for 1981-{Present}. {[}1985-2021{]}. {NOAA} {National} {Centers} for {Environmental} {Information}. {Dataset}. Available from \url{https://doi.org/10.7289/v52j68xx} {[}accessed 1 August 2022{]}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-sanchez-jerez_interactions_2008}{}}%
+Sanchez-Jerez, P., Fernandez-Jover, D., Bayle-Sempere, J., Valle, C., Dempster, T., Tuya, F., and Juanes, F. 2008. Interactions between bluefish {Pomatomus} saltatrix ({L}.) and coastal sea-cage farms in the {Mediterranean} {Sea}. Aquaculture \textbf{1-4}(282): 61--67. doi:\href{https://doi.org/10.1016/j.aquaculture.2008.06.025}{10.1016/j.aquaculture.2008.06.025}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-schoener_nonsynchronous_1970}{}}%
+Schoener, T.W. 1970. Nonsynchronous {Spatial} {Overlap} of {Lizards} in {Patchy} {Habitats}. Ecology \textbf{51}(3): 408--418. doi:\href{https://doi.org/10.2307/1935376}{10.2307/1935376}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-smith_impacts_2011}{}}%
+Smith, A.D., Brown, C.J., Bulman, C.M., Fulton, E.A., Johnson, P., Kaplan, I.C., Lozano-Montes, H., Mackinson, S., Marzloff, M., Shannon, L.J., Shin, Y.J., and Tam, J. 2011. Impacts of fishing low-trophic level species on marine ecosystems. Science \textbf{333}(6046): 1147--50. doi:\href{https://doi.org/10.1126/science.1209395}{10.1126/science.1209395}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-smith_trophic_2010}{}}%
+Smith, B.E., and Link, J.S. 2010. The {Trophic} {Dynamics} of 50 {Finfish} and 2 {Squid} {Species} on the {Northeast} {US} {Continental} {Shelf}. {NOAA} {Technichal} {Memorandum} {NMFS}-{NE}-216. National Marine Fisheries Service, 166 Water Street, Woods Hole, MA 02543-1026. Available from \url{http://www.nefsc.noaa.gov/publications/tm/tm216/} {[}accessed 26 April 2016{]}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-smith_fish_2022}{}}%
+Smith, B.E., and Rowe, S. 2022, September. Fish trophic ecology of the northeast {US} continental shelf. {Shiny} {Application}. Available from \url{https://fwdp.shinyapps.io/tm2020/}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-smith_multispecies_2020}{}}%
+Smith, B.E., and Smith, L.A. 2020. Multispecies functional responses reveal reduced predation at high prey densities and varied responses among and within trophic groups. Fish and Fisheries \textbf{21}(5): 891--905. doi:\href{https://doi.org/10.1111/faf.12468}{10.1111/faf.12468}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-soudijn_harvesting_2021}{}}%
+Soudijn, F.H., Daniël van Denderen, P., Heino, M., Dieckmann, U., and Roos, A.M. de. 2021. Harvesting forage fish can prevent fishing-induced population collapses of large piscivorous fish. Proceedings of the National Academy of Sciences \textbf{118}(6): e1917079118. doi:\href{https://doi.org/10.1073/pnas.1917079118}{10.1073/pnas.1917079118}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-staudinger_role_2020}{}}%
+Staudinger, M.D., Goyert, H., Suca, J.J., Coleman, K., Welch, L., Llopiz, J.K., Wiley, D., Altman, I., Applegate, A., Auster, P., Baumann, H., Beaty, J., Boelke, D., Kaufman, L., Loring, P., Moxley, J., Paton, S., Powers, K., Richardson, D., Robbins, J., Runge, J., Smith, B., Spiegel, C., and Steinmetz, H. 2020. The role of sand lances ({Ammodytes} sp.) in the {Northwest} {Atlantic} {Ecosystem}: {A} synthesis of current knowledge with implications for conservation and management. Fish and Fisheries \textbf{21}(3): 522--556. doi:\href{https://doi.org/10.1111/faf.12445}{10.1111/faf.12445}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-stock_woods_2021}{}}%
+Stock, B.C., and Miller, T.J. 2021. The {Woods} {Hole} {Assessment} {Model} ({WHAM}): {A} general state-space assessment framework that incorporates time- and age-varying processes via random effects and links to environmental covariates. Fisheries Research \textbf{240}: 105967. doi:\href{https://doi.org/10.1016/j.fishres.2021.105967}{10.1016/j.fishres.2021.105967}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-suca_environmental_2021}{}}%
+Suca, J.J., Deroba, J.J., Richardson, D.E., Ji, R., and Llopiz, J.K. 2021. Environmental drivers and trends in forage fish occupancy of the {Northeast} {US} shelf. ICES Journal of Marine Science (fsab214). doi:\href{https://doi.org/10.1093/icesjms/fsab214}{10.1093/icesjms/fsab214}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-sydeman_sixty-five_2020}{}}%
+Sydeman, W.J., Dedman, S., García-Reyes, M., Thompson, S.A., Thayer, J.A., Bakun, A., and MacCall, A.D. 2020. Sixty-five years of northern anchovy population studies in the southern {California} {Current}: A review and suggestion for sensible management. ICES Journal of Marine Science \textbf{77}(2): 486--499. doi:\href{https://doi.org/10.1093/icesjms/fsaa004}{10.1093/icesjms/fsaa004}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-sydeman_integrating_2022}{}}%
+Sydeman, W.J., Thompson, S.A., Piatt, J.F., Zador, S.G., and Dorn, M.W. 2022. Integrating seabird dietary and groundfish stock assessment data: {Can} puffins predict pollock spawning stock biomass in the {North} {Pacific}? Fish and Fisheries \textbf{23}(1): 213--226. doi:\href{https://doi.org/10.1111/faf.12611}{10.1111/faf.12611}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-r_core_team_r_2022}{}}%
+Team, R.C. 2022. R: {A} {Language} and {Environment} for {Statistical} {Computing}. R Foundation for Statistical Computing, Vienna, Austria. Available from \url{https://www.R-project.org}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-thorson_guidance_2019}{}}%
+Thorson, J.T. 2019. Guidance for decisions using the {Vector} {Autoregressive} {Spatio}-{Temporal} ({VAST}) package in stock, ecosystem, habitat and climate assessments. Fisheries Research \textbf{210}: 143--161. doi:\href{https://doi.org/10.1016/j.fishres.2018.10.013}{10.1016/j.fishres.2018.10.013}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-thorson_diet_2022}{}}%
+Thorson, J.T., Arimitsu, M.L., Levi, T., and Roffler, G.H. 2022. Diet analysis using generalized linear models derived from foraging processes using {R} package mvtweedie. Ecology \textbf{103}(5): e3637. doi:\href{https://doi.org/10.1002/ecy.3637}{10.1002/ecy.3637}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-thorson_comparing_2017}{}}%
+Thorson, J.T., and Barnett, L.A.K. 2017. Comparing estimates of abundance trends and distribution shifts using single- and multispecies models of fishes and biogenic habitat. ICES Journal of Marine Science \textbf{74}(5): 1311--1321. doi:\href{https://doi.org/10.1093/icesjms/fsw193}{10.1093/icesjms/fsw193}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-thorson_implementing_2016}{}}%
+Thorson, J.T., and Kristensen, K. 2016. Implementing a generic method for bias correction in statistical models using random effects, with spatial and population dynamics examples. Fisheries Research \textbf{175}: 66--74. doi:\href{https://doi.org/10.1016/j.fishres.2015.11.016}{10.1016/j.fishres.2015.11.016}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-tommasi_improved_2017}{}}%
+Tommasi, D., Stock, C.A., Pegion, K., Vecchi, G.A., Methot, R.D., Alexander, M.A., and Checkley, D.M. 2017. Improved management of small pelagic fisheries through seasonal climate prediction. Ecological Applications \textbf{27}(2): 378--388. doi:\href{https://doi.org/10.1002/eap.1458}{10.1002/eap.1458}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-wilberg_incorporating_2009}{}}%
+Wilberg, M.J., Thorson, J.T., Linton, B.C., and Berkson, J. 2009. Incorporating {Time}-{Varying} {Catchability} into {Population} {Dynamic} {Stock} {Assessment} {Models}. Reviews in Fisheries Science \textbf{18}(1): 7--24. doi:\href{https://doi.org/10.1080/10641260903294647}{10.1080/10641260903294647}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-zuur_mixed_2009}{}}%
+Zuur, A.F., Ieno, E.N., Walker, N., Saveliev, A.A., and Smith, G.M. 2009. Mixed effects models and extensions in ecology with {R}. Springer, New York, NY. doi:\href{https://doi.org/10.1007/978-0-387-87458-6}{10.1007/978-0-387-87458-6}.
+
+\end{CSLReferences}
+
+\newpage
+
+\hypertarget{tables}{%
+\section{Tables}\label{tables}}
+
+\providecommand{\docline}[3]{\noalign{\global\setlength{\arrayrulewidth}{#1}}\arrayrulecolor[HTML]{#2}\cline{#3}}
+
+\setlength{\tabcolsep}{2pt}
+
+\renewcommand*{\arraystretch}{1}
+
+\begin{longtable}[c]{|p{1.50in}|p{1.50in}|p{1.00in}|p{1.00in}|p{1.00in}}
+
+\caption{Prey identified in bluefish stomachs, Northeast Fisheries Science Center (NEFSC, years 1973-2021) and Northeast Area Monitoring and Assessment Program (NEAMAP, years 2007-2021) databases.
+}\label{tab:preylist}\\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Prey}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Prey\ common\ name}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC\ stomachs\ (n)\ with\ prey}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEAMAP\ stomachs\ (n)\ with\ prey}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Total\ bluefish\ stomachs\ (n)\ with\ prey}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\endfirsthead
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Prey}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Prey\ common\ name}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC\ stomachs\ (n)\ with\ prey}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEAMAP\ stomachs\ (n)\ with\ prey}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Total\ bluefish\ stomachs\ (n)\ with\ prey}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}\endhead
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Anchoa\ mitchilli}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Bay\ anchovy}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{321}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{1,378}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{1,699}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Peprilus\ triacanthus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Butterfish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{307}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{356}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{663}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Engraulidae}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Anchovy\ (unidentified)}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{408}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{61}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{469}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Anchoa\ hepsetus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Striped\ anchovy}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{171}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{266}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{437}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Loligo\ spp.}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Loligo\ squid}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{423}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{8}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{431}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Cephalopoda}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Unidentified\ cephalopoda}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{262}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{8}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{270}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Ammodytes\ spp.}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Sand\ lances}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{96}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{139}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{235}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Loligo\ pealeii}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Longfin\ inshore\ squid}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{17}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{171}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{188}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Stenotomus\ chrysops}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Scup}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{69}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{108}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{177}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Etrumeus\ teres}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Round\ herring}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{126}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{15}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{141}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Teuthida}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Unidentified\ squids}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{95}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{95}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Merluccius\ bilinearis}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Silver\ hake}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{53}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{10}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{63}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Anchoa\ spp.}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Common\ anchovies}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{7}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{52}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{59}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Clupeidae}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Unidentified\ herring}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{30}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{26}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{56}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Pomatomus\ saltatrix}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Bluefish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{22}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{28}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{50}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Brevoortia\ tyrannus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Atlantic\ menhaden}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{10}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{36}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{46}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Clupea\ harengus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Atlantic\ herring}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{37}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{4}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{41}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Illex\ sp}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Shortfin\ squids}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{40}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{40}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Cynoscion\ regalis}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Weakfish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{12}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{26}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{38}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Engraulis\ eurystole}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Silver\ anchovy}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{18}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{8}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{26}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Scomber\ scombrus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.5in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Atlantic\ mackerel}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{14}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{14}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+
+
+\end{longtable}
+
+\newpage  
+\providecommand{\docline}[3]{\noalign{\global\setlength{\arrayrulewidth}{#1}}\arrayrulecolor[HTML]{#2}\cline{#3}}
+
+\setlength{\tabcolsep}{2pt}
+
+\renewcommand*{\arraystretch}{1}
+
+\begin{longtable}[c]{|p{3.00in}|p{1.00in}|p{1.00in}|p{1.00in}}
+
+\caption{Predators with highest diet similarity to Bluefish, Northeast Fisheries Science Center (NEFSC, years 1973-2021) and Northeast Area Monitoring and Assessment Program (NEAMAP, years 2007-2021) databases.
+}\label{tab:pisclist}\\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Predator\ name}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Minimum\ length\ (cm)}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Maximum\ length\ (cm)}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Survey}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\endfirsthead
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Predator\ name}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Minimum\ length\ (cm)}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Maximum\ length\ (cm)}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Survey}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}\endhead
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Atlantic\ cod}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{81.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{150.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Both}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Atlantic\ halibut}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{31.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{90.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Bluefish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{3.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{118.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Both}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Buckler\ dory}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{21.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{50.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Cusk}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{51.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{104.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Fourspot\ flounder}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{41.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{49.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Goosefish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{5.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{124.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Both}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Longfin\ squid}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{1.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{30.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Northern\ shortfin\ squid}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{3.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{30.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Pollock}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{51.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{120.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Red\ hake}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{41.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{98.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Sea\ raven}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{4.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{68.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Silver\ hake}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{21.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{76.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Both}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Spanish\ mackerel}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{10.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{33.5}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEAMAP}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Spiny\ dogfish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{36.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{117.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Both}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Spotted\ hake}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{21.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{40.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Spotted\ sea\ trout}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{15.5}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{34.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEAMAP}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Striped\ bass}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{31.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{120.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Both}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Summer\ flounder}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{21.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{70.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Both}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Thorny\ skate}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{81.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{108.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Weakfish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{26.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{50.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Both}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{White\ hake}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{21.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{136.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{NEFSC}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+
+
+\end{longtable}
+
+\newpage  
+\providecommand{\docline}[3]{\noalign{\global\setlength{\arrayrulewidth}{#1}}\arrayrulecolor[HTML]{#2}\cline{#3}}
+
+\setlength{\tabcolsep}{2pt}
+
+\renewcommand*{\arraystretch}{1}
+
+\begin{longtable}[c]{|p{3.00in}|p{2.00in}|p{1.00in}}
+
+\caption{Prey species names in Northeast Fisheries Science Center (NEFSC) stomach contents and survey data with corresponding prey groups and management categories used in analysis.
+}\label{tab:groups}\\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Prey\ name}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Prey\ group}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Managed\ species?}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\endfirsthead
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Prey\ name}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Prey\ group}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Managed\ species?}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}\endhead
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Ammodytes}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{sandlances}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Ammodytes\ sp}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{sandlances}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Ammodytes\ americanus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{sandlances}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Ammodytes\ dubius}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{sandlances}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Engraulidae}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{anchovies}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Anchoa\ mitchilli}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{anchovies}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Anchoa\ hepsetus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{anchovies}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Engraulis\ eurystole}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{anchovies}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Clupea\ harengus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{herrings}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Clupeidae}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{herrings}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Etrumeus\ teres}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{herrings}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Loligo\ sp}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{squids}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Loligo\ plei}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{squids}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Loligo\ pealeii}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{squids}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Illex\ sp}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{squids}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Illex\ illecebrosus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{squids}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Cephalopoda}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{squids}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{No}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Merluccius}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{silverhake}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Merluccius\ bilinearis}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{silverhake}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Peprilus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{butterfish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Peprilus\ triacanthus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{butterfish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Pomatomus\ saltatrix}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{bluefish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Scomber\ scombrus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{mackerel}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Stenotomus\ chrysops}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{scup}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Cynoscion\ regalis}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{weakfish}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Brevoortia}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{menhaden}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 3in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Brevoortia\ tyrannus}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 2in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{menhaden}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{Yes}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+
+
+\end{longtable}
+
+\providecommand{\docline}[3]{\noalign{\global\setlength{\arrayrulewidth}{#1}}\arrayrulecolor[HTML]{#2}\cline{#3}}
+
+\setlength{\tabcolsep}{2pt}
+
+\renewcommand*{\arraystretch}{1}
+
+\begin{longtable}[c]{|p{0.75in}|p{0.75in}|p{0.75in}|p{0.75in}|p{0.75in}|p{0.75in}}
+
+\caption{Bluefish stock assessment model fit and retrospective diagnostics with (model = ecov\_on) and without (model = ecov\_off) the fall StateWaters forage index included as a catchability covariate on the recreational fishery catch per unit effort index. Mohn\textquotesingle{}s rho values (rho) indicate retrospective performance for recruitment (R), spawning stock biomass (SSB) and fully selected fishing mortality (Fbar).
+}\label{tab:WHAMresults}\\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{model}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{dAIC}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{AIC}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{rho\_R}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{rho\_SSB}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{rho\_Fbar}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\endfirsthead
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{model}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{dAIC}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{AIC}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{rho\_R}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{rho\_SSB}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{rho\_Fbar}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}\endhead
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{ecov\_on}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{0.0}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{3,230.6}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{-0.0136}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{0.0880}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{-0.0641}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{ecov\_off}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{5.6}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{3,236.2}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{0.0104}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{0.1301}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{-0.0962}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+
+
+\end{longtable}
+
+\newpage  
+\listoffigures
+
+\hypertarget{figures}{%
+\section{Figures}\label{figures}}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{fig1maps} \caption{Maps of (a) Northeast USA states (ME = Maine, NH = New Hampshire, MA = Massachusetts, RI = Rhode Island, CT = Connecticut, NY = New York, NJ = New Jersey, DE = Delaware, MD = Maryland, VA = Virginia) and Atlantic coastal features, (b) areas corresponding to ecoregions Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and bluefish assessment index areas in (c) bottom trawl survey index strata (SurveyBluefish), and (d) state waters within 3 miles of shore (StateWaters) within the combined Mid Atlantic Bight and Georges Bank (MABGB) region. The full VAST model grid is shown in brown. Base maps are from the R package sf with map projection NAD83 and coordinate system WGS84.}\label{fig:maps}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/seasondecade-1.pdf}
+\caption{\label{fig:seasondecade}Bluefish diet by season and decade, NEFSC bottom trawl surveys. Light blue color in the plots shows included prey, while light gray sections represent unidentified fish and other categories not included in this analysis. Prey species are listed for those making up \textgreater3\% of diet by weight in a decade/season. Bar width indicates number of years with samples in the decade/season block. Full width bars had samples in all years.}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=0.99\linewidth]{pyindex/allagg_fall_500_lennosst_ALLsplit_biascorrect/ln_density-predicted} \caption{Yearly maps of VAST model estimated forage fish density for Fall (months 7-12).}\label{fig:falldens}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/fallall-1.pdf}
+\caption{\label{fig:fallall}Fall forage indices scaled to the maximum value (Mid Atlantic, 1985) for Ecoregions: Georges Bank (GB), Gulf of Maine (GOM), Mid Atlantic Bight (MAB), and Bluefish assessment index areas: state waters within 3 miles of shore (StateWaters), and bottom trawl survey index strata (SurveyBluefish).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/tscomp-1.pdf}
+\caption{\label{fig:tscomp}Time series of VAST stomach contents based forage index (red) compared with survey based index (black) by season and region (GOM = Gulf of Maine, GB = Georges Bank, MAB = Mid Atlantic Bight).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/corr-1.pdf}
+\caption{\label{fig:corr}VAST stomach contents based forage index (VASTForage) compared with survey based index (SurvForage) by season and region (GOM = Gulf of Maine, GB = Georges Bank, MAB = Mid Atlantic Bight). Pearson correlation coefficients (\emph{R}) and correlation significance (\emph{p}) are shown for each season/region.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/sppprop-1.pdf}
+\caption{\label{fig:sppprop}Comparison of raw proportional species composition from all predator stomachs combined (source = stomach, red) to the raw proportional species composition from bottom trawl survey sampling (source = survey, black) in the model domain forall regions and seasons from 1985-2021.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/silver-1.pdf}
+\caption{\label{fig:silver}Proportion of silver hake in stomach contents data (red) compared with survey biomass sampling (black) over time by region and season.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/sandlance-1.pdf}
+\caption{\label{fig:sandlance}Proportion of sandlance species in stomach contents data (red) compared with survey biomass sampling (black) over time by region and season.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/unmanagedprop-1.pdf}
+\caption{\label{fig:unmanagedprop}Proportion of unmanaged forage species in stomach contents data (red) compared with survey biomass sampling (black) over time by region and season.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/WHAMq-1.pdf}
+\caption{\label{fig:WHAMq}Fall state waters forage index fit as a catchabilty covariate within the bluefish assessment model (top), with resulting catchability, q, for the recreational fishery catch per unit effort (MRIP) index (bottom).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Bluefish_forageindex_CJFAS_files/figure-latex/WHAMcomp-1.pdf}
+\caption{\label{fig:WHAMcomp}Bluefish assessment results with (ecov\_on) and without (ecov\_off) the fall StateWaters forage index as a catchabilty covariate on recreational fishery catch per unit effort. Estimated fishing mortality (F, top), recruitment (center), and spawning stock biomass (SSB, bottom).}
+\end{figure}
+
+\end{document}
