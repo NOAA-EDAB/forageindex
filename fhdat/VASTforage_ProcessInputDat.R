@@ -36,6 +36,12 @@ guilds <- hclust(d_dietoverlap, method = "complete")
 
 dend <- as.dendrogram(guilds)
 
+dend <- color_branches(dend, k=6) # Brian uses 6 categories
+
+labels(dend) <- paste(as.character(names(dietoverlap[-1]))[order.dendrogram(dend)],
+                      "(",labels(dend),")", 
+                      sep = "")
+
 pisccomplete <- partition_leaves(dend)[[
   which_node(dend, c("Bluefish..S(37)", "Bluefish..M(36)", "Bluefish..L(35)"))
 ]]
