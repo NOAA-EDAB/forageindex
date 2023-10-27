@@ -360,7 +360,10 @@ raster_to_sstdf <- function(brick,
 
 varname <- "sst"
 
-years <- 2022
+# 1985-2021 previously pulled, processed and stored. add 2022.
+# add 1981-1984 to extend back in time. No OISST before 1981.
+
+years <- 1983:1984 # 2022
 for(i in years) {
   name <- paste0(i, ".nc")
   dir.create(here::here("data-raw","gridded", "sst_data"), recursive = TRUE)
@@ -470,4 +473,4 @@ dietstn_OISST_merge <- dietstn_OISST %>%
 
 bluepyagg_stn_all_OISST <- left_join(bluepyagg_stn_all, dietstn_OISST_merge)
 
-saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_1973-2022.rds"))
+saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_1981-2022.rds"))
