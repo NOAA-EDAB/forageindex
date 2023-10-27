@@ -251,7 +251,7 @@ NEFSCstations <- allfh %>%
   dplyr::distinct()
 
 # Need NEAMAP SST update! This is the old file
-NEAMAPstationSST <- read.csv(here("fhdat/NEAMAP SST_2007_2021.csv"))
+NEAMAPstationSST <- read.csv(here("fhdat/NEAMAP SST_2007_2022.csv"))
 
 NEAMAPstations <- NEAMAPstationSST %>%
   dplyr::mutate(id = station,
