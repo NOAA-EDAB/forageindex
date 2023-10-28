@@ -362,8 +362,9 @@ varname <- "sst"
 
 # 1985-2021 previously pulled, processed and stored. add 2022.
 # add 1981-1984 to extend back in time. No OISST before 1981.
+# 1981 is only Sept-Dec so don't use
 
-years <- 1983:1984 # 2022
+years <- #1982:1984 # 2022
 for(i in years) {
   name <- paste0(i, ".nc")
   dir.create(here::here("data-raw","gridded", "sst_data"), recursive = TRUE)
@@ -473,4 +474,4 @@ dietstn_OISST_merge <- dietstn_OISST %>%
 
 bluepyagg_stn_all_OISST <- left_join(bluepyagg_stn_all, dietstn_OISST_merge)
 
-saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_1981-2022.rds"))
+saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_1982-2022.rds"))

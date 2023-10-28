@@ -12,7 +12,7 @@ library(VAST)
 
 # this dataset created in SSTmethods.Rmd
 
-bluepyagg_stn <- readRDS(here::here("fhdat/bluepyagg_stn_all_OISST_1985-2022.rds"))
+bluepyagg_stn <- readRDS(here::here("fhdat/bluepyagg_stn_all_OISST_1982-2022.rds"))
 
 # make SST column that uses surftemp unless missing or 0
 # there are 3 surftemp 0 values in the dataset, all with oisst > 15
