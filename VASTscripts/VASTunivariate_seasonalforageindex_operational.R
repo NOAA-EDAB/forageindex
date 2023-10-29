@@ -43,7 +43,7 @@ bluepyagg_stn_fall <- bluepyagg_stn %>%
          npiscsp,
          #bottemp, #this leaves out many stations for NEFSC
          #surftemp, #this leaves out many stations for NEFSC
-         oisst,
+         #oisst, #leaves out everything before 1982
          sstfill
          ) %>%
   na.omit() %>%
@@ -66,7 +66,7 @@ bluepyagg_stn_spring <- bluepyagg_stn %>%
          npiscsp,
          #bottemp, #this leaves out many stations for NEFSC
          #surftemp, #this leaves out many stations for NEFSC
-         oisst,
+         #oisst, #leaves out everything before 1982
          sstfill
          ) %>%
   na.omit() %>%
