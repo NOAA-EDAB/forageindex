@@ -1,0 +1,18 @@
+---
+title: "Forage Index Pages"
+author: "Sarah Gaichas"
+output: html_document
+---
+
+<button>
+    <a href="https://github.com/NOAA-EDAB/forageindex"> forageindex github repo </a>
+</button>
+
+
+<!-- ADD LINKS BELOW, note, using the RMD link syntax will open the presentation in the same tab, which is annoying. Use the html with the "_blank" to fix that behavior -->
+
+## Analysis pages
+ 
+
+<a href="https://noaa-edab.github.io/forageindex/SOEforageindex.html" target="_blank"> Documenting SOE forage index workflow - 9 Nov 2023 </a>
+

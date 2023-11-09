@@ -1,5 +1,6 @@
 ---
 title: "Forage Index update for 2024 SOE"
+subtitle: "Data updated through 2022"
 author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
   Katie Drew, Abigail Tyrell, and James Thorson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -7,6 +8,7 @@ output:
   bookdown::html_document2: 
     toc: true
     toc_float: true
+    code_fold: hide
   bookdown::word_document2:
     toc: true
   bookdown::pdf_document2:
@@ -16,7 +18,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, # no code blocks in word doc
+knitr::opts_chunk$set(echo = TRUE, # no code blocks in word doc
                       message = FALSE,
                       warning = FALSE)
 
@@ -39,6 +41,33 @@ library(flextable)
 Based on comparisons below, I'm satisfied that the methods update between last years SOE and this doesn't fundamentally change the trend. I'm also fine with starting the time series earlier. However, looking at the coverage, we may not want to start the model at the absolute beginning of the time series.
 
 Will discuss a good starting point with the team, but for now submit the 1982 starting point with data through 2022.
+
+# Workflow
+
+Operational updates to the forage index submitted to the State of the Ecosystem report are in the forageindex github repository: https://github.com/NOAA-EDAB/forageindex
+
+Data input files are in the folder `fhdat` and were processed with the script `VASTforage_ProcessInputDat.R` in that folder: https://github.com/NOAA-EDAB/forageindex/blob/main/fhdat/VASTforage_ProcessInputDat.R
+
+```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/fhdat/VASTforage_ProcessInputDat.R"), eval=FALSE}
+
+```
+
+
+VAST models were run using the script `VASTunivariate_seasonalforageindex_operational.R` in the folder `VASTscripts`: https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_seasonalforageindex_operational.R 
+
+```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/VASTscripts/VASTunivariate_seasonalforageindex_operational.R"), eval=FALSE}
+
+```
+
+Model output was saved in the folder `SOEpyindex` for three different time series options: 1973-2022, 1982-2022, and 1985-2022.
+
+The script to create the SOE forage indices from the VAST output is in the `SOEpyindex` folder: https://github.com/NOAA-EDAB/forageindex/blob/main/SOEpyindex/SOE-VASTForageIndices.R
+
+```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/SOEpyindex/SOE-VASTForageIndices.R"), eval=FALSE}
+
+```
+
+Code blocks below setup the index comparisons in the remainder of this document.
 
 ```{r preycut1, fig.cap="Trend comparison between fall forage indices using different bluefish prey cut-offs: 10 or more observations by survey and 25 observations combined across surveys (current method).", fig.height=8}
 # compare 2022 prey list to paper update preylist for indices
