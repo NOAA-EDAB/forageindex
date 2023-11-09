@@ -6,7 +6,6 @@
 .DS_Store
 
 *.docx
-*.html
 
 # interim files
 *.log
