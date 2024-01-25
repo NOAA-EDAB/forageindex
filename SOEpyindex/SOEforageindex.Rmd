@@ -524,3 +524,74 @@ ggplot(splitoutput |> filter(Season =="spring",
 
 ```
 
+# Center of gravity exploration
+
+Has forage shifted along the coast?
+
+```{r, eval=FALSE}
+
+
+library(FishStatsUtils)
+
+fitfall <- VAST::reload_model(readRDS(here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/fit.rds")))
+
+cogoutfall <- FishStatsUtils::plot_range_index(Sdreport = fitfall$parameter_estimates$SD, 
+                                           Report = fitfall$Report, 
+                                           TmbData = fitfall$data_list,
+                                           year_labels = as.numeric(fitfall$year_labels),
+                                           years_to_plot = fitfall$years_to_plot,
+                                           Znames = colnames(fitfall$data_list$Z_xm),
+                                           PlotDir = here::here("test")) #already have plots, will delete this directory
+
+saveRDS(cogoutfall, here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+
+fitspring <- VAST::reload_model(readRDS(here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/fit.rds")))
+
+cogoutspring <- FishStatsUtils::plot_range_index(Sdreport = fitspring$parameter_estimates$SD, 
+                                           Report = fitspring$Report, 
+                                           TmbData = fitspring$data_list, 
+                                           year_labels = as.numeric(fitspring$year_labels),
+                                           years_to_plot = fitspring$years_to_plot,
+                                           Znames = colnames(fitspring$data_list$Z_xm),
+                                           PlotDir = here::here("test"))
+
+saveRDS(cogoutspring, here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+
+unlink(here::here("test"), recursive=TRUE) #removes directory with unneeded plots
+
+
+```
+
+Fall center of gravity, forage index, significantly more North and East over time
+```{r}
+
+cogoutfall <- readRDS(here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+
+cogdat <- as.data.frame(cogoutfall$COG_Table) |>
+  dplyr::mutate(direction = ifelse(m==1, "Northward", "Eastward"))
+
+ggplot2::ggplot(cogdat, ggplot2::aes(x = Year, y = COG_hat)) + 
+  ggplot2::geom_point() + 
+  ecodata::geom_gls() + 
+  ggplot2::labs(y = "Center of gravity") +
+  ggplot2::facet_wrap(~direction, scales = "free_y") + 
+  ecodata::theme_facet()
+
+```
+
+Spring center of gravity, forage index, no significant trend
+```{r}
+
+cogoutspring <- readRDS(here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+
+cogdat <- as.data.frame(cogoutspring$COG_Table) |>
+  dplyr::mutate(direction = ifelse(m==1, "Northward", "Eastward"))
+
+ggplot2::ggplot(cogdat, ggplot2::aes(x = Year, y = COG_hat)) + 
+  ggplot2::geom_point() + 
+  ecodata::geom_gls() + 
+  ggplot2::labs(y = "Center of gravity") +
+  ggplot2::facet_wrap(~direction, scales = "free_y") + 
+  ecodata::theme_facet()
+
+```
