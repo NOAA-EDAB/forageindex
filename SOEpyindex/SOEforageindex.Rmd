@@ -568,12 +568,12 @@ Fall center of gravity, forage index, significantly more North and East over tim
 cogoutfall <- readRDS(here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
 
 cogdat <- as.data.frame(cogoutfall$COG_Table) |>
-  dplyr::mutate(direction = ifelse(m==1, "Northward", "Eastward"))
+  dplyr::mutate(direction = ifelse(m==1, "Eastward", "Northward"))
 
 ggplot2::ggplot(cogdat, ggplot2::aes(x = Year, y = COG_hat)) + 
   ggplot2::geom_point() + 
   ecodata::geom_gls() + 
-  ggplot2::labs(y = "Center of gravity") +
+  ggplot2::labs(y = "Center of gravity, km") +
   ggplot2::facet_wrap(~direction, scales = "free_y") + 
   ecodata::theme_facet()
 
@@ -585,13 +585,203 @@ Spring center of gravity, forage index, no significant trend
 cogoutspring <- readRDS(here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
 
 cogdat <- as.data.frame(cogoutspring$COG_Table) |>
-  dplyr::mutate(direction = ifelse(m==1, "Northward", "Eastward"))
+  dplyr::mutate(direction = ifelse(m==1, "Eastward", "Northward"))
 
 ggplot2::ggplot(cogdat, ggplot2::aes(x = Year, y = COG_hat)) + 
   ggplot2::geom_point() + 
   ecodata::geom_gls() + 
-  ggplot2::labs(y = "Center of gravity") +
+  ggplot2::labs(y = "Center of gravity, km") +
   ggplot2::facet_wrap(~direction, scales = "free_y") + 
   ecodata::theme_facet()
 
 ```
+
+update get function for ecodata to add cog to existing forage_index dataset
+```{r, eval=FALSE}
+## Forage Index
+raw.dir<- here::here("data-raw/")
+#ann<- "annualforageindex - Sarah Gaichas - NOAA Federal.rds"
+fal<- "fallforageindex - Sarah Gaichas - NOAA Federal.rds"
+spr<- "springforageindex - Sarah Gaichas - NOAA Federal.rds"
+falcog <- "fallforagecog.rds"
+sprcog <- "springforagecog.rds"
+
+get_forage_index <- function(save_clean = F){
+
+  #annual<-readRDS(file.path(raw.dir, ann))
+  fall<- readRDS(file.path(raw.dir, fal))
+  spring<-readRDS(file.path(raw.dir, spr))
+  fallcog <- readRDS(file.path(raw.dir, falcog))
+  springcog <-readRDS(file.path(raw.dir, sprcog))
+
+  forage_index<- rbind(fall, spring, fallcog, springcog)
+
+
+  if (save_clean){
+    usethis::use_data(forage_index, overwrite = T)
+  } else {
+    return(forage_index)
+  }
+}
+get_forage_index(save_clean = T)
+
+
+```
+
+update plot function
+```{r, eval=FALSE}
+
+plot_forage_index <- function(shadedRegion = NULL,
+                              report="MidAtlantic",
+                              varName = "index") {
+
+  setup <- ecodata::plot_setup(shadedRegion = shadedRegion,
+                               report=report)
+  
+  if (varName == "index") {
+    
+  if (report == "MidAtlantic") {
+    filterEPUs <- c("MAB")
+  } else {
+    filterEPUs <- c("GB", "GOM")
+  }
+
+  fix<- ecodata::forage_index |>
+    dplyr::filter(Var %in% c("Fall Forage Fish Biomass Estimate",
+                             "Spring Forage Fish Biomass Estimate"),
+                  EPU %in% filterEPUs) |>
+    dplyr::group_by(EPU) |>
+    dplyr::summarise(max = max(Value))
+
+  p <- ecodata::forage_index |>
+    dplyr::filter(Var %in% c("Fall Forage Fish Biomass Estimate",
+                             "Fall Forage Fish Biomass Estimate SE",
+                             "Spring Forage Fish Biomass Estimate",
+                             "Spring Forage Fish Biomass Estimate SE"),
+                  EPU %in% filterEPUs) |>
+    dplyr::group_by(EPU) |>
+    tidyr::separate(Var, into = c("Season", "A", "B", "C", "D", "Var")) |>
+    dplyr::mutate(Var = tidyr::replace_na(Var, "Mean")) |> #,
+                  #max = as.numeric(Value)) |>
+    tidyr::pivot_wider(names_from = Var, values_from = Value) |>
+    dplyr::left_join(fix) |>
+    dplyr::mutate(#Value = Value/resca,
+      Mean = as.numeric(Mean),
+      #max = as.numeric(Value),
+      Mean = Mean/max,
+      SE = SE/max,
+      Upper = Mean + SE,
+      Lower = Mean - SE) |>
+    ggplot2::ggplot(ggplot2::aes(x = Time, y = Mean, group = Season))+
+    ggplot2::annotate("rect", fill = setup$shade.fill, alpha = setup$shade.alpha,
+        xmin = setup$x.shade.min , xmax = setup$x.shade.max,
+        ymin = -Inf, ymax = Inf) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = Lower, ymax = Upper, fill = Season), alpha = 0.5)+
+    ggplot2::geom_point()+
+    ggplot2::geom_line()+
+    ggplot2::ggtitle("")+
+    ggplot2::ylab(expression("Relative forage biomass"))+
+    ggplot2::xlab(ggplot2::element_blank())+
+    ggplot2::facet_wrap(.~EPU)+
+    ecodata::geom_gls()+
+    ecodata::theme_ts()+
+    ecodata::theme_facet()+
+    ecodata::theme_title()
+
+    if (report == "NewEngland") {
+      p <- p +
+        ggplot2::theme(legend.position = "bottom",
+                       legend.title = ggplot2::element_blank())
+
+    }
+  }
+  
+  if (varName == "cog"){
+    
+    p <- ecodata::forage_index |>
+      dplyr::filter(Var %in% c("Fall Eastward Forage Fish Center of Gravity",
+                               "Fall Eastward Forage Fish Center of Gravity SE",
+                               "Fall Northward Forage Fish Center of Gravity",
+                               "Fall Northward Forage Fish Center of Gravity SE",
+                               "Spring Eastward Forage Fish Center of Gravity",
+                               "Spring Eastward Forage Fish Center of Gravity SE",
+                               "Spring Northward Forage Fish Center of Gravity",
+                               "Spring Northward Forage Fish Center of Gravity SE")) |>
+      tidyr::separate(Var, into = c("Season", "Direction", "A", "B", "C", "D", "E", "Var")) |>
+      dplyr::mutate(Var = tidyr::replace_na(Var, "Mean")) |> 
+      tidyr::pivot_wider(names_from = Var, values_from = Value) |>
+      dplyr::mutate(Mean = as.numeric(Mean),
+                    Upper = Mean + SE,
+                    Lower = Mean - SE) |>
+      ggplot2::ggplot(ggplot2::aes(x = Time, y = Mean, group = Season))+
+      ggplot2::annotate("rect", fill = setup$shade.fill, alpha = setup$shade.alpha,
+                        xmin = setup$x.shade.min , xmax = setup$x.shade.max,
+                        ymin = -Inf, ymax = Inf) +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin = Lower, ymax = Upper, fill = Season), alpha = 0.3)+ #
+      ggplot2::geom_point()+
+      ggplot2::geom_line()+
+      ggplot2::ggtitle("")+
+      ggplot2::ylab(expression("Forage Center of Gravity, km"))+
+      ggplot2::xlab(ggplot2::element_blank())+
+      ggplot2::facet_wrap(~Direction, scales = "free_y")+ #Season
+      ecodata::geom_gls()+
+      ecodata::theme_ts()+
+      ecodata::theme_facet()+
+      ecodata::theme_title()
+
+  }
+
+    return(p)
+
+}
+
+attr(plot_forage_index,"report") <- c("MidAtlantic","NewEngland")
+attr(plot_forage_index, "varName") <- c("index", "cog")
+
+```
+
+forage COG indices produced by SOE-VASTForageCOG.R
+
+```{r}
+
+fallforagecog <- readRDS(here::here("SOEpyindex/fallforagecog.rds"))
+springforagecog <- readRDS(here::here("SOEpyindex/springforagecog.rds"))
+
+setup <- ecodata::plot_setup(shadedRegion = c(2014,2023), report = "MidAtlantic")
+
+testplot <- dplyr::bind_rows(fallforagecog, springforagecog) |>
+  
+  dplyr::filter(Var %in% c("Fall Eastward Forage Fish Center of Gravity",
+                               "Fall Eastward Forage Fish Center of Gravity SE",
+                               "Fall Northward Forage Fish Center of Gravity",
+                               "Fall Northward Forage Fish Center of Gravity SE",
+                               "Spring Eastward Forage Fish Center of Gravity",
+                               "Spring Eastward Forage Fish Center of Gravity SE",
+                               "Spring Northward Forage Fish Center of Gravity",
+                               "Spring Northward Forage Fish Center of Gravity SE")) |>
+      tidyr::separate(Var, into = c("Season", "Direction", "A", "B", "C", "D", "E", "Var")) |>
+      dplyr::mutate(Var = tidyr::replace_na(Var, "Mean")) |> 
+      tidyr::pivot_wider(names_from = Var, values_from = Value) |>
+      dplyr::mutate(Mean = as.numeric(Mean),
+                    Upper = Mean + SE,
+                    Lower = Mean - SE) |>
+      ggplot2::ggplot(ggplot2::aes(x = Time, y = Mean, group = Season))+
+      ggplot2::annotate("rect", fill = setup$shade.fill, alpha = setup$shade.alpha,
+                        xmin = setup$x.shade.min , xmax = setup$x.shade.max,
+                        ymin = -Inf, ymax = Inf) +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin = Lower, ymax = Upper, fill = Season), alpha = 0.3)+ #
+      ggplot2::geom_point()+
+      ggplot2::geom_line()+
+      ggplot2::ggtitle("")+
+      ggplot2::ylab(expression("Forage Center of Gravity, km"))+
+      ggplot2::xlab(ggplot2::element_blank())+
+      ggplot2::facet_wrap(~Direction, scales = "free_y")+ #Season
+      ecodata::geom_gls()+
+      ecodata::theme_ts()+
+      ecodata::theme_facet()+
+      ecodata::theme_title()
+
+testplot
+
+```
+
