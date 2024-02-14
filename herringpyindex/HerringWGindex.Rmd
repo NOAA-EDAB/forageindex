@@ -1,0 +1,61 @@
+---
+title: "Herring index from stomachs"
+subtitle: "Data updated through 2022"
+author: "Sarah Gaichas and James Gartland, based on work by Elizabeth Ng"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
+    code_fold: hide
+  bookdown::word_document2:
+    toc: true
+  bookdown::pdf_document2:
+    includes: 
+       in_header: latex/header1.tex
+    keep_tex: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, # no code blocks in word doc
+                      message = FALSE,
+                      warning = FALSE)
+
+library(tidyverse)
+theme_set(theme_bw())
+library(here)
+
+library(officedown)
+library(officer)
+library(flextable)
+# op_section <- prop_section(type = "continuous")
+# close_section <- prop_section(
+#     page_size = page_size(orient = "landscape"), 
+#     type = "continuous")
+
+```
+
+# Summary
+
+This index uses herring observed in predator stomachs to evaluate potential herring trends for the 2025 RT assessment.
+
+Methods are based on 
+
+Will discuss a good starting point with the team, but for now submit the 1982 starting point with data through 2022.
+
+# Workflow
+
+Operational updates to the forage index submitted to the State of the Ecosystem report are in the forageindex github repository: https://github.com/NOAA-EDAB/forageindex
+
+Data input files are in the folder `fhdat` and were processed with the script `VASTforage_ProcessInputDat.R` in that folder: https://github.com/NOAA-EDAB/forageindex/blob/main/fhdat/VASTherringWG_ProcessInputDat.R
+
+```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/fhdat/VASTherringWG_ProcessInputDat.R"), eval=FALSE}
+
+```
+
+
+VAST models were run using the script `VASTunivariate_seasonalforageindex_operational.R` in the folder `VASTscripts`: https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_seasonalherringindex.R 
+
+```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/VASTscripts/VASTunivariate_seasonalherringindex.R"), eval=FALSE}
+
+```
