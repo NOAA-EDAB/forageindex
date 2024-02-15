@@ -14,6 +14,9 @@ output:
     includes: 
        in_header: latex/header1.tex
     keep_tex: true
+link-citations: yes
+bibliography: Exported items.bib
+urlcolor: blue
 ---
 
 ```{r setup, include=FALSE}
@@ -39,22 +42,22 @@ library(flextable)
 
 This index uses herring observed in predator stomachs to evaluate potential herring trends for the 2025 RT assessment.
 
-Methods are based on 
+Methods are based on the forage index for Bluefish [@gaichas_assessing_2023] and the State of the Ecosystem [forage index](https://noaa-edab.github.io/catalog/forage-fish-index.html). 
 
-Will discuss a good starting point with the team, but for now submit the 1982 starting point with data through 2022.
+Will discuss a good starting point with the team, but for now start at 1973 and use data through 2022.
 
 # Workflow
 
 Operational updates to the forage index submitted to the State of the Ecosystem report are in the forageindex github repository: https://github.com/NOAA-EDAB/forageindex
 
-Data input files are in the folder `fhdat` and were processed with the script `VASTforage_ProcessInputDat.R` in that folder: https://github.com/NOAA-EDAB/forageindex/blob/main/fhdat/VASTherringWG_ProcessInputDat.R
+Data input files are in the folder `fhdat` and were processed with the script `VASTherringWG_ProcessInputDat.R` in that folder: https://github.com/NOAA-EDAB/forageindex/blob/main/fhdat/VASTherringWG_ProcessInputDat.R
 
 ```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/fhdat/VASTherringWG_ProcessInputDat.R"), eval=FALSE}
 
 ```
 
 
-VAST models were run using the script `VASTunivariate_seasonalforageindex_operational.R` in the folder `VASTscripts`: https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_seasonalherringindex.R 
+VAST models were run using the script `VASTunivariate_seasonalherringindex.R` in the folder `VASTscripts`: https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_seasonalherringindex.R 
 
 ```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/VASTscripts/VASTunivariate_seasonalherringindex.R"), eval=FALSE}
 
@@ -62,9 +65,74 @@ VAST models were run using the script `VASTunivariate_seasonalforageindex_operat
 
 # Results
 
-## Fall model: failed
+## How many piscivore locations had herring?
 
-Probably not enough data in fall. 
+Not that many. Seems a spring model will run anyway using the forage index configuration but a fall model will not.
+
+```{r}
+herringagg_stn <- readRDS(here::here("fhdat/herringagg_stn_all_OISST_1982-2022.rds"))
+
+# make SST column that uses surftemp unless missing or 0
+# there are 3 surftemp 0 values in the dataset, all with oisst > 15
+herringagg_stn <- herringagg_stn %>%
+  dplyr::mutate(sstfill = ifelse((is.na(surftemp)|surftemp==0), oisst, surftemp))
+
+#herringagg_stn <- bluepyagg_pred_stn
+
+# filter to assessment years at Tony's suggestion
+
+# code Vessel as AL=0, HB=1, NEAMAP=2
+
+herringagg_stn_all <- herringagg_stn %>%
+  #ungroup() %>%
+  #filter(season_ng == "FALL") |>
+  #,year > 1984) %>%
+  mutate(AreaSwept_km2 = 1, #Elizabeth's code
+         #declon = -declon already done before neamap merge
+         Vessel = as.numeric(as.factor(vessel))-1
+  ) %>% 
+  dplyr::select(Catch_g = meanherringwt, #use bluepywt for individuals input in example
+                Year = year,
+                Vessel,
+                AreaSwept_km2,
+                Lat = declat,
+                Lon = declon,
+                meanpisclen,
+                npiscsp,
+                #bottemp, #this leaves out many stations for NEFSC
+                #surftemp, #this leaves out many stations for NEFSC
+                #oisst, #leaves out everything before 1982
+                sstfill,
+                season_ng
+  ) %>%
+  na.omit() %>%
+  as.data.frame()
+
+nonzeroherring <- herringagg_stn_all |>
+  dplyr::filter(Catch_g > 0) |> 
+  dplyr::group_by(season_ng, Year) |> 
+  dplyr::summarise(n = dplyr::n()) |>
+  tidyr::pivot_wider(names_from = "season_ng", names_prefix = "Herring", values_from = "n")
+
+tows <- herringagg_stn_all |>
+  dplyr::group_by(season_ng, Year) |> 
+  dplyr::summarise(n = dplyr::n()) |>
+  tidyr::pivot_wider(names_from = "season_ng", names_prefix = "Total", values_from = "n")
+
+pisctows <- dplyr::left_join(tows, nonzeroherring) |>
+  dplyr::select(Year, TotalSPRING, HerringSPRING, TotalFALL, HerringFALL)
+
+tab1 <- flextable::flextable(pisctows) |>
+  flextable::set_caption("Number of piscivore stomach locations by season and year (TotalSPRING and TotalFALL), and number of piscivore stomach locations having nonzero herring prey (HerringSPRING and HerringFALL).") 
+
+flextable::colformat_double(tab1, big.mark = "", digits = 0)
+
+```
+
+
+## Fall model using forage index setup: failed
+
+About the same number of positive observations in spring and fall. 
 
 ```
 List of estimated fixed and random effects:
@@ -103,9 +171,11 @@ In nlminb(start = startpar, objective = fn, gradient = gr, control = nlminb.cont
 ```
 Trying spring model
 
-## Spring results
+## Spring results using forage index setup: ran
 
-Ran. Check diagnostics. 
+Check diagnostics.
+
+Abundance index:
 
 ```{r}
 SOEinputs <- function(infile, season, outfile) {
@@ -186,8 +256,29 @@ ggplot(foragewide, aes(x=Time, y=`Spring Forage Fish Biomass Estimate`, colour =
 
 
 ```
+Log density pattern:
 
 ```{r}
 knitr::include_graphics(here::here("herringpyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/ln_density-predicted.png"))
 ```
+
+Spatial residuals:
+
+```{r}
+knitr::include_graphics(here::here("herringpyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/quantile_residuals_on_map.png"))
+```
+
+How much data in spring?
+
+```{r}
+knitr::include_graphics(here::here("herringpyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/Data_by_year.png"))
+```
+
+
+## Model selection
+
+Same initial as forage index to see if spatial RE, spatio-temporal RE, and aniso make sense.
+
+
+# References
 
