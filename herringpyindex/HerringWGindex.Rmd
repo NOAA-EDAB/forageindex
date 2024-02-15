@@ -59,3 +59,135 @@ VAST models were run using the script `VASTunivariate_seasonalforageindex_operat
 ```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/VASTscripts/VASTunivariate_seasonalherringindex.R"), eval=FALSE}
 
 ```
+
+# Results
+
+## Fall model: failed
+
+Probably not enough data in fall. 
+
+```
+List of estimated fixed and random effects:
+    Coefficient_name Number_of_coefficients   Type
+1           beta1_ft                     48  Fixed
+2           beta2_ft                     48  Fixed
+3       L_epsilon1_z                      1  Fixed
+4       L_epsilon2_z                      1  Fixed
+5         L_omega1_z                      1  Fixed
+6         L_omega2_z                      1  Fixed
+7          lambda1_k                      3  Fixed
+8          lambda2_k                      3  Fixed
+9         ln_H_input                      2  Fixed
+10         logkappa1                      1  Fixed
+11         logkappa2                      1  Fixed
+12         logSigmaM                      1  Fixed
+13 Epsiloninput1_sff                  27750 Random
+14 Epsiloninput2_sff                  27750 Random
+15    Omegainput1_sf                    555 Random
+16    Omegainput2_sf                    555 Random
+
+### Checking model at initial values
+All fixed effects have a nonzero gradient
+
+... After 167 iterations...
+
+The following parameters appear to be approaching zero:
+          Param starting_value Lower           MLE Upper final_gradient
+55 L_epsilon1_z              1  -Inf -8.171138e-07   Inf  -7.579271e-05
+Please turn off factor-model variance parameters `L_` that are approaching zero and re-run the model
+
+Error: Please change model structure to avoid problems with parameter estimates and then re-try; see details in `?check_fit`
+In addition: Warning message:
+In nlminb(start = startpar, objective = fn, gradient = gr, control = nlminb.control,  :
+  NA/NaN function evaluation
+```
+Trying spring model
+
+## Spring results
+
+Ran. Check diagnostics. 
+
+```{r}
+SOEinputs <- function(infile, season, outfile) {
+  
+  splitoutput <- read.csv(infile)
+  
+  # warning, hardcoded. obviously
+  stratlook <- data.frame(Stratum = c("Stratum_1",
+                                      "Stratum_2",
+                                      "Stratum_3",
+                                      "Stratum_4",
+                                      "Stratum_5",
+                                      "Stratum_6",
+                                      "Stratum_7",
+                                      "Stratum_8",
+                                      "Stratum_9",
+                                      "Stratum_10",
+                                      "Stratum_11",
+                                      "Stratum_12",
+                                      "Stratum_13",
+                                      "Stratum_14",
+                                      "Stratum_15"),
+                          Region  = c("AllEPU", 
+                                      "MABGB", 
+                                      "MABGBstate", 
+                                      "MABGBfed", 
+                                      "MAB",
+                                      "GB",
+                                      "GOM",
+                                      "bfall",
+                                      "bfin",
+                                      "bfoff",
+                                      "MABGBalbinshore",
+                                      "MABGBothoffshore",
+                                      "albbfin",
+                                      "albbfall",
+                                      "allother"))
+  
+  forageindex <- splitoutput %>%
+    left_join(stratlook) %>%
+    dplyr::select(Time, 
+                  EPU = Region, 
+                  "Forage Fish Biomass Estimate" = Estimate, 
+                  "Forage Fish Biomass Estimate SE" = Std..Error.for.Estimate) %>%
+    tidyr::pivot_longer(c("Forage Fish Biomass Estimate", "Forage Fish Biomass Estimate SE"), 
+                        names_to = "Var", values_to = "Value") %>%
+    dplyr::filter(EPU %in% c("MAB", "GB", "GOM", "AllEPU")) %>%
+    dplyr::mutate(Units = "relative grams per stomach") %>%
+    dplyr::select(Time, Var, Value, EPU, Units)
+  
+  forageindex$Var <- stringr::str_c(season, forageindex$Var, sep = " ")
+  
+  #readr::write_csv(forageindex, outfile)
+  saveRDS(forageindex, outfile)
+  
+} 
+
+
+# make data files
+
+SOEinputs(infile = here::here("herringpyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/Index.csv"),
+          season = "Spring", 
+           outfile = here::here("herringpyindex/springherringindex.rds"))
+
+
+forageindex <- readRDS(here::here("herringpyindex/springherringindex.rds"))
+
+# test plot
+foragewide <- forageindex %>%
+  pivot_wider(names_from = Var, values_from = Value)
+
+
+ggplot(foragewide, aes(x=Time, y=`Spring Forage Fish Biomass Estimate`, colour = EPU)) +
+  geom_errorbar(aes(ymin=`Spring Forage Fish Biomass Estimate`+`Spring Forage Fish Biomass Estimate SE`,
+                    ymax=`Spring Forage Fish Biomass Estimate`-`Spring Forage Fish Biomass Estimate SE`))+
+  geom_point()+
+  geom_line()
+
+
+```
+
+```{r}
+knitr::include_graphics(here::here("herringpyindex/allagg_spring_500_lennosst_ALLsplit_biascorrect/ln_density-predicted.png"))
+```
+
