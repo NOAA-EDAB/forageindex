@@ -1,0 +1,37 @@
+$par
+  L_omega1_z L_epsilon1_z    logkappa1    logSigmaM 
+    452859.3    1646200.6   -1207890.4     767943.1 
+
+$objective
+[1] NaN
+
+$iterations
+[1] 13
+
+$evaluations
+function gradient 
+      69       14 
+
+$time_for_MLE
+Time difference of 2.652267 mins
+
+$max_gradient
+[1] NaN
+
+$Convergence_check
+[1] NA
+
+$number_of_coefficients
+ Total  Fixed Random 
+ 29172      4  29168 
+
+$AIC
+[1] NaN
+
+$diagnostics
+                    Param starting_value     Lower        MLE     Upper final_gradient
+L_omega1_z     L_omega1_z      1.2457892      -Inf   452859.3       Inf            NaN
+L_epsilon1_z L_epsilon1_z      0.7202065      -Inf  1646200.6       Inf            NaN
+logkappa1       logkappa1     -4.1568573 -6.390438 -1207890.4 -1.767562            NaN
+logSigmaM       logSigmaM      0.1539235      -Inf   767943.1 10.000000            NaN
+
