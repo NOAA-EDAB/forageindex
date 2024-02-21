@@ -150,6 +150,13 @@ allEPU2 <- coast3nmbuffst %>%
   dplyr::select(stratum_number2) %>%
   dplyr::distinct()
 
+strata.limits <- as.list(c("AllEPU" = allEPU2, 
+                           "MAB" = MAB2,
+                           "GB" = GB2,
+                           "GOM" = GOM2,
+                           "allother" = allother2))
+
+
 # Model selection 1 (spatial, spatio-temporal effects, no covariates) options and naming:
 # Use_REML = TRUE in fit_model
 # Season_knots + suffix below
@@ -205,9 +212,9 @@ New_Extrapolation_List <- readRDS(here::here("spatialdat/CustomExtrapolationList
 
 # list of data, settings, and directory for output for each option
 
-mod.season <- c("all_500", "fall_500", "spring_500") #includes n knots
+mod.season <- c("all_500","fall_500", "spring_500") # includes n knots
 
-mod.dat <- list(herringagg_stn_all, herringagg_stn_fall, herringagg_stn_spring)
+mod.dat <- list(herringagg_stn_all, herringagg_stn_fall, herringagg_stn_spring) # 
 
 names(mod.dat) <- mod.season
 
@@ -327,78 +334,81 @@ names(mod.eta) <- mod.covar
 # #########################################################
 # # Run model selection 2
 # 
-# for(season in mod.season){
-#   
-#   season <- season # c("annual_500_lennosst_ALLsplit")
-#   
-#   dat <- mod.dat[[season]]
-#   
-#   Q_ikbase  <-  NULL
-#   Q_iklen <- as.matrix(dat[,c("meanpisclen")])
-#   Q_iknum <- as.matrix(dat[,c("npiscsp")])
-#   Q_iklennum <- as.matrix(dat[,c("meanpisclen", "npiscsp")])
-#   Q_iksst <- as.matrix(dat[,c("sstfill")])
-#   Q_iklensst <- as.matrix(dat[,c("meanpisclen", "sstfill")])
-#   Q_iknumsst <- as.matrix(dat[,c("npiscsp", "sstfill")])
-#   Q_iklennumsst <- as.matrix(dat[,c("meanpisclen", "npiscsp", "sstfill")])
-#   
-#   mod.Qik <- list(Q_ikbase, Q_iklen, 
-#                   Q_iknum, Q_iklennum,
-#                   Q_iksst, Q_iklensst, 
-#                   Q_iknumsst, Q_iklennumsst,
-#                   Q_ikbase, Q_ikbase)
-#   
-#   names(mod.Qik) <- mod.covar
-#   
-#   for(covar in mod.covar) {
-#     
-#     name <- paste0(season,"_", covar)
-#     
-#     working_dir <- here::here(sprintf("herringpyindex/modsel2/allagg_%s/", name))
-#     
-#     if(!dir.exists(working_dir)) {
-#       dir.create(working_dir)
-#     }
-#     
-#     # winners of model selection 1
-#     use_anisotropy <- TRUE
-#     FieldConfig <- FieldConfig1
-#     
-#     OverdispersionConfig <- mod.eta[[covar]]
-#     Q_ik <- mod.Qik[[covar]]
-#     
-#     settings <- make_settings( n_x = 500, 
-#                                Region = "northwest_atlantic",
-#                                Version = "VAST_v14_0_1", #needed to prevent error from newer dev version number
-#                                #strata.limits = list('All_areas' = 1:1e5), full area
-#                                strata.limits = strata.limits,
-#                                purpose = "index2", 
-#                                bias.correct = FALSE,
-#                                use_anisotropy = use_anisotropy,
-#                                FieldConfig = FieldConfig,
-#                                RhoConfig = RhoConfig, #always default
-#                                OverdispersionConfig = OverdispersionConfig
-#     )
-#     
-#     
-#     fit <- fit_model(
-#       settings = settings, 
-#       extrapolation_list = New_Extrapolation_List,
-#       Lat_i = dat$Lat, 
-#       Lon_i = dat$Lon, 
-#       t_i = dat$Year, 
-#       b_i = as_units(dat[,'Catch_g'], 'g'),
-#       a_i = rep(1, nrow(dat)),
-#       v_i = dat$Vessel,
-#       Q_ik = Q_ik,
-#       #Use_REML = TRUE,
-#       working_dir = paste0(working_dir, "/"))
-#     
-#     #saveRDS(fit, file = paste0(working_dir, "/fit.rds"))
-#     
-#     # Plot results
-#     plot( fit,
-#           working_dir = paste0(working_dir, "/"))
-#     
-#   } # end covar loop
-# } # end season loop
+for(season in mod.season){
+
+  season <- season # c("annual_500_lennosst_ALLsplit")
+
+  dat <- mod.dat[[season]]
+
+  Q_ikbase  <-  NULL
+  Q_iklen <- as.matrix(dat[,c("meanpisclen")])
+  Q_iknum <- as.matrix(dat[,c("npiscsp")])
+  Q_iklennum <- as.matrix(dat[,c("meanpisclen", "npiscsp")])
+  Q_iksst <- as.matrix(dat[,c("sstfill")])
+  Q_iklensst <- as.matrix(dat[,c("meanpisclen", "sstfill")])
+  Q_iknumsst <- as.matrix(dat[,c("npiscsp", "sstfill")])
+  Q_iklennumsst <- as.matrix(dat[,c("meanpisclen", "npiscsp", "sstfill")])
+
+  mod.Qik <- list(Q_ikbase, Q_iklen,
+                  Q_iknum, Q_iklennum,
+                  Q_iksst, Q_iklensst,
+                  Q_iknumsst, Q_iklennumsst,
+                  Q_ikbase, Q_ikbase)
+
+  names(mod.Qik) <- mod.covar
+
+  for(covar in mod.covar) {
+
+    name <- paste0(season,"_", covar)
+
+    working_dir <- here::here(sprintf("herringpyindex/modsel2/allagg_%s/", name))
+
+    if(!dir.exists(working_dir)) {
+      dir.create(working_dir)
+    }
+
+    # winners of model selection 1
+    use_anisotropy <- TRUE
+    FieldConfig <- FieldConfig1
+
+    OverdispersionConfig <- mod.eta[[covar]]
+    Q_ik <- mod.Qik[[covar]]
+
+    settings <- make_settings( n_x = 500,
+                               Region = "northwest_atlantic",
+                               Version = "VAST_v14_0_1", #needed to prevent error from newer dev version number
+                               #strata.limits = list('All_areas' = 1:1e5), full area
+                               strata.limits = strata.limits,
+                               purpose = "index2",
+                               bias.correct = FALSE,
+                               use_anisotropy = use_anisotropy,
+                               FieldConfig = FieldConfig,
+                               RhoConfig = RhoConfig, #always default
+                               OverdispersionConfig = OverdispersionConfig
+    )
+
+
+    fit <- try(fit_model(
+      settings = settings,
+      extrapolation_list = New_Extrapolation_List,
+      Lat_i = dat$Lat,
+      Lon_i = dat$Lon,
+      t_i = dat$Year,
+      b_i = as_units(dat[,'Catch_g'], 'g'),
+      a_i = rep(1, nrow(dat)),
+      v_i = dat$Vessel,
+      Q_ik = Q_ik,
+      #Use_REML = TRUE,
+      working_dir = paste0(working_dir, "/"))
+    )
+
+    #saveRDS(fit, file = paste0(working_dir, "/fit.rds"))
+
+    # Plot results
+    if(!class(fit)=="try-error"){
+      plot( fit,
+            working_dir = paste0(working_dir, "/"))
+    }
+
+  } # end covar loop
+} # end season loop

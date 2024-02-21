@@ -42,7 +42,7 @@ library(flextable)
 
 This index uses herring observed in predator stomachs to evaluate potential herring trends for the 2025 RT assessment.
 
-Methods are based on the forage index for Bluefish [@gaichas_assessing_2023] and the State of the Ecosystem [forage index](https://noaa-edab.github.io/catalog/forage-fish-index.html). 
+Methods are based on the forage index for Bluefish [@gaichas_assessing_2023] and the State of the Ecosystem [forage index](https://noaa-edab.github.io/catalog/forage-fish-index.html). These indices were inspired by @ng_predator_2021, which specifically looked at herring in stomachs of predators, but for each predator separately.
 
 Will discuss a good starting point with the team, but for now start at 1973 and use data through 2022.
 
@@ -355,10 +355,10 @@ getmodinfo <- function(d.name){
     
   }else{
     
-    AIC <- NULL
-    converged <- NULL
-    fixedcoeff <- NULL
-    randomcoeff <- NULL
+    AIC <- NA_real_
+    converged <- NA_character_
+    fixedcoeff <- NA_integer_
+    randomcoeff <- NA_integer_
   }
   
   
@@ -474,10 +474,11 @@ Model selection 2 (covariates) options, FieldConfig default (all IID), with anis
 1.  "_eta10" =         Overdispersion (vessel effect) in first linear predictor (prey encounter)
 1.  "_eta11" =         Overdispersion (vessel effect) in both linear predictors (prey encounter and weight)
 
+Strangely, the fall models all errored out with the same error as above, parameter going to 0. Even the same configuration that worked using REML above.
 
 ```{r modsel2}
 # from each output folder in pyindex, 
-outdir <- here("pyindex_modsel2")
+outdir <- here("herringpyindex/modsel2")
 moddirs <- list.dirs(outdir) 
 moddirs <- moddirs[-1]
 # keep folder name
@@ -523,7 +524,11 @@ flextable::flextable(modselect2%>%
 
 ```
 
+For the annual and spring models, the same set of covariates from the full forage model were best supported by the data: number of predator species at a station, mean length of predators at a station, and SST at the station. 
 
+So it looks like the spring model above, which is bias corrected, is the preferred model based on model selection.
+
+Need to sort out what is going on with fall.
 
 # References
 
