@@ -1,0 +1,285 @@
+---
+title: "Copepod data for herring WG"
+author: "Sarah Gaichas"
+date: "`r Sys.Date()`"
+output:
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
+    code_fold: hide
+  bookdown::word_document2:
+    toc: true
+  bookdown::pdf_document2:
+    includes: 
+       in_header: latex/header1.tex
+    keep_tex: true
+link-citations: yes
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, # no code blocks in word doc
+                      message = FALSE,
+                      warning = FALSE)
+
+library(tidyverse)
+theme_set(theme_bw())
+library(here)
+
+library(officedown)
+library(officer)
+library(flextable)
+```
+
+# Zooplankton datasets in `ecodata`
+
+Maybe you can install from github if you aren't on a NOAA windows machine?
+
+https://noaa-edab.github.io/ecodata/
+
+`remotes::install_github("noaa-edab/ecodata",build_vignettes=TRUE)`
+
+Multiple datasets right now, some described here:
+
+https://noaa-edab.github.io/catalog/calanus_variation.html
+
+https://noaa-edab.github.io/catalog/wbts_mesozooplankton.html
+
+https://noaa-edab.github.io/catalog/zoo_abundance_anom.html
+
+https://noaa-edab.github.io/catalog/zoo_diversity.html
+
+
+How to call the datasets in R once ecodata is installed:
+
+`ecodata::zoo_abundance_anom`
+
+`ecodata::zoo_diversity`
+
+`ecodata::zoo_regime`
+
+`ecodata::zoo_strat_abun`
+
+Some visualizations not available on the catalog pages.
+
+# Abundance anomalies
+
+Documentation here:
+
+https://noaa-edab.github.io/tech-doc/zoo_abundance_anom.html
+
+Which zooplankton group anomalies are available? 
+
+```{r}
+unique(ecodata::zoo_abundance_anom$Var)
+```
+
+Ecosystem reporting areas: Ecosystem Production Units (EPUs)
+
+Definition used for zooplankton data *I think* 
+
+![EPU by ten minute squares](https://noaa-edab.github.io/tech-doc/images/EPUs.jpg)
+
+*Calanus finmarchicus* time series by EPU
+
+```{r}
+calfin <- ecodata::zoo_abundance_anom |>
+  dplyr::mutate(Value = as.numeric(Value)) |>
+  dplyr::filter(Var == "Calfin") |>
+  ggplot2::ggplot(aes(x = Time, y = Value)) +
+  ggplot2::geom_point() + 
+  ggplot2::geom_line() + 
+  ecodata::geom_gls() +
+  ecodata::theme_facet() +
+  ggplot2::facet_wrap(~EPU)
+
+calfin
+```
+
+# Calanus stages
+
+Documentation: https://noaa-edab.github.io/tech-doc/calanus-stage.html
+
+Mid Atlantic
+
+```{r}
+#Time series constants
+shade.alpha <- 0.3
+shade.fill <- "lightgrey"
+lwd <- 1
+pcex <- 2
+trend.alpha <- 0.5
+trend.size <- 2
+hline.size <- 1
+hline.alpha <- 0.35
+hline.lty <- "dashed"
+label.size <- 5
+hjust.label <- 1.5
+letter_size <- 4
+feeding.guilds <- c("Apex Predator","Piscivore","Planktivore","Benthivore","Benthos")
+x.shade.min <- 2012
+x.shade.max <- 2022
+#Function for custom ggplot facet labels
+label <- function(variable,value){
+  return(facet_names[value])
+}
+
+
+cal <- ecodata::calanus_stage %>% 
+  dplyr::filter(EPU == "MAB") %>% 
+  tidyr::separate(Var, into = c("Var", "season"), sep = "-") %>% 
+  filter(Var %in% c("c3", "c4", "c5", "adt"))
+
+cal$Var <- factor(cal$Var, levels = c("c3", "c4", "c5", "adt"))
+cal$season <- factor(cal$season, levels = c("Spring", "Summer", "Fall"))
+
+cal %>% 
+  ggplot2::ggplot(aes(x = Time, y = Value, color = Var, fill = Var)) +
+    ggplot2::annotate("rect", fill = shade.fill, alpha = shade.alpha,
+      xmin = x.shade.min , xmax = x.shade.max,
+      ymin = -Inf, ymax = Inf)+
+  ggplot2::geom_bar(stat = "identity")+
+  ggplot2::facet_wrap(~season)+
+  ggplot2::ylab("Calanus Stage (N/100m^3)") +
+  ggplot2::xlab(element_blank())+
+  ggplot2::ggtitle("MAB Calanus Stage Abundance") +
+  ggplot2::theme(legend.position = "bottom", 
+                 legend.title = element_blank())+
+  ecodata::theme_facet()+
+  scale_fill_manual(values = c("steelblue1","steelblue3", "coral1", "coral3"))+
+  scale_color_manual(values = c("steelblue1","steelblue3", "coral1", "coral3"))+
+  ecodata::theme_title()
+```
+
+
+Georges Bank
+
+```{r}
+cal <- ecodata::calanus_stage %>% 
+  dplyr::filter(EPU == "GB") %>% 
+  tidyr::separate(Var, into = c("Var", "season"), sep = "-") %>% 
+  filter(Var %in% c("c3", "c4", "c5", "adt"))
+
+cal$Var <- factor(cal$Var, levels = c("c3", "c4", "c5", "adt"))
+cal$season <- factor(cal$season, levels = c("Spring", "Summer", "Fall"))
+
+cal %>% 
+  ggplot2::ggplot(aes(x = Time, y = Value, color = Var, fill = Var)) +
+    ggplot2::annotate("rect", fill = shade.fill, alpha = shade.alpha,
+      xmin = x.shade.min , xmax = x.shade.max,
+      ymin = -Inf, ymax = Inf)+
+  ggplot2::geom_bar(stat = "identity")+
+  ggplot2::facet_wrap(~season)+
+  ggplot2::ylab("Calanus Stage (N/100m^3)") +
+  ggplot2::xlab(element_blank())+
+  ggplot2::ggtitle("GB Calanus Stage Abundance") +
+  ggplot2::theme(legend.position = "bottom", 
+                 legend.title = element_blank())+
+  ecodata::theme_facet()+
+  scale_fill_manual(values = c("steelblue1","steelblue3", "coral1", "coral3"))+
+  scale_color_manual(values = c("steelblue1","steelblue3", "coral1", "coral3"))
+
+
+# cal %>% 
+#   ggplot2::ggplot(aes(x = Time, y = Value, color = Var, fill = Var)) +
+#     ggplot2::annotate("rect", fill = shade.fill, alpha = shade.alpha,
+#       xmin = x.shade.min , xmax = x.shade.max,
+#       ymin = -Inf, ymax = Inf)+
+#   ggplot2::geom_bar(stat = "identity")+
+#   ggplot2::facet_wrap(~season, ncol = 1, scales = "free")+
+#   ggplot2::ylab("Calanus Stage (N/100m^3)") +
+#   ggplot2::xlab(element_blank())+
+#   ggplot2::ggtitle("GB Calanus Stage Abundance") +
+#   ggplot2::theme(legend.position = "bottom", 
+#                  legend.title = element_blank())+
+#   ecodata::theme_facet()+
+#   scale_fill_manual(values = c("steelblue1","steelblue3", "coral1", "coral3"))+
+#   scale_color_manual(values = c("steelblue1","steelblue3", "coral1", "coral3"))
+
+# cal %>% 
+#   ggplot2::ggplot() +
+#     ggplot2::annotate("rect", fill = shade.fill, alpha = shade.alpha,
+#       xmin = x.shade.min , xmax = x.shade.max,
+#       ymin = -Inf, ymax = Inf)+
+#   ggplot2::geom_line(aes(x = Time, y = meanday))+
+#   ggplot2::geom_point(aes(x = Time, y = meanday))+
+#   #ecodata::geom_gls( aes(x = Time, y = meanday)) +
+#   ggplot2::facet_wrap(~season, ncol = 3, scales = "free")+
+#   ggplot2::ylab("Mean day of year") +
+#   ggplot2::xlab(element_blank())+
+#   ggplot2::ggtitle("GB Calanus Stage Mean DOY") +
+#   #ggplot2::theme(legend.position = "bottom", 
+#   #               legend.title = element_blank())+
+#   ecodata::theme_facet()
+# 
+# cal %>% 
+#   ggplot2::ggplot() +
+#     ggplot2::annotate("rect", fill = shade.fill, alpha = shade.alpha,
+#       xmin = x.shade.min , xmax = x.shade.max,
+#       ymin = -Inf, ymax = Inf)+
+#   ggplot2::geom_line(aes(x = Time, y = ndays))+
+#   ggplot2::geom_point(aes(x = Time, y = ndays))+
+#   #ecodata::geom_gls( aes(x = Time, y = ndays)) +
+#   ggplot2::facet_wrap(~season, ncol = 3, scales = "free")+
+#   ggplot2::ylab("Number of sampling days") +
+#   ggplot2::xlab(element_blank())+
+#   ggplot2::ggtitle("GB Number of sampling days") +
+#   #ggplot2::theme(legend.position = "bottom", 
+#   #               legend.title = element_blank())+
+#   ecodata::theme_facet()
+```
+
+Gulf of Maine
+```{r}
+cal <- ecodata::calanus_stage %>% 
+  
+  tidyr::separate(Var, into = c("Var", "season"), sep = "-") %>% 
+  dplyr::filter(EPU == "GOM", 
+                Var %in% c( "c5", "adt")) %>%
+  dplyr::mutate(Var = recode(Var, "c5" = "Stage 5", 
+                             "adt" = "Adult" ))
+  #dplyr::mutate(newval=ifelse(ndays<10, NA, Value),
+  #              newday= (meanday/ 365))
+  
+
+cal$Var <- factor(cal$Var, levels = c( "Stage 5", "Adult"))
+cal$season <- factor(cal$season, levels = c("Spring", "Summer", "Fall"))
+
+cal %>% 
+  ggplot2::ggplot(aes(x = Time , y = Value, color = Var, fill = Var)) +
+    ggplot2::annotate("rect", fill = shade.fill, alpha = shade.alpha,
+      xmin = x.shade.min , xmax = x.shade.max,
+      ymin = -Inf, ymax = Inf)+
+  ggplot2::geom_bar(stat = "identity")+
+  ggplot2::facet_wrap(~season)+
+  ggplot2::ylab("Calanus Stage (N/100m^3)") +
+  ggplot2::xlab(element_blank())+
+  ggplot2::ggtitle("GOM Calanus Stage Abundance") +
+  ggplot2::theme(legend.position = "bottom", 
+                 legend.title = element_blank())+
+  ecodata::theme_facet()+
+  scale_fill_manual(values = c("steelblue1", "coral1"))+
+  scale_color_manual(values = c("steelblue1", "coral1"))+
+  ecodata::theme_title()
+```
+
+# Other possibilities
+
+Scott Large has developed a VAST model looking at ECOMON zooplankton communities and how they have shifted over time.
+
+There should be a dataset that could be used to develop a spatial model of Cal fin or whatever other zooplankton categories similar to what Micah did for haddock.
+
+One could ask whether zooplankton of different types are still overlapping herring in space and time, or at least develop an index of zooplankton abundance that combines the information from multiple surveys at the footprint needed for the herring assessment.
+
+We could also try overlapping with Mark's spatial herring energy density info.
+
+# Questions for the WG
+
+What do we want? None of these are a great fit right now but could be worked with.
+
+Zooplankton indices could possibly be clarified through background work in the ESP.
+
+Thoughts?
+
+
