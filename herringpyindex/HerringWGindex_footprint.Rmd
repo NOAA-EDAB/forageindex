@@ -30,7 +30,10 @@ library(here)
 
 library(officedown)
 library(officer)
-library(flextable)
+library(dendextend)
+library(flextable) #hopefully makes actual tables in word
+set_flextable_defaults(font.size = 11, padding = 3,
+                       fonts_ignore=TRUE) #for latex
 library(sf)
 library(patchwork)
 # op_section <- prop_section(type = "continuous")
@@ -71,13 +74,144 @@ VAST models were run using the script `VASTunivariate_seasonalherringindex.R` in
 
 The predator list used in initial runs was the same used for bluefish diet, which includes herring and 19 other prey. Therefore it included predators that may feed on smaller forage fish (squids). 
 
+This is the full piscivore list, derived from Brian Smith's prey similarity matrix and using cluster analysis to identify the predator/sizes that have highest diet similarity to all size classes of bluefish:
+
+```{r pisclistcalc}
+
+# object is called `allfh`
+load(here("fhdat/allfh.Rdata"))
+
+#object is called allfh21
+load(here("fhdat/allfh21.Rdata"))
+
+#object is called allfh22
+load(here("fhdat/allfh22.Rdata"))
+
+# bind all NEFSC stomach datasets
+allfh <- allfh %>%
+  dplyr::bind_rows(allfh21) |>
+  dplyr::bind_rows(allfh22)
+
+dietoverlap <- read_csv(here("fhdat/tgmat.2022-02-15.csv"))
+
+d_dietoverlap <- dist(dietoverlap)
+
+# again directly from https://cran.r-project.org/web/packages/dendextend/vignettes/Cluster_Analysis.html
+hclust_methods <- c("ward.D", "single", "complete", "average", "mcquitty", 
+        "median", "centroid", "ward.D2")
+diet_dendlist <- dendlist()
+for(i in seq_along(hclust_methods)) {
+   hc_diet <- hclust(d_dietoverlap, method = hclust_methods[i])   
+   diet_dendlist <- dendlist(diet_dendlist, as.dendrogram(hc_diet))
+}
+names(diet_dendlist) <- hclust_methods
+
+# preds <- list()
+# 
+# for(i in 1:8) {
+#   dendi <- diet_dendlist[[i]]
+#   namei <- names(diet_dendlist)[i]
+#   labels(dendi) <- paste(as.character(names(dietoverlap[-1]))[order.dendrogram(dendi)],
+#                            "(",labels(dendi),")", 
+#                            sep = "")
+#   #preds[[namei]] <- partition_leaves(dendi)[[which_node(dendi, c("35", "36", "37"))]]
+#   preds[[namei]] <- partition_leaves(dendi)[[which_node(dendi, c("Bluefish..S(37)", "Bluefish..M(36)", "Bluefish..L(35)"))]]
+# 
+# }
+
+dendi <- diet_dendlist$complete
+
+labels(dendi) <- paste(as.character(names(dietoverlap[-1]))[order.dendrogram(dendi)],
+                           "(",labels(dendi),")", 
+                           sep = "")
+  
+pisccomplete <- partition_leaves(dendi)[[which_node(dendi, c("Bluefish..S(37)", "Bluefish..M(36)", "Bluefish..L(35)"))]]
+  
+
+sizedefs <- allfh %>% 
+  select(pdcomnam, sizecat, pdlen) %>% 
+  group_by(pdcomnam, sizecat) %>% 
+  summarize(minlen = min(pdlen), maxlen = max(pdlen))
+
+# add these in as a NEAMAP column
+# +  Summer Flounder 21-70 cm
+# +  Silver Hake 21-76 cm
+# +  Weakfish 26-50 cm
+# +  Atlantic Cod 81-150 cm 
+# +  Bluefish 3 – 118 cm
+# +  Striped Bass 31 – 120 cm
+# +  Spanish Mackerel 10 – 33.5 cm 
+# +  Spotted Sea Trout 15.5 – 34 cm 
+# +  Spiny Dogfish 36 – 117 cm
+# +  Goosefish 5 – 124 cm  
+
+NEAMAPpisc <- data.frame("comname" = c("Summer Flounder",
+                                       "Silver Hake", 
+                                       "Weakfish", 
+                                       "Atlantic Cod", 
+                                       "Bluefish", 
+                                       "Striped Bass", 
+                                       "Spanish Mackerel", 
+                                       "Spotted Sea Trout", 
+                                       "Spiny Dogfish", 
+                                       "Goosefish"),
+                         "mincm" = c(21, 21, 26, 81, 3, 31, 10, 15.5, 36, 5),
+                         "maxcm" = c(70, 76, 50, 150, 118, 120, 33.5, 34, 117, 124)
+                         ) %>%
+  dplyr::mutate(comname = stringr::str_to_sentence(comname),
+                NEAMAP = TRUE)
+
+
+pisccompletedf <- data.frame("COMNAME" = toupper(str_remove(pisccomplete, "\\..*")),
+                              "SizeCat" = str_remove(str_extract(pisccomplete, "\\..*[:upper:]+"), "\\.."),
+                              "feedguild" = "pisccomplete") %>%
+  left_join(sizedefs, by=c("COMNAME" = "pdcomnam", 
+                          "SizeCat" = "sizecat")) %>%
+  arrange(COMNAME, minlen)
+
+piscall <- pisccompletedf %>%
+  dplyr::mutate(comname = stringr::str_to_sentence(COMNAME)) %>%
+  dplyr::group_by(comname) %>%
+  dplyr::summarise(mincm = min(minlen),
+                   maxcm = max(maxlen),
+                   NEFSC = TRUE) %>%
+  dplyr::full_join(NEAMAPpisc) %>%
+  dplyr::mutate(survey = dplyr::case_when(NEFSC & NEAMAP ~ "Both",
+                                          NEFSC ~ "NEFSC",
+                                          NEAMAP ~ "NEAMAP")) %>%
+  dplyr::arrange(comname)
+
+flextable::flextable(piscall %>% dplyr::select(-c(NEFSC, NEAMAP))) %>%
+  flextable::set_header_labels(comname = 'Predator name', 
+                               #SizeCat = "Size category", 
+                               mincm = "Minimum length (cm)",
+                               maxcm = "Maximum length (cm)",
+                               survey = "Survey") %>%
+  flextable::set_caption("Predators with highest diet similarity to Bluefish, Northeast Fisheries Science Center (NEFSC, years 1973-2021) and Northeast Area Monitoring and Assessment Program (NEAMAP, years 2007-2021) databases.") %>%
+  #flextable::align_text_col(j=survey, align = "right", header = TRUE, footer = TRUE) %>%
+  #flextable::autofit()
+  flextable::width(width = c(3, 1, 1, 1))
+```
+
+
+Here is an alternative:
+
 
 
 ## Evaluate spatial footprint
 
+This depends on the predator list. For interest/sensitivity testing, I'll first use the piscivore predator list (full forage index predator field) to do the footprint.
+
+Then I'll look at how the footprint changes with different predator lists.
+
+Can run the model with each combination.
+
+
 # Results
 
 ## How many piscivore locations had herring?
+
+### Piscivore predator list
 
 Not that many. Seems a spring model will run anyway using the forage index configuration but a fall model will not.
 
@@ -231,6 +365,7 @@ Spring + Fall
 
 
 ## Now run models limiting strata to those with herring observations
+
 
 
 ## Fall model using forage index setup: failed
