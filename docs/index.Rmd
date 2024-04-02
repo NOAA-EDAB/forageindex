@@ -19,3 +19,5 @@ output: html_document
 <a href="https://noaa-edab.github.io/forageindex/HerringWGindex.html" target="_blank"> Documenting Herring WG index workflow - 14 Feb 2024 </a>
 
 <a href="https://noaa-edab.github.io/forageindex/ZooplanktonOverview.html" target="_blank"> Initial review of zooplankton indices for Herring WG - 27 March 2024 </a>
+
+<a href="https://noaa-edab.github.io/forageindex/HerringWGindex_footprint.html" target="_blank"> Adjustments to predator list and spatial footprint - 2 April 2024 </a>

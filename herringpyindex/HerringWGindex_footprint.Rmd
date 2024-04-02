@@ -49,7 +49,7 @@ This index uses herring observed in predator stomachs to evaluate potential herr
 
 Methods are based on the forage index for Bluefish [@gaichas_assessing_2023] and the State of the Ecosystem [forage index](https://noaa-edab.github.io/catalog/forage-fish-index.html). These indices were inspired by @ng_predator_2021, which specifically looked at herring in stomachs of predators, but for each predator separately.
 
-Will discuss a good starting point with the team, but for now start at 1973 and use data through 2022.
+Will discuss a good starting point with the team. Preliminary models started in 1973 and used data through 2022. Data are thin prior to 1982 and I can't bring in SST data from OISST before then, so for these examples we start in 1982. The herring RT model will start in 1987 so a 1982 start covers that.
 
 # Workflow
 
@@ -196,6 +196,52 @@ flextable::flextable(piscall %>% dplyr::select(-c(NEFSC, NEAMAP))) %>%
 
 Here is an alternative:
 
+Jim Gartland used the list of predators that had at least 5 locations with herring prey 1978-2019 across both NEFSC and NEAMAP surveys, but also only included predators sampled consistently over the full time series. 
+
+Let's count all possible herring observations by predator in NEFSC. They are in the table, but for the index lets leave out observations of eggs and larvae so this covers the sizes and ages modeled in the assessment. This is a count of stomachs. 
+
+```{r}
+preycount <- allfh %>%
+  filter(pdcomnam != "",
+         pynam %in% c("CLUPEA HARENGUS",
+                      "CLUPEIDAE",
+                      "CLUPEA HARENGUS SCALES",
+                      "CLUPEIDAE SCALES",
+                      "CLUPEA HARENGUS LARVAE",
+                      "CLUPEA HARENGUS EGGS",
+                      "CLUPEIDAE LARVAE",
+                      "CLUPEIDAE EGGS"
+         )) %>%
+  mutate(id = paste0(cruise6, "_", station)) |>
+  group_by(pdcomnam, pynam) %>%
+  summarise(count = n()) %>%
+  ungroup() |>
+  pivot_wider(names_from = pynam, values_from = count) |>
+  arrange(desc(`CLUPEA HARENGUS`))
+
+flextable::flextable(preycount)
+```
+
+Now a count of stations by predator with CLUPEA HARENGUS only
+
+```{r}
+AHstncount <- allfh %>%
+  filter(pdcomnam != "",
+         pynam %in% c("CLUPEA HARENGUS"
+         )) %>%
+  mutate(id = paste0(cruise6, "_", station)) |>
+  dplyr::select(pdcomnam, id) %>%
+  dplyr::distinct() %>%
+  group_by(pdcomnam) |>
+  summarise(count = n()) |>
+  arrange(desc(count))
+
+flextable::flextable(AHstncount)
+```
+
+
+Applying Jim's criteria (CLUPEA HARENGUS only in 5 or more stations across the dataset) we include everything down to herring.
+
 
 
 ## Evaluate spatial footprint
@@ -213,7 +259,7 @@ Can run the model with each combination.
 
 ### Piscivore predator list
 
-Not that many. Seems a spring model will run anyway using the forage index configuration but a fall model will not.
+Not that many. Seems a spring model will run anyway using the forage index configuration but a fall model will not. This is the full time series from the stomach data, we aren't using all of it in the model. 
 
 ```{r}
 herringagg_stn <- readRDS(here::here("fhdat/herringagg_stn_all_OISST_1982-2022.rds"))
@@ -277,7 +323,7 @@ flextable::colformat_double(tab1, big.mark = "", digits = 0)
 
 ## Evaluate spatial footprint by season
 
-Visual: stations with herring observations across all years by season
+Visual: stations with herring observations across all years by season, 1982-2022
 
 ```{r}
 herringagg_stn_fall <- herringagg_stn %>%
