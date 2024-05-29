@@ -242,6 +242,46 @@ flextable::flextable(AHstncount)
 
 Applying Jim's criteria (CLUPEA HARENGUS only in 5 or more stations across the dataset) we include everything down to herring.
 
+If we look at station counts by year to establish *consistent* sampling across the time series, do we drop any? These are all stations where the predator was sampled in a year, whether they had herring in stomachs or not.
+
+```{r}
+AHstncountpreds <- AHstncount |> dplyr::filter(count >= 5) |> dplyr::select(pdcomnam)
+
+sampstncountyr <- allfh %>%
+  dplyr::filter(pdcomnam != "",
+         pdcomnam %in% AHstncountpreds$pdcomnam) |>
+  dplyr::mutate(id = paste0(cruise6, "_", station)) |>
+  dplyr::select(year, pdcomnam, id) %>%
+  dplyr::distinct() %>%
+  dplyr::group_by(year, pdcomnam) |>
+  dplyr::summarise(count = n()) |>
+  tidyr::pivot_wider(names_from = year, values_from = count) 
+
+flextable::flextable(sampstncountyr)
+
+
+```
+
+I'll need to ask what we meant by consistent across the time series, but its possible that would drop striped bass and barndoor skate.
+
+Compare the number of stations with herring and the sampling across time from the piscivore list with Jim G's list:
+
+```{r}
+
+altpredlist <- AHstncountpreds |>
+  dplyr::mutate(comname = stringr::str_to_sentence(AHstncountpreds$pdcomnam))
+
+predlists <- piscall |>
+  dplyr::full_join(altpredlist)
+
+flextable::flextable(predlists)
+```
+
+
+The current NEAMAP input data includes the list of piscivores. I would need to request a different dataset to use the other list. That said, there weren't many herring in the NEAMAP dataset anyway.
+
+The main question for the WG is whether we want to include haddock and the skates, which are not in the piscivore dataset. This would also require a new NEAMAP pull.
+
 
 
 ## Evaluate spatial footprint
@@ -259,7 +299,7 @@ Can run the model with each combination.
 
 ### Piscivore predator list
 
-Not that many. Seems a spring model will run anyway using the forage index configuration but a fall model will not. This is the full time series from the stomach data, we aren't using all of it in the model. 
+Not that many. Seems a spring model will run anyway using the forage index configuration but a fall model will not. This is the full time series from the stomach data for piscivores, we aren't using all of it in the model. 
 
 ```{r}
 herringagg_stn <- readRDS(here::here("fhdat/herringagg_stn_all_OISST_1982-2022.rds"))
@@ -323,7 +363,7 @@ flextable::colformat_double(tab1, big.mark = "", digits = 0)
 
 ## Evaluate spatial footprint by season
 
-Visual: stations with herring observations across all years by season, 1982-2022
+Visual: stations with herring observations across all years by season, 1982-2022, using the piscivores list
 
 ```{r}
 herringagg_stn_fall <- herringagg_stn %>%
