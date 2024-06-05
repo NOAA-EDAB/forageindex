@@ -449,6 +449,105 @@ Spring + Fall
 
 ```
 
+How does this compare to herring survey strata (in green here)?
+
+```{r}
+# from Jon
+herring_spring <- c(01010, 01020, 01030, 01040, 01050, 01060, 01070, 01080, 01090, 
+                    01100, 01110, 01120, 01130, 01140, 01150, 01160, 01170, 01180, 
+                    01190, 01200, 01210, 01220, 01230, 01240, 01250, 01260, 01270, 
+                    01280, 01290, 01300, 01360, 01370, 01380, 01390, 01400, 01610, 
+                    01620, 01630, 01640, 01650, 01660, 01670, 01680, 01690, 01700, 
+                    01710, 01720, 01730, 01740, 01750, 01760)
+herring_fall <- c(01050, 01060, 01070, 01080, 01090, 01100, 01110, 01120, 01130, 
+                  01140, 01150, 01160, 01170, 01180, 01190, 01200, 01210, 01220, 
+                  01230, 01240, 01250, 01260, 01270, 01280, 01290, 01300, 01360, 
+                  01370, 01380, 01390, 01400)
+
+herring_springgrid <-  FishStatsUtils::northwest_atlantic_grid %>%
+  filter(stratum_number %in% herring_spring)
+
+herring_fallgrid <-  FishStatsUtils::northwest_atlantic_grid %>%
+  filter(stratum_number %in% herring_fall)
+
+Fall <- ggplot(data = ecodata::coast) +
+  geom_sf() + 
+  geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
+  geom_point(data = herring_fallgrid, aes(x = Lon, y = Lat),  colour = "green", size=0.05, alpha=0.1) +
+  geom_point(data = nonzerofall, aes(x = Lon, y = Lat), colour = "blue", size=0.5, alpha=1) +
+  coord_sf(xlim =c(-78.5, -65.5), ylim = c(33, 45)) + #zoomed to Hatteras and N
+  xlab("") +
+  ylab("") +
+  ggtitle("Fall herring in stomachs 1982-2022")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
+
+Spring <- ggplot(data = ecodata::coast) +
+  geom_sf() + 
+  geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
+  geom_point(data = herring_springgrid, aes(x = Lon, y = Lat),  colour = "green", size=0.05, alpha=0.1) +
+  geom_point(data = nonzerospring, aes(x = Lon, y = Lat), colour = "blue", size=0.5, alpha=1) +
+  coord_sf(xlim =c(-78.5, -65.5), ylim = c(33, 45)) + #zoomed to Hatteras and N
+  xlab("") +
+  ylab("") +
+  ggtitle("Spring herring in stomachs 1982-2022")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
+ 
+Spring + Fall
+
+```
+
+Distribution from NEFSC BTS tows
+
+```{r, eval=FALSE}
+
+survdat_nobio <- readRDS("~/Documents/0_Data/benthosindex/data/survdat_nobio.rds")
+
+survdat_herring_tows <- survdat_nobio$survdat |>
+  dplyr::filter(SVSPP == 32) |> # Atlantic herring
+  dplyr::select(CRUISE6, STATION, STRATUM, SVSPP, YEAR, SEASON, LAT, LON, ABUNDANCE, BIOMASS) |>
+  dplyr::distinct()
+
+saveRDS(survdat_herring_tows, here::here("herringpyindex/survdat_herring_tows.rds"))
+
+```
+
+```{r}
+survdat_herring_tows <- readRDS(here::here("herringpyindex/survdat_herring_tows.rds"))
+
+surv_herr_fall <- survdat_herring_tows |>
+  dplyr::filter(SEASON == "FALL",
+                YEAR > 1981)
+  
+surv_herr_spring <- survdat_herring_tows |>
+  dplyr::filter(SEASON == "SPRING",
+                YEAR > 1981)
+
+Fall <- ggplot(data = ecodata::coast) +
+  geom_sf() + 
+  geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
+  geom_point(data = herring_fallgrid, aes(x = Lon, y = Lat),  colour = "green", size=0.05, alpha=0.1) +
+  geom_point(data = surv_herr_fall, aes(x = LON, y = LAT), colour = "blue", size=0.5, alpha=1) +
+  coord_sf(xlim =c(-78.5, -65.5), ylim = c(33, 45)) + #zoomed to Hatteras and N
+  xlab("") +
+  ylab("") +
+  ggtitle("Fall herring NEFSC BTS 1982-2022")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
+
+Spring <- ggplot(data = ecodata::coast) +
+  geom_sf() + 
+  geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
+  geom_point(data = herring_springgrid, aes(x = Lon, y = Lat),  colour = "green", size=0.05, alpha=0.1) +
+  geom_point(data = surv_herr_spring, aes(x = LON, y = LAT), colour = "blue", size=0.5, alpha=1) +
+  coord_sf(xlim =c(-78.5, -65.5), ylim = c(33, 45)) + #zoomed to Hatteras and N
+  xlab("") +
+  ylab("") +
+  ggtitle("Spring herring NEFSC BTS 1982-2022")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
+ 
+Spring + Fall
+```
+
+I think we can define the fall model domain southern extent using the herring BTS strata.
 
 ## Now run models limiting strata to those with herring observations
 
@@ -553,7 +652,7 @@ SOEinputs <- function(infile, season, outfile) {
   forageindex$Var <- stringr::str_c(season, forageindex$Var, sep = " ")
   
   #readr::write_csv(forageindex, outfile)
-  saveRDS(forageindex, outfile)
+  #saveRDS(forageindex, outfile)
   
 } 
 
