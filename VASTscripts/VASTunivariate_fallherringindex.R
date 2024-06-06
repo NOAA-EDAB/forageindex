@@ -89,10 +89,29 @@ herring_fall <- c(01050, 01060, 01070, 01080, 01090, 01100, 01110, 01120, 01130,
                   01230, 01240, 01250, 01260, 01270, 01280, 01290, 01300, 01360, 
                   01370, 01380, 01390, 01400)
 
-MAB <- c(1010:1080, 1100:1120, 1600:1750, 3010:3450, 3470, 3500, 3510)
+MAB <- c(1010:1080, 1100:1120, 1600:1750, 3010:3450, 3470, 3500, 3510) #spring
+SNE <- c(1050:1080, 1100:1120) # fall
 GB  <- c(1090, 1130:1210, 1230, 1250, 3460, 3480, 3490, 3520:3550)
 GOM <- c(1220, 1240, 1260:1290, 1360:1400, 3560:3830)
 SS  <- c(1300:1352, 3840:3990)
+
+# spring herring NEFSC BTS
+her_spr <- FishStatsUtils::northwest_atlantic_grid %>% 
+  dplyr::filter(stratum_number %in% herring_spring) %>%
+  dplyr::select(stratum_number) %>%
+  dplyr::distinct()
+
+# fall herring NEFSC BTS
+her_fall <- FishStatsUtils::northwest_atlantic_grid %>% 
+  dplyr::filter(stratum_number %in% herring_fall) %>%
+  dplyr::select(stratum_number) %>%
+  dplyr::distinct()
+
+# for fall models
+SNE <- FishStatsUtils::northwest_atlantic_grid %>% 
+  dplyr::filter(stratum_number %in% SNE) %>%
+  dplyr::select(stratum_number) %>%
+  dplyr::distinct()
 
 MAB2 <- FishStatsUtils::northwest_atlantic_grid %>% 
   dplyr::filter(stratum_number %in% MAB) %>%
@@ -128,6 +147,11 @@ allEPU2 <- FishStatsUtils::northwest_atlantic_grid %>%
   dplyr::filter(stratum_number %in% c(MAB, GB, GOM, SS)) %>%
   dplyr::select(stratum_number) %>%
   dplyr::distinct()
+ 
+allEPUfall <- FishStatsUtils::northwest_atlantic_grid %>%  
+  dplyr::filter(stratum_number %in% c(SNE, GB, GOM, SS)) %>%
+  dplyr::select(stratum_number) %>%
+  dplyr::distinct()
 
 # # configs same FieldConfig as below but formatted differently
 # FieldConfig <- c(
@@ -158,17 +182,24 @@ OverdispersionConfig	<- c("eta1"=0, "eta2"=0)
 # eta1 = vessel effects on prey encounter rate
 # eta2 = vessel effects on prey weight
 
-strata.limits <- as.list(c("AllEPU" = allEPU2, 
+strata.limits.spring <- as.list(c("AllEPU" = allEPU2, 
                            "MAB" = MAB2,
                            "GB" = GB2,
                            "GOM" = GOM2,
-                           "allother" = allother2))
+                           "herring_spring" = her_spr))
 
-settings = make_settings( n_x = 500, 
+strata.limits.fall <- as.list(c("AllEPUfall" = allEPUfall, 
+                           "SNE" = SNE,
+                           "GB" = GB2,
+                           "GOM" = GOM2,
+                           "herring_fall" = her_fall))
+
+
+settings.spring = make_settings( n_x = 500, 
                           Region = "northwest_atlantic",
                           Version = "VAST_v14_0_1", #needed to prevent error from newer dev version number
                           #strata.limits = list('All_areas' = 1:1e5), full area
-                          strata.limits = strata.limits,
+                          strata.limits = strata.limits.spring,
                           purpose = "index2", 
                           bias.correct = TRUE,
                           #use_anisotropy = FALSE,
@@ -178,17 +209,29 @@ settings = make_settings( n_x = 500,
                           OverdispersionConfig = OverdispersionConfig
                           )
 
+settings.fall = make_settings( n_x = 500, 
+                                 Region = "northwest_atlantic",
+                                 Version = "VAST_v14_0_1", #needed to prevent error from newer dev version number
+                                 #strata.limits = list('All_areas' = 1:1e5), full area
+                                 strata.limits = strata.limits.fall,
+                                 purpose = "index2", 
+                                 bias.correct = TRUE,
+                                 #use_anisotropy = FALSE,
+                                 #fine_scale = FALSE,
+                                 #FieldConfig = FieldConfig,
+                                 #RhoConfig = RhoConfig,
+                                 OverdispersionConfig = OverdispersionConfig
+)
 
-New_Extrapolation_List <- readRDS(here::here("spatialdat/CustomExtrapolationList.rds"))
 
 # select dataset and set directory for output
 
 #########################################################
 # Run model fall
 
-season <- c("fall_500_lennosst_ALLsplit_biascorrect")
+season <- c("fall_500_lennosst_biascorrect")
 
-working_dir <- here::here(sprintf("herringpyindex/allagg_%s/", season))
+working_dir <- here::here(sprintf("herringpyindex/fallfoot_%s/", season))
 
 if(!dir.exists(working_dir)) {
   dir.create(working_dir)
@@ -198,8 +241,8 @@ if(!dir.exists(working_dir)) {
 #herringagg_stn_fall <- herringagg_stn_fall %>% filter(Year<1990)                       
 
 fit <- fit_model(
-  settings = settings, 
-  extrapolation_list = New_Extrapolation_List,
+  settings = settings.fall, 
+  #extrapolation_list = New_Extrapolation_List,
   Lat_i = herringagg_stn_fall$Lat, 
   Lon_i = herringagg_stn_fall$Lon, 
   t_i = herringagg_stn_fall$Year, 
@@ -222,9 +265,9 @@ plot( fit,
 ######################################################
 # Run model spring
 
-season <- c("spring_500_lennosst_ALLsplit_biascorrect")
+season <- c("spring_500_lennosst_biascorrect")
 
-working_dir <- here::here(sprintf("herringpyindex/allagg_%s/", season))
+working_dir <- here::here(sprintf("herringpyindex/springfoot_%s/", season))
 
 if(!dir.exists(working_dir)) {
   dir.create(working_dir)
@@ -233,8 +276,8 @@ if(!dir.exists(working_dir)) {
 # subset for faster testing
 #herringagg_stn_spring <- herringagg_stn_spring %>% filter(Year<1990) 
 
-fit <- fit_model( settings = settings,  
-                 extrapolation_list = New_Extrapolation_List,
+fit <- fit_model( settings = settings.spring,  
+                 #extrapolation_list = New_Extrapolation_List,
                  Lat_i = herringagg_stn_spring[,'Lat'], 
                  Lon_i = herringagg_stn_spring[,'Lon'], 
                  t_i = herringagg_stn_spring[,'Year'], 
