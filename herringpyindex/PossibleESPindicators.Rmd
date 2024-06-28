@@ -1,0 +1,277 @@
+---
+title: "Herring ESP potential indicators"
+author: "Sarah Gaichas"
+date: "`r Sys.Date()`"
+output:
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
+    code_fold: hide
+  bookdown::word_document2:
+    toc: true
+  bookdown::pdf_document2:
+    includes: 
+       in_header: latex/header1.tex
+    keep_tex: true
+link-citations: yes
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, # no code blocks in word doc
+                      message = FALSE,
+                      warning = FALSE,
+                      fig.asp=0.35)
+
+library(tidyverse)
+theme_set(theme_bw())
+library(here)
+
+library(officedown)
+library(officer)
+library(flextable)
+
+library(sf)
+library(patchwork)
+```
+
+# Introduction
+
+This document visualizes existing datasets, MOST OF WHICH ARE NOT SPECIFIC TO HERRING.
+
+That said, herring survey strata in the fall look a lot like the combined Gulf of Maine (GOM) and Georges Bank (GB).
+
+Herring strata in the spring look like the full shelf, GOM, GB, and the Mid Atlantic Bight (MAB).
+
+```{r, fig.asp=1}
+
+# from Jon
+herring_spring <- c(01010, 01020, 01030, 01040, 01050, 01060, 01070, 01080, 01090, 
+                    01100, 01110, 01120, 01130, 01140, 01150, 01160, 01170, 01180, 
+                    01190, 01200, 01210, 01220, 01230, 01240, 01250, 01260, 01270, 
+                    01280, 01290, 01300, 01360, 01370, 01380, 01390, 01400, 01610, 
+                    01620, 01630, 01640, 01650, 01660, 01670, 01680, 01690, 01700, 
+                    01710, 01720, 01730, 01740, 01750, 01760)
+herring_fall <- c(01050, 01060, 01070, 01080, 01090, 01100, 01110, 01120, 01130, 
+                  01140, 01150, 01160, 01170, 01180, 01190, 01200, 01210, 01220, 
+                  01230, 01240, 01250, 01260, 01270, 01280, 01290, 01300, 01360, 
+                  01370, 01380, 01390, 01400)
+
+herring_springgrid <-  FishStatsUtils::northwest_atlantic_grid %>%
+  filter(stratum_number %in% herring_spring)
+
+herring_fallgrid <-  FishStatsUtils::northwest_atlantic_grid %>%
+  filter(stratum_number %in% herring_fall)
+
+survdat_herring_tows <- readRDS(here::here("herringpyindex/survdat_herring_tows.rds"))
+
+surv_herr_fall <- survdat_herring_tows |>
+  dplyr::filter(SEASON == "FALL",
+                YEAR > 1981)
+  
+surv_herr_spring <- survdat_herring_tows |>
+  dplyr::filter(SEASON == "SPRING",
+                YEAR > 1981)
+
+Fall <- ggplot(data = ecodata::coast) +
+  geom_sf() + 
+  geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
+  geom_point(data = herring_fallgrid, aes(x = Lon, y = Lat),  colour = "green", size=0.05, alpha=0.1) +
+  geom_point(data = surv_herr_fall, aes(x = LON, y = LAT), colour = "blue", size=0.5, alpha=.3) +
+  coord_sf(xlim =c(-78.5, -65.5), ylim = c(33, 45)) + #zoomed to Hatteras and N
+  xlab("") +
+  ylab("") +
+  ggtitle("Fall herring NEFSC BTS 1982-2022")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
+
+Spring <- ggplot(data = ecodata::coast) +
+  geom_sf() + 
+  geom_point(data = FishStatsUtils::northwest_atlantic_grid, aes(x = Lon, y = Lat),  colour = "coral4", size=0.05, alpha=0.1) +
+  geom_point(data = herring_springgrid, aes(x = Lon, y = Lat),  colour = "green", size=0.05, alpha=0.1) +
+  geom_point(data = surv_herr_spring, aes(x = LON, y = LAT), colour = "blue", size=0.5, alpha=.3) +
+  coord_sf(xlim =c(-78.5, -65.5), ylim = c(33, 45)) + #zoomed to Hatteras and N
+  xlab("") +
+  ylab("") +
+  ggtitle("Spring herring NEFSC BTS 1982-2022")+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"))
+ 
+Spring + Fall
+```
+
+The goal is to identify which are most promising for further refinement.
+
+Refinement can include evaluating different spatial footprints or seasons or both.
+
+# Recruitment indicators in `ecodata` or elsewhere
+
+## Upper TL: 
+
+### Egg/larval predators → haddock (Micah's work)
+
+### Competitors → gelantinous zooplankton
+
+```{r, fig.asp=.6}
+ecodata::plot_zoo_abundance_anom(report = "NewEngland", varName = "euphausid")
+```
+
+```{r, fig.asp=.35}
+ecodata::plot_zoo_abundance_anom(report = "MidAtlantic", varName = "euphausid")
+```
+
+
+### Seabirds 
+
+Common tern fledgling success at GOM nesting colonies
+
+```{r, fig.asp=.35}
+ecodata::plot_seabird_ne(report = "NewEngland", varName = "productivity")
+```
+
+
+## Lower TL: 
+
+### Primary production (Chlorophyll)
+
+```{r}
+ecodata::plot_annual_chl_pp(report = "NewEngland", EPU = "GOM", varName = "chl", plottype = "mean") + ggplot2::ggtitle("GOM Mean chl a")
+```
+```{r}
+ecodata::plot_annual_chl_pp(report = "NewEngland", EPU = "GB", varName = "chl", plottype = "mean") + ggplot2::ggtitle("GB Mean chl a")
+```
+
+```{r}
+ecodata::plot_annual_chl_pp(report = "MidAtlantic", EPU = "MAB", varName = "chl", plottype = "mean") + ggplot2::ggtitle("MAB Mean chl a")
+```
+
+### Small zooplankton timing and availability 
+
+Relative availability from SOE
+
+```{r, fig.asp=.6}
+ecodata::plot_zoo_abundance_anom(report = "NewEngland", varName = "copepod")
+```
+
+```{r}
+ecodata::plot_zoo_abundance_anom(report = "MidAtlantic", varName = "copepod")
+```
+
+### Large zooplankton timing and availability
+
+In GOM Wilkinson Basin there is evidence of changing Calanus timing (Fig. \ref{fig:zooplankton-season})
+
+```{r zooplankton-season, fig.cap="Dry mass of mesozooplankton captured with a 200µm ring net towed from the bottom to surface at a deep time series station  in Wilkinson Basin between 2005-2022 (Runge et al. 2023)."}
+
+magick::image_read("https://github.com/NOAA-EDAB/ecodata/blob/dev/workshop/images/WBTS_Mesozooplankton_BIomass_2005-2022_Runge_Dullaert-Jeffrey_Runge_2024.jpg?raw=true")
+
+```
+
+See also [zooplankton page](https://noaa-edab.github.io/forageindex/ZooplanktonOverview.html)
+
+See also [preliminary Cal fin indices](https://noaa-edab.github.io/zooplanktonindex/TestResults.html) annual and by season for herring areas
+
+Small copeopod indices in development
+
+## Physical: 
+
+### Temperature (surface and bottom)
+
+Its going up, [bottom temp in all seasons](https://noaa-edab.github.io/catalog/bottom_temp_comp.html)
+
+and [surface temp in all seasons](https://noaa-edab.github.io/catalog/seasonal_oisst_anom.html)
+
+BUT, I think what we want is number of days at or above a threshold by area, like this plot for scallops:
+
+![days exceeding scallop stress temperature 2022](https://github.com/NOAA-EDAB/ecodata/raw/master/workshop/images/bottom_temp_threshold_17_19_Elephant_Trunk.png){width=30%}
+
+
+
+For this we need a threshold/stressful temperature for herring eggs (bottom temp), larvae, and recruits (surface temp?)
+
+### Heatwave index
+
+```{r, fig.asp=.6}
+ecodata::plot_heatwave(report = "NewEngland")
+
+```
+```{r}
+ecodata::plot_heatwave(report = "MidAtlantic")
+```
+
+
+### Climate variability (ie NAO)
+
+### Larval transport processes (wind, currents)
+
+## Demographic: 
+
+### Fecundity
+
+### Body condition (deviation from expected weight at length)
+
+```{r}
+load("/Users/sarah.gaichas/Documents/0_Data/zooplanktonindex/data/AtlHerring_SpringCondition.RData")
+
+ggplot2::ggplot(condNSpp, ggplot2::aes(x = YEAR, y = MeanCond)) +
+  ggplot2::geom_line() + 
+  ggplot2::geom_ribbon(ggplot2::aes(ymin = MeanCond-(2*StdDevCond), ymax = MeanCond+(2*StdDevCond)), alpha = 0.3) +
+  ggplot2::ggtitle("Atlantic herring spring condition, courtesy Laurel Smith")
+```
+
+
+### Regime shift?
+
+# Mortality
+
+## Upper: 
+
+### Bluefin tuna
+
+Need indicator of timing/abundance in herring region
+
+### Marine Mammals
+
+Data on this may be hard to find
+
+### Demersal fish
+
+See Gartland et al in review, consumption estimates
+
+Overlap index with predators?
+
+## Lower: 
+
+### Zooplankton community structure
+
+Increases in diversity due to lower abundance of common species
+
+```{r}
+ecodata::plot_zoo_diversity(report = "NewEngland")
+```
+
+```{r}
+ecodata::plot_zoo_diversity(report = "MidAtlantic")
+```
+
+### Zooplankton abundance, phenology, and energy content
+
+Abundance and phenology see above
+
+### Menhaden competition/alternative stable states
+
+## Physical: 
+
+### Sea surface temperature 
+
+(see above)
+
+## Demographic
+
+### Energy density
+
+```{r, fig.asp=.7}
+ecodata::plot_energy_density()
+```
+
+
+
