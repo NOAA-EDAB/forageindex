@@ -22,5 +22,5 @@ output: html_document
 
 <a href="https://noaa-edab.github.io/forageindex/HerringWGindex_footprint.html" target="_blank"> Adjustments to predator list and spatial footprint - 2 April 2024 </a>
 
-<a href="https://noaa-edab.github.io/forageindex/PossibleESPIndicators.html" target="_blank"> Visualize potential recruitment and mortality indicators - 28 June 2024 </a>
+<a href="https://noaa-edab.github.io/forageindex/PossibleESPindicators.html" target="_blank"> Visualize potential recruitment and mortality indicators - 28 June 2024 </a>
 
