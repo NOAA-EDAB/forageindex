@@ -185,6 +185,25 @@ BUT, I think what we want is number of days at or above a threshold by area, lik
 ![days exceeding scallop stress temperature 2022](https://github.com/NOAA-EDAB/ecodata/raw/master/workshop/images/bottom_temp_threshold_17_19_Elephant_Trunk.png){width=30%}
 
 
+Or a simpler version just looking at timing of days exceeding by depth and area, we could tailor this to herring areas and temperature thresholds.
+
+This example shows bottom temperature for the year 2023 (black line) with range observed 1993-2023 at >15 and >24 C; Thermal habitat area is calculated by identifying 1/12 degree cells within a given EPU that are greater than or equal to the temperature threshold then taking the sum of all cell areas.
+
+We can turn into an index N days/prop area at or above a given threshold for any given spatial footprint (e.g. herring survey areas in spring and fall, inshore vs offshore areas given a definition).
+
+
+
+```{r, fig.asp=.6}
+ecodata::plot_thermal_habitat_area(report="NewEngland", EPU = "GOM")
+```
+
+```{r, fig.asp=.6}
+ecodata::plot_thermal_habitat_area(report="NewEngland", EPU = "GB")
+```
+
+```{r, fig.asp=.6}
+ecodata::plot_thermal_habitat_area(report="MidAtlantic", EPU = "MAB")
+```
 
 For this we need a threshold/stressful temperature for herring eggs (bottom temp), larvae, and recruits (surface temp?)
 
