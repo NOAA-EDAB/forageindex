@@ -2,6 +2,7 @@
 # October 2023
 #   This one is updating with 2022 NEFSC and NEAMAP data and OISST
 #   To be used in the 2024 State of the Ecosystem report
+# October 2024, added Brian's new input dataset, all else the same
 
 library(tidyverse)
 library(here)
@@ -9,21 +10,32 @@ library(dendextend)
 
 # Load NEFSC stomach data received from Brian Smith
 
+# New full dataset Septemer 2024 from https://drive.google.com/drive/folders/11aJkYoE1eVExKig-9rcMrgJ0V_GBIgkn
+# downloaded datafile allfh.rmd.epu.Rdata and put it in my fhdat folder on this repo
+
 # object is called `allfh`
-load(here("fhdat/allfh.Rdata"))
+load(here("fhdat/allfh.rmd.epu.Rdata"))
 
-#object is called allfh21
-load(here("fhdat/allfh21.Rdata"))
-
-#object is called allfh22
-load(here("fhdat/allfh22.Rdata"))
-
-# bind all NEFSC stomach datasets
-allfh <- allfh %>%
-  dplyr::bind_rows(allfh21) |>
-  dplyr::bind_rows(allfh22)
+# Prior to Oct 2024, datasets were appended
+# object is called `allfh`
+# load(here("fhdat/allfh.Rdata"))
+# 
+# #object is called allfh21
+# load(here("fhdat/allfh21.Rdata"))
+# 
+# #object is called allfh22
+# load(here("fhdat/allfh22.Rdata"))
+# 
+# # bind all NEFSC stomach datasets
+# allfh <- allfh %>%
+#   dplyr::bind_rows(allfh21) |>
+#   dplyr::bind_rows(allfh22)
 
 ###############################################################################
+# 2024 note: diet overlap could be updated with new diet data, but 
+# I DONT WANT THE PREDATOR LIST TO CHANGE SLIGHTLY EVERY YEAR WITHOUT TESTING
+# Revisit after several years, do comparisons, then decide whether to update
+#
 # read predator similarity info to generate predator list
 # Input NEFSC food habits overlap matrix:
 
@@ -474,4 +486,6 @@ dietstn_OISST_merge <- dietstn_OISST %>%
 
 bluepyagg_stn_all_OISST <- left_join(bluepyagg_stn_all, dietstn_OISST_merge)
 
-saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_1982-2022.rds"))
+#saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_1982-2022.rds"))
+saveRDS(bluepyagg_stn_all_OISST, here("fhdat/bluepyagg_stn_all_OISST_1982-2023.rds"))
+
