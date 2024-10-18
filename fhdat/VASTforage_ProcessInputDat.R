@@ -326,7 +326,7 @@ bluepyagg_stn_all <- left_join(bluepyagg_stn_all, NEAMAPidSST, by="id") %>%
 ###############################################################################
 #Now match stations to OISST
 
-#make an SST dataframe for 2022! Add to saved sst_data in data-raw/gridded
+#make an SST dataframe for 2023! Add to saved sst_data in data-raw/gridded
 
 library(sf)
 library(raster)
@@ -396,16 +396,17 @@ raster_to_sstdf <- function(brick,
 
 varname <- "sst"
 
-# 1985-2021 previously pulled, processed and stored. add 2022.
+# 1985-2022 previously pulled, processed and stored. add 2023.
 # add 1981-1984 to extend back in time. No OISST before 1981.
 # 1981 is only Sept-Dec so don't use
 
-years <- #1982:1984 # 2022
+years <- 2023 #1982:1984 # 2022
 for(i in years) {
   name <- paste0(i, ".nc")
   dir.create(here::here("data-raw","gridded", "sst_data"), recursive = TRUE)
   filename <- here::here("data-raw","gridded", "sst_data", paste0("test_", i, ".grd"))
   url <- paste0("https://downloads.psl.noaa.gov/Datasets/noaa.oisst.v2.highres/sst.day.mean.", i, ".nc")
+  options(timeout = max(300, getOption("timeout")))
   download.file(url, destfile = name)
   
   text <- knitr::knit_expand(text = "test_{{year}} <- nc_to_raster(nc = name, varname = varname)
@@ -492,7 +493,8 @@ for(df in SSTdfs){
   
 }
 
-#saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST.rds"))
+# takes >10 minutes to run, save and tack on next years rather than full merge?
+saveRDS(dietstn_OISST, here("data-raw/dietstn_OISST_1982_2023.rds"))
 
 # Now join with OISST dataset
 
