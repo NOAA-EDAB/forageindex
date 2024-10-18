@@ -1,5 +1,5 @@
 # This is the exact VAST code used in Gaichas et al 2023, but with data years 
-# extended from 1973-2022
+# extended from 1973-2023
 # VAST attempt 2 univariate model as a script
 # modified from https://github.com/James-Thorson-NOAA/VAST/wiki/Index-standardization
 
@@ -12,7 +12,7 @@ library(VAST)
 
 # this dataset created in SSTmethods.Rmd
 
-bluepyagg_stn <- readRDS(here::here("fhdat/bluepyagg_stn_all_OISST_1982-2022.rds"))
+bluepyagg_stn <- readRDS(here::here("fhdat/bluepyagg_stn_all_OISST_1982-2023.rds"))
 
 # make SST column that uses surftemp unless missing or 0
 # there are 3 surftemp 0 values in the dataset, all with oisst > 15
