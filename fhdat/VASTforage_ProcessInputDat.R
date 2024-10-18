@@ -239,6 +239,26 @@ neamap_bluepreyagg_stn <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluef
          #surftemp = , 
          setdepth = depthm) 
 
+# Read in NEAMAP 2023 input from Jim Gartland, reformat with same names
+neamap_bluepreyagg_stn23 <- read_csv(here("fhdat/NEAMAP_Mean stomach weights_Bluefish Prey_Oct2024.csv")) %>%  
+  mutate(vessel = "NEAMAP") %>%
+  rename(id = station,
+         sumbluepywt = sumbluepreywt,
+         nbluepysp = nbfpreyspp,
+         #npreysp = ,
+         npiscsp = npiscspp,
+         nstomtot = nstomtot, 
+         meanbluepywt = meanbluepreywt,
+         meanpisclen = meanpisclen.simple, 
+         #varpisclen = ,
+         season_ng = season,
+         declat  = lat,
+         declon = lon,
+         bottemp = bWT,
+         #surftemp = , 
+         setdepth = depthm) 
+
+neamap_bluepreyagg_stn <- dplyr::bind_rows(neamap_bluepreyagg_stn, neamap_bluepreyagg_stn23)
 
 # combine NEAMAP and NEFSC
 bluepyagg_stn_all <-  nefsc_bluepyagg_stn %>%
@@ -264,6 +284,10 @@ NEFSCstations <- allfh %>%
 
 # Need NEAMAP SST update! This is the old file
 NEAMAPstationSST <- read.csv(here("fhdat/NEAMAP SST_2007_2022.csv"))
+
+NEAMAPstationSST23 <- read.csv(here("fhdat/NEAMAP SST_2023.csv"))
+
+NEAMAPstationSST <- dplyr::bind_rows(NEAMAPstationSST, NEAMAPstationSST23)
 
 NEAMAPstations <- NEAMAPstationSST %>%
   dplyr::mutate(id = station,
