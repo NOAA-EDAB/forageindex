@@ -1,5 +1,6 @@
-# This is the exact VAST code used in Gaichas et al 2023, but with data years 
+# This is the VAST code used in Gaichas et al 2023, but with data years 
 # extended from 1973-2023
+# AND NO CUSTOM EXTRAPOLATION GRID SO NO 3-nmile INSHORE STRATA
 # VAST attempt 2 univariate model as a script
 # modified from https://github.com/James-Thorson-NOAA/VAST/wiki/Index-standardization
 
@@ -43,7 +44,7 @@ bluepyagg_stn_fall <- bluepyagg_stn %>%
          npiscsp,
          #bottemp, #this leaves out many stations for NEFSC
          #surftemp, #this leaves out many stations for NEFSC
-         #oisst, #leaves out everything before 1982
+         oisst, #leaves out everything before 1982
          sstfill
          ) %>%
   na.omit() %>%
@@ -66,7 +67,7 @@ bluepyagg_stn_spring <- bluepyagg_stn %>%
          npiscsp,
          #bottemp, #this leaves out many stations for NEFSC
          #surftemp, #this leaves out many stations for NEFSC
-         #oisst, #leaves out everything before 1982
+         oisst, #leaves out everything before 1982
          sstfill
          ) %>%
   na.omit() %>%
@@ -91,6 +92,7 @@ GB  <- c(1090, 1130:1210, 1230, 1250, 3460, 3480, 3490, 3520:3550)
 GOM <- c(1220, 1240, 1260:1290, 1360:1400, 3560:3830)
 SS  <- c(1300:1352, 3840:3990)
 
+# using VAST built in grid because custom one is breaking Oct 2024
 MAB2 <- FishStatsUtils::northwest_atlantic_grid %>% 
   dplyr::filter(stratum_number %in% MAB) %>%
   dplyr::select(stratum_number) %>%
