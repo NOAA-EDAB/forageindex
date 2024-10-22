@@ -91,103 +91,39 @@ GB  <- c(1090, 1130:1210, 1230, 1250, 3460, 3480, 3490, 3520:3550)
 GOM <- c(1220, 1240, 1260:1290, 1360:1400, 3560:3830)
 SS  <- c(1300:1352, 3840:3990)
 
-MABGBinshore <- c(3010:3450, 3460, 3470, 3480, 3490, 3500, 3510, 3520:3550)
-
-MABGBoffshore <- c(1010:1080, 1090, 1100:1120,1130:1210, 1230, 1250, 1600:1750)
-
-coast3nmbuffst <- readRDS(here::here("spatialdat/coast3nmbuffst.rds"))
-
-MAB2 <- coast3nmbuffst %>% 
+MAB2 <- FishStatsUtils::northwest_atlantic_grid %>% 
   dplyr::filter(stratum_number %in% MAB) %>%
-  dplyr::select(stratum_number2) %>%
+  dplyr::select(stratum_number) %>%
   dplyr::distinct()
-
-# MAB state waters
-MAB2state <- MAB2 %>%
-  dplyr::filter(stratum_number2 %% 10 == 1) 
-
-# MAB federal waters
-MAB2fed <- MAB2 %>%
-  dplyr::filter(stratum_number2 %% 10 == 2) 
 
 # Georges Bank EPU
-GB2 <- coast3nmbuffst %>% 
+GB2 <- FishStatsUtils::northwest_atlantic_grid %>% 
   dplyr::filter(stratum_number %in% GB) %>%
-  dplyr::select(stratum_number2) %>%
+  dplyr::select(stratum_number) %>%
   dplyr::distinct()
 
-# GB state waters
-GB2state <- GB2 %>%
-  dplyr::filter(stratum_number2 %% 10 == 1) 
-
-#GB federal waters
-GB2fed <- GB2 %>%
-  dplyr::filter(stratum_number2 %% 10 == 2) 
-
-# whole bluefish domain MABG
-MABGB2 <- dplyr::bind_rows(MAB2, GB2)
-
-# MABGB state waters
-MABGBstate <- dplyr::bind_rows(MAB2state, GB2state)
-
-# MABGB federal waters
-MABGBfed <- dplyr::bind_rows(MAB2fed, GB2fed)
-
 # gulf of maine EPU (for SOE)
-GOM2 <- coast3nmbuffst %>%
+GOM2 <- FishStatsUtils::northwest_atlantic_grid %>% 
   dplyr::filter(stratum_number %in% GOM) %>%
-  dplyr::select(stratum_number2) %>%
+  dplyr::select(stratum_number) %>%
   dplyr::distinct()
 
 # scotian shelf EPU (for SOE)
-SS2 <- coast3nmbuffst %>%
+SS2 <- FishStatsUtils::northwest_atlantic_grid %>%  
   dplyr::filter(stratum_number %in% SS) %>%
-  dplyr::select(stratum_number2) %>%
+  dplyr::select(stratum_number) %>%
   dplyr::distinct()
 
-# previous bluefish strata
-bfinshore2 <- coast3nmbuffst %>%
-  dplyr::filter(stratum_number %in% bfinshore) %>%
-  dplyr::select(stratum_number2) %>%
-  dplyr::distinct()
-
-# additional new bluefish strata 2022
-bfoffshore2 <- coast3nmbuffst %>%
-  dplyr::filter(stratum_number %in% bfoffshore) %>%
-  dplyr::select(stratum_number2) %>%
-  dplyr::distinct()
-
-# all bluefish strata
-bfall2 <- dplyr::bind_rows(bfinshore2, bfoffshore2)
-
-# albatross inshore strata
-albinshore2 <- coast3nmbuffst %>%
-  dplyr::filter(stratum_number %in% setdiff(MABGBinshore, bfinshore)) %>%
-  dplyr::select(stratum_number2) %>%
-  dplyr::distinct()
-
-# Albold for WHAM input
-albbfinshore <- dplyr::bind_rows(albinshore2, bfinshore2)
-
-# Albnew for WHAM input
-albbfall <- dplyr::bind_rows(albinshore2, bfall2)
-
-# offshore of all bluefish survey strata
-MABGBothoffshore2 <- coast3nmbuffst %>%
-  dplyr::filter(stratum_number %in% setdiff(MABGBoffshore, bfoffshore)) %>%
-  dplyr::select(stratum_number2) %>%
-  dplyr::distinct()
-
-# needed to cover the whole northwest atlantic grid
-allother2 <- coast3nmbuffst %>%
-  dplyr::filter(!stratum_number %in% c(MAB, GB, GOM, SS)) %>%
-  dplyr::select(stratum_number2) %>%
-  dplyr::distinct()
+# needed to cover the whole northwest atlantic grid--lets try without
+ allother2 <- FishStatsUtils::northwest_atlantic_grid %>%
+   dplyr::filter(!stratum_number %in% c(MAB, GB, GOM, SS)) %>%
+   dplyr::select(stratum_number) %>%
+   dplyr::distinct()
 
 # all epus
-allEPU2 <- coast3nmbuffst %>%
+allEPU2 <- FishStatsUtils::northwest_atlantic_grid %>%  
   dplyr::filter(stratum_number %in% c(MAB, GB, GOM, SS)) %>%
-  dplyr::select(stratum_number2) %>%
+  dplyr::select(stratum_number) %>%
   dplyr::distinct()
 
 # # configs same FieldConfig as below but formatted differently
@@ -220,20 +156,12 @@ OverdispersionConfig	<- c("eta1"=0, "eta2"=0)
 # eta2 = vessel effects on prey weight
 
 strata.limits <- as.list(c("AllEPU" = allEPU2, 
-                           "MABGB" = MABGB2,
-                           "MABGBstate" = MABGBstate,
-                           "MABGBfed" = MABGBfed,
                            "MAB" = MAB2,
                            "GB" = GB2,
                            "GOM" = GOM2,
-                           "bfall" = bfall2,
-                           "bfin" = bfinshore2,
-                           "bfoff" = bfoffshore2,
-                           "MABGBalbinshore" = albinshore2,
-                           "MABGBothoffshore" = MABGBothoffshore2,
-                           "albbfin" = albbfinshore,
-                           "albbfall" = albbfall,
-                           "allother" = allother2))
+                           "SS" = SS2,
+                           "allother" = allother2
+                           ))
 
 settings = make_settings( n_x = 500, 
                           Region = "northwest_atlantic",
@@ -250,14 +178,14 @@ settings = make_settings( n_x = 500,
                           )
 
 
-New_Extrapolation_List <- readRDS(here::here("spatialdat/CustomExtrapolationList.rds"))
+#New_Extrapolation_List <- readRDS(here::here("spatialdat/CustomExtrapolationList.rds"))
 
 # select dataset and set directory for output
 
 #########################################################
 # Run model fall
 
-season <- c("fall_500_lennosst_ALLsplit_biascorrect")
+season <- c("fall_500_lennosst_EPUonly_biascorrect")
 
 working_dir <- here::here(sprintf("SOEpyindex/allagg_%s/", season))
 
@@ -270,7 +198,7 @@ if(!dir.exists(working_dir)) {
 
 fit <- fit_model(
   settings = settings, 
-  extrapolation_list = New_Extrapolation_List,
+  #extrapolation_list = New_Extrapolation_List,
   Lat_i = bluepyagg_stn_fall$Lat, 
   Lon_i = bluepyagg_stn_fall$Lon, 
   t_i = bluepyagg_stn_fall$Year, 
@@ -293,7 +221,7 @@ plot( fit,
 ######################################################
 # Run model spring
 
-season <- c("spring_500_lennosst_ALLsplit_biascorrect")
+season <- c("spring_500_lennosst_EPUonly_biascorrect")
 
 working_dir <- here::here(sprintf("SOEpyindex/allagg_%s/", season))
 
@@ -305,7 +233,7 @@ if(!dir.exists(working_dir)) {
 #bluepyagg_stn_spring <- bluepyagg_stn_spring %>% filter(Year<1990) 
 
 fit <- fit_model( settings = settings,  
-                 extrapolation_list = New_Extrapolation_List,
+                 #extrapolation_list = New_Extrapolation_List,
                  Lat_i = bluepyagg_stn_spring[,'Lat'], 
                  Lon_i = bluepyagg_stn_spring[,'Lon'], 
                  t_i = bluepyagg_stn_spring[,'Year'], 
