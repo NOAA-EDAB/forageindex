@@ -500,6 +500,31 @@ ggplot(splitoutput |> filter(Season =="spring",
 
 The spring comparison is what I was hoping for. I'm unclear on why the fall model is different in scale. 
 
+Plot them all on the reported scale
+
+```{r, fig.height=8}
+ggplot(splitoutput |> filter(#Season =="spring",
+                             Data %in% c("1982-2022",
+                                         "1982-2023")), 
+       aes(x=Time, y=Estimate, colour=Data)) +
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=Data), linetype = 0, alpha = 0.15)+
+  geom_point(aes(shape=Data))+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(Region~Season, scales = "free_y", ncol = 2) +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Forage biomass output by VAST")  +
+  ggtitle("Output comparison")+
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0)
+        legend.position = "bottom",
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
+```
+
+
 # Center of gravity exploration
 
 Has forage shifted along the coast?
