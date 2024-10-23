@@ -512,7 +512,8 @@ ggplot(splitoutput |> filter(#Season =="spring",
   geom_point(aes(shape=Data))+
   geom_line()+
   #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
-  facet_wrap(Region~Season, scales = "free_y", ncol = 2) +
+  facet_wrap(Region~Season, scales = "free_y", ncol = 2,
+              labeller = label_wrap_gen(multi_line=FALSE)) +
   #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
   ylab("Forage biomass output by VAST")  +
   ggtitle("Output comparison")+
@@ -531,42 +532,36 @@ Has forage shifted along the coast?
 
 ```{r, eval=FALSE}
 
-
 library(FishStatsUtils)
 
-fitfall <- VAST::reload_model(readRDS(here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/fit.rds")))
+getcogVAST <- function(d.name){
+  
+  fit <- VAST::reload_model(readRDS(paste0(d.name,"/fit.rds")))
+  
+  dir.create(paste0(d.name,"/test"))
+  
+  cogout <- FishStatsUtils::plot_range_index(Sdreport = fit$parameter_estimates$SD, 
+                                             Report = fit$Report, 
+                                             TmbData = fit$data_list,
+                                             year_labels = as.numeric(fit$year_labels),
+                                             years_to_plot = fit$years_to_plot,
+                                             Znames = colnames(fit$data_list$Z_xm),
+                                             PlotDir = paste0(d.name,"/test")) #already have plots, will delete this directory
+  
+  saveRDS(cogout, paste0(d.name,"/cogout.rds"))
+  
+  unlink(paste0(d.name,"/test"), recursive=TRUE) #removes directory with unneeded plots
+  
+}
 
-cogoutfall <- FishStatsUtils::plot_range_index(Sdreport = fitfall$parameter_estimates$SD, 
-                                           Report = fitfall$Report, 
-                                           TmbData = fitfall$data_list,
-                                           year_labels = as.numeric(fitfall$year_labels),
-                                           years_to_plot = fitfall$years_to_plot,
-                                           Znames = colnames(fitfall$data_list$Z_xm),
-                                           PlotDir = here::here("test")) #already have plots, will delete this directory
-
-saveRDS(cogoutfall, here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
-
-fitspring <- VAST::reload_model(readRDS(here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/fit.rds")))
-
-cogoutspring <- FishStatsUtils::plot_range_index(Sdreport = fitspring$parameter_estimates$SD, 
-                                           Report = fitspring$Report, 
-                                           TmbData = fitspring$data_list, 
-                                           year_labels = as.numeric(fitspring$year_labels),
-                                           years_to_plot = fitspring$years_to_plot,
-                                           Znames = colnames(fitspring$data_list$Z_xm),
-                                           PlotDir = here::here("test"))
-
-saveRDS(cogoutspring, here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
-
-unlink(here::here("test"), recursive=TRUE) #removes directory with unneeded plots
-
+purrr::map(newmods, getcogVAST)
 
 ```
 
 Fall center of gravity, forage index, significantly more North and East over time
 ```{r}
 
-cogoutfall <- readRDS(here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+cogoutfall <- readRDS(here::here("SOEpyindex/1982-2023/allagg_fall_500_lennosst_EPUonly_biascorrect/cogout.rds"))
 
 cogdat <- as.data.frame(cogoutfall$COG_Table) |>
   dplyr::mutate(direction = ifelse(m==1, "Eastward", "Northward"))
@@ -583,7 +578,7 @@ ggplot2::ggplot(cogdat, ggplot2::aes(x = Year, y = COG_hat)) +
 Spring center of gravity, forage index, no significant trend
 ```{r}
 
-cogoutspring <- readRDS(here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+cogoutspring <- readRDS(here::here("SOEpyindex/1982-2023/allagg_spring_500_lennosst_EPUonly_biascorrect/cogout.rds"))
 
 cogdat <- as.data.frame(cogoutspring$COG_Table) |>
   dplyr::mutate(direction = ifelse(m==1, "Eastward", "Northward"))

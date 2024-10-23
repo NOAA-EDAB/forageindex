@@ -31,10 +31,10 @@ SOEinputsCOG <- function(infile, season, outfile) {
 }
   
 # make data files
-SOEinputsCOG(infile = "SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/cogout.rds",
+SOEinputsCOG(infile = "SOEpyindex/1982-2023/allagg_fall_500_lennosst_EPUonly_biascorrect/cogout.rds",
           season = "Fall", 
           outfile = "SOEpyindex/fallforagecog.rds")
 
-SOEinputsCOG(infile = "SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/cogout.rds",
+SOEinputsCOG(infile = "SOEpyindex/1982-2023/allagg_spring_500_lennosst_EPUonly_biascorrect/cogout.rds",
           season = "Spring", 
           outfile = "SOEpyindex/springforagecog.rds")

@@ -6,41 +6,11 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 
-SOEinputs <- function(infile, season, outfile) {
+SOEinputs <- function(infile, season, stratlook, outfile) {
   
   splitoutput <- read.csv(infile)
   
-  # warning, hardcoded. obviously
-  stratlook <- data.frame(Stratum = c("Stratum_1",
-                                      "Stratum_2",
-                                      "Stratum_3",
-                                      "Stratum_4",
-                                      "Stratum_5",
-                                      "Stratum_6",
-                                      "Stratum_7",
-                                      "Stratum_8",
-                                      "Stratum_9",
-                                      "Stratum_10",
-                                      "Stratum_11",
-                                      "Stratum_12",
-                                      "Stratum_13",
-                                      "Stratum_14",
-                                      "Stratum_15"),
-                          Region  = c("AllEPU", 
-                                      "MABGB", 
-                                      "MABGBstate", 
-                                      "MABGBfed", 
-                                      "MAB",
-                                      "GB",
-                                      "GOM",
-                                      "bfall",
-                                      "bfin",
-                                      "bfoff",
-                                      "MABGBalbinshore",
-                                      "MABGBothoffshore",
-                                      "albbfin",
-                                      "albbfall",
-                                      "allother"))
+  stratlook <- stratlook
   
   forageindex <- splitoutput %>%
     left_join(stratlook) %>%
@@ -61,18 +31,67 @@ SOEinputs <- function(infile, season, outfile) {
   
 } 
 
+# warning, hardcoded. obviously
+stratlook_ALLsplit <- data.frame(Stratum = c("Stratum_1",
+                                    "Stratum_2",
+                                    "Stratum_3",
+                                    "Stratum_4",
+                                    "Stratum_5",
+                                    "Stratum_6",
+                                    "Stratum_7",
+                                    "Stratum_8",
+                                    "Stratum_9",
+                                    "Stratum_10",
+                                    "Stratum_11",
+                                    "Stratum_12",
+                                    "Stratum_13",
+                                    "Stratum_14",
+                                    "Stratum_15"),
+                        Region  = c("AllEPU", 
+                                    "MABGB", 
+                                    "MABGBstate", 
+                                    "MABGBfed", 
+                                    "MAB",
+                                    "GB",
+                                    "GOM",
+                                    "bfall",
+                                    "bfin",
+                                    "bfoff",
+                                    "MABGBalbinshore",
+                                    "MABGBothoffshore",
+                                    "albbfin",
+                                    "albbfall",
+                                    "allother"))
+
+stratlook_EPUonly <- data.frame(Stratum = c("Stratum_1",
+                                            "Stratum_2",
+                                            "Stratum_3",
+                                            "Stratum_4",
+                                            "Stratum_5",
+                                            "Stratum_6"),
+                                Region = c("AllEPU", 
+                                           "MAB",
+                                           "GB",
+                                           "GOM",
+                                           "SS",
+                                           "allother"))
+
+
 
 # make data files
 SOEinputs(infile = "SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/Index.csv",
           season = "Fall", 
+          stratlook = stratlook_EPUonly, 
            outfile = "SOEpyindex/fallforageindex.rds")
 
 SOEinputs(infile = "SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/Index.csv",
           season = "Spring", 
+          stratlook = stratlook_EPUonly,
            outfile = "SOEpyindex/springforageindex.rds")
 
 # SOEinputs(infile = "pyindex/allagg_annual_500_lennosst_ALLsplit_biascorrect/Index.csv",
-#           season = "Annual", 
+#           season = "Annual",
+#           stratlook = stratlook_ALLsplit,
 #            outfile = "toSOE/annualforageindex.rds")
 
 
