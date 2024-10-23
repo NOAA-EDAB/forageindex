@@ -24,4 +24,4 @@ output: html_document
 
 <a href="https://noaa-edab.github.io/forageindex/PossibleESPindicators.html" target="_blank"> Visualize potential recruitment and mortality indicators - 28 June 2024 </a>
 
-
+<a href="https://noaa-edab.github.io/forageindex/SOEforageindex_24issues.html" target="_blank"> Documenting amended SOE forage index workflow for 2025 SOE - 23 October 2024 </a>

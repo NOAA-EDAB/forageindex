@@ -40,7 +40,9 @@ library(flextable)
 
 I needed to compare the 1982-2022 submitted for the 2024 report with the 1982-2023 to be submitted for 2025 because a change to the VAST code caused my previous setup to break.
 
-I can no longer produce the inshore <3 nmi and offshore strata which used a custom extrapolation grid. The current run uses the built in grid and only estimates EPU level indices for the SOE.
+Also, its a full new input NEFSC food habits dataset, rather than tagging on years as was done in the past. NEAMAP just added one year from last year's submission.
+
+I can no longer produce the inshore <3 nmi and offshore strata which used a custom extrapolation grid. There may be a fix to estimate the bluefish assessment indices ([see here](https://github.com/James-Thorson-NOAA/FishStatsUtils/issues/96)), but the current run uses the built in grid and only estimates EPU level indices for the SOE.
 
 # Workflow
 
@@ -311,7 +313,7 @@ flextable::flextable(modselect %>%
                        dplyr::mutate(modname = str_extract(modname, '(?<=allagg_).*')) |>
                        dplyr::filter(timeseries %in% c("1982-2022", "1982-2023")) |>
                        dplyr::select(-c(use_anisotropy, 
-         omega1, omega2, epsilon1, epsilon2, 
+         omega1, omega2, epsilon1, epsilon2,
          beta1, beta2))) %>%
   flextable::set_header_labels(timeseries = "Data",
                                modname = "Model name",
@@ -414,7 +416,7 @@ ggplot(foragetsmean |> filter(Season =="spring",
 
 ```
 
-Trends look comparable. The difference looks loke the time series mean changing with the addition of 2023. So far so good. 
+Trends look comparable. The difference looks like the time series mean changing with the addition of 2023. So far so good. 
 
 ## Stomach spatial coverage
 
@@ -558,7 +560,7 @@ purrr::map(newmods, getcogVAST)
 
 ```
 
-Fall center of gravity, forage index, significantly more North and East over time
+Fall center of gravity, forage index, significantly more North and East over time (same as last year)
 ```{r}
 
 cogoutfall <- readRDS(here::here("SOEpyindex/1982-2023/allagg_fall_500_lennosst_EPUonly_biascorrect/cogout.rds"))
@@ -575,7 +577,7 @@ ggplot2::ggplot(cogdat, ggplot2::aes(x = Year, y = COG_hat)) +
 
 ```
 
-Spring center of gravity, forage index, no significant trend
+Spring center of gravity, forage index, significantly northward with the addition of 2023 data (no significant trends last year)
 ```{r}
 
 cogoutspring <- readRDS(here::here("SOEpyindex/1982-2023/allagg_spring_500_lennosst_EPUonly_biascorrect/cogout.rds"))
