@@ -1,0 +1,763 @@
+---
+title: "Forage Index update for 2025 SOE"
+subtitle: "Data updated through 2023"
+author: "Sarah Gaichas, James Gartland, Brian Smith, Anthony Wood, Elizabeth Ng, Michael Celestino,
+  Katie Drew, Abigail Tyrell, and James Thorson"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  bookdown::html_document2: 
+    toc: true
+    toc_float: true
+    code_fold: hide
+  bookdown::word_document2:
+    toc: true
+  bookdown::pdf_document2:
+    includes: 
+       in_header: latex/header1.tex
+    keep_tex: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, # no code blocks in word doc
+                      message = FALSE,
+                      warning = FALSE)
+
+library(tidyverse)
+theme_set(theme_bw())
+library(here)
+
+library(officedown)
+library(officer)
+library(flextable)
+# op_section <- prop_section(type = "continuous")
+# close_section <- prop_section(
+#     page_size = page_size(orient = "landscape"), 
+#     type = "continuous")
+
+```
+
+# Summary
+
+I needed to compare the 1982-2022 submitted for the 2024 report with the 1982-2023 to be submitted for 2025 because a change to the VAST code caused my previous setup to break.
+
+I can no longer produce the inshore <3 nmi and offshore strata which used a custom extrapolation grid. The current run uses the built in grid and only estimates EPU level indices for the SOE.
+
+# Workflow
+
+Operational updates to the forage index submitted to the State of the Ecosystem report are in the forageindex github repository: https://github.com/NOAA-EDAB/forageindex
+
+Data input files are in the folder `fhdat` and were processed with the script `VASTforage_ProcessInputDat.R` in that folder: https://github.com/NOAA-EDAB/forageindex/blob/main/fhdat/VASTforage_ProcessInputDat.R
+
+```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/fhdat/VASTforage_ProcessInputDat.R"), eval=FALSE}
+
+```
+
+
+For the 2024 report, VAST models were run using the script `VASTunivariate_seasonalforageindex_operational.R` in the folder `VASTscripts`: https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_seasonalforageindex_operational.R 
+
+That previous script fails for me under VAST v. ‘3.11.2’ and FishStatsUtils v. ‘2.13.1’. I also had to upgrade R to 4.4.1, all of this to run WHAM. 
+
+So, for the 2025 report I have used this script to get our indices in on time: https://github.com/NOAA-EDAB/forageindex/blob/main/VASTscripts/VASTunivariate_seasonalforageindex_SOE_EPUsonly.R 
+
+```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/refs/heads/main/VASTscripts/VASTunivariate_seasonalforageindex_SOE_EPUsonly.R"), eval=FALSE}
+
+```
+
+Model output was saved in the folder `SOEpyindex` for the time period submitted in 2024 plus the updated data: 1982-2023.
+
+The script to create the SOE forage indices from the VAST output is in the `SOEpyindex` folder: https://github.com/NOAA-EDAB/forageindex/blob/main/SOEpyindex/SOE-VASTForageIndices.R
+
+```{r, code = readLines("https://raw.githubusercontent.com/NOAA-EDAB/forageindex/main/SOEpyindex/SOE-VASTForageIndices.R"), eval=FALSE}
+
+```
+
+Code blocks below setup the index comparisons in the remainder of this document, where I compare only the 1982-2022 (2024 SOE) and 1982-2023 (2025 SOE) indices.
+
+```{r stratasets}
+# compare full custom strata set to to EPU only strata
+
+stratlook <- data.frame(Stratum = c("ALLsplit_Stratum_1",
+                                    "ALLsplit_Stratum_2",
+                                    "ALLsplit_Stratum_3",
+                                    "ALLsplit_Stratum_4",
+                                    "ALLsplit_Stratum_5",
+                                    "ALLsplit_Stratum_6",
+                                    "ALLsplit_Stratum_7",
+                                    "ALLsplit_Stratum_8",
+                                    "ALLsplit_Stratum_9",
+                                    "ALLsplit_Stratum_10",
+                                    "ALLsplit_Stratum_11",
+                                    "ALLsplit_Stratum_12",
+                                    "ALLsplit_Stratum_13",
+                                    "ALLsplit_Stratum_14",
+                                    "ALLsplit_Stratum_15"),
+                        Region  = c("AllEPU", 
+                                    "MABGB", 
+                                    "MABGBstate", 
+                                    "MABGBfed", 
+                                    "MAB",
+                                    "GB",
+                                    "GOM",
+                                    "bfall",
+                                    "bfin",
+                                    "bfoff",
+                                    "MABGBalbinshore",
+                                    "MABGBothoffshore",
+                                    "albbfin",
+                                    "albbfall",
+                                    "allother"))
+# new run has fewer strata
+stratlook2 <- data.frame(Stratum = c("EPUonly_Stratum_1",
+                                     "EPUonly_Stratum_2",
+                                     "EPUonly_Stratum_3",
+                                     "EPUonly_Stratum_4",
+                                     "EPUonly_Stratum_5",
+                                     "EPUonly_Stratum_6"),
+                         Region = c("AllEPU", 
+                                    "MAB",
+                                    "GB",
+                                    "GOM",
+                                    "SS",
+                                    "allother"))
+
+stratlookall <- dplyr::bind_rows(stratlook, stratlook2) 
+
+```
+
+```{r getmodinfoindex}
+
+# from each output folder in pyindex, 
+outdir <- here("SOEpyindex")
+moddirs <- list.dirs(outdir)
+# only get pred sensitivities and original full models
+fullfall <- grep("/allagg_fall_", moddirs, value = TRUE)
+fullspring <- grep("/allagg_spring_", moddirs, value = TRUE)
+moddirs <- c(fullfall, fullspring)
+# get original published version 1985-2021
+#outdir1 <- here("pyindex")
+#moddirs1 <- list.dirs(outdir1)
+#RTfall <- grep("pyindex/2022/allagg_fall_", moddirs1, value = TRUE)
+#RTspring <- grep("pyindex/2022/allagg_spring_", moddirs1, value = TRUE)
+#paperfall <- grep("pyindex/allagg_fall_", moddirs1, value = TRUE)
+#paperspring <- grep("pyindex/allagg_spring_", moddirs1, value = TRUE)
+#moddirs1 <- c(RTfall, RTspring, paperfall, paperspring)
+# keep folder name
+modnames <- list.dirs(outdir, full.names = FALSE)
+#modnames1 <- list.dirs(outdir1, full.names = FALSE)
+
+# function to apply extracting info
+getmodinfo <- function(d.name){
+  # read settings
+  modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+  modname <- modpath[length(modpath)]
+  modnamepre <- modpath[length(modpath)-1]
+  
+  settings <- read.table(file.path(d.name, "settings.txt"), comment.char = "",
+    fill = TRUE, header = FALSE)
+  
+  n_x <- as.numeric(as.character(settings[(which(settings[,1]=="$n_x")+1),2]))
+  grid_size_km <- as.numeric(as.character(settings[(which(settings[,1]=="$grid_size_km")+1),2]))
+  max_cells <- as.numeric(as.character(settings[(which(settings[,1]=="$max_cells")+1),2]))
+  use_anisotropy <- as.character(settings[(which(settings[,1]=="$use_anisotropy")+1),2])
+  fine_scale <- as.character(settings[(which(settings[,1]=="$fine_scale")+1),2])
+  bias.correct <- as.character(settings[(which(settings[,1]=="$bias.correct")+1),2])
+  
+  #FieldConfig
+  if(settings[(which(settings[,1]=="$FieldConfig")+1),1]=="Component_1"){
+    omega1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+2),2])
+    omega2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),1])
+    epsilon1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),2])
+    epsilon2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+5),1])
+    beta1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+6),2])
+    beta2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+7),1])
+  }
+  
+  if(settings[(which(settings[,1]=="$FieldConfig")+1),1]=="Omega1"){
+    omega1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),1])
+    omega2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),1])
+    epsilon1 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+3),2])
+    epsilon2 <- as.character(settings[(which(settings[,1]=="$FieldConfig")+4),2])
+    beta1 <- "IID"
+    beta2 <- "IID"
+  }
+  
+  
+  #RhoConfig
+  rho_beta1 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+3),1]))
+  rho_beta2 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+3),2]))
+  rho_epsilon1 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+4),1]))
+  rho_epsilon2 <- as.numeric(as.character(settings[(which(settings[,1]=="$RhoConfig")+4),2]))
+  
+  # read parameter estimates, object is called parameter_Estimates
+  load(file.path(d.name, "parameter_estimates.RData"))
+  
+  AIC <- parameter_estimates$AIC[1]  
+  converged <- parameter_estimates$Convergence_check[1]
+  fixedcoeff <- unname(parameter_estimates$number_of_coefficients[2])
+  randomcoeff <- unname(parameter_estimates$number_of_coefficients[3])
+  
+  #index <- read.csv(file.path(d.name, "Index.csv"))
+  
+  # return model attributes as a dataframe
+  out <- data.frame(modname = paste0(modnamepre,"_", modname),
+                    n_x = n_x,
+                    grid_size_km = grid_size_km,
+                    max_cells = max_cells,
+                    use_anisotropy = use_anisotropy,
+                    fine_scale =  fine_scale,
+                    bias.correct = bias.correct,
+                    omega1 = omega1,
+                    omega2 = omega2,
+                    epsilon1 = epsilon1,
+                    epsilon2 = epsilon2,
+                    beta1 = beta1,
+                    beta2 = beta2,
+                    rho_epsilon1 = rho_epsilon1,
+                    rho_epsilon2 = rho_epsilon2,
+                    rho_beta1 = rho_beta1,
+                    rho_beta2 = rho_beta2,
+                    AIC = AIC,
+                    converged = converged,
+                    fixedcoeff = fixedcoeff,
+                    randomcoeff = randomcoeff#,
+                    #index = index
+  )
+  	
+	return(out)
+
+}
+
+# getfitdat <- function(d.name){
+#   # read settings
+#   modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+#   modname <- modpath[length(modpath)]
+#   
+#   readRDS(file.path(d.name, "fit.rds"))
+#   nstations <- fit$data_list$n_i # this is grid size not input N stations
+#   out <- data.frame(modname = modname,
+#                     nstations = nstations
+#   )
+#   
+#   return(out)
+# }
+
+
+# function to apply extracting info
+getmodindex <- function(d.name){
+  # read settings
+  modpath <- stringr::str_split(d.name, "/", simplify = TRUE)
+  modname <- modpath[length(modpath)]
+  timeseries <- modpath[length(modpath)-1]
+  strata <- stringr::str_split(modname, "_", simplify = TRUE)[,5]
+  
+  if(file.exists(file.path(d.name,"Index.csv"))){
+    index <- read.csv(file.path(d.name, "Index.csv"))
+    
+    # return model indices as a dataframe
+    out <- data.frame(modname = paste0(timeseries,"_", modname),
+                      strata = strata,
+                      index
+    )
+  }else{
+    stopifnot()
+    out <- NULL
+  }
+  
+  
+  return(out)
+}
+
+moddirsall <- c(moddirs)#, moddirs1)
+
+modcompare <- purrr::map_dfr(moddirsall, getmodinfo)
+
+modcompareindex <- purrr::map_dfr(moddirsall, getmodindex)
+
+```
+
+# Check for convergence, etc
+
+```{r}
+modtable <- function(moddirs){
+  
+  # apply getmodinfo function to inout directories
+  modcompare <- purrr::map_dfr(moddirs, getmodinfo)
+  
+  modselect <- modcompare |>
+    dplyr::mutate(season = dplyr::case_when(stringr::str_detect(modname, "_fall_") ~ "Fall",
+                                            stringr::str_detect(modname, "spring") ~ "Spring",
+                                            stringr::str_detect(modname, "_all_") ~ "Annual",
+                                            TRUE ~ as.character(NA))) |>
+    dplyr::mutate(converged2 = dplyr::case_when(stringr::str_detect(converged, "no evidence") ~ "likely",
+                                                stringr::str_detect(converged, "is likely not") ~ "unlikely",
+                                                TRUE ~ as.character(NA))) |>
+    dplyr::mutate(timeseries = stringr::str_extract(modname, "[^_]+")) |>
+    #dplyr::mutate(modname = str_extract(modname, '(?<=allagg_).*')) |>
+    dplyr::group_by(timeseries, season) |>
+    #dplyr::mutate(deltaAIC = AIC-min(AIC)) |>
+    dplyr::select(timeseries, modname, season, #deltaAIC, 
+                  fixedcoeff,
+                  randomcoeff, use_anisotropy, 
+                  omega1, omega2, epsilon1, epsilon2, 
+                  beta1, beta2, AIC, converged2) |>
+    dplyr::arrange(timeseries, season, AIC)
+  
+  return(modselect)
+}
+
+modselect <- modtable(moddirs)
+
+flextable::flextable(modselect %>%
+                       dplyr::mutate(modname = str_extract(modname, '(?<=allagg_).*')) |>
+                       dplyr::filter(timeseries %in% c("1982-2022", "1982-2023")) |>
+                       dplyr::select(-c(use_anisotropy, 
+         omega1, omega2, epsilon1, epsilon2, 
+         beta1, beta2))) %>%
+  flextable::set_header_labels(timeseries = "Data",
+                               modname = "Model name",
+                               season = "Season",
+                               #deltaAIC = "dAIC",
+                               fixedcoeff = "N fixed",
+                               randomcoeff = "N random",
+                               converged2 = "Convergence") |>
+  flextable::set_caption("Convergence check for 2025 SOE submission relative to 2024.") %>%
+  flextable::fontsize(size = 9, part = "all") %>%
+  flextable::colformat_double(digits = 2) |>
+  flextable::set_table_properties(layout = "autofit", width = 1)
+
+# # lets only look at indices for converged models
+# modcompare_conv <- modselect |>
+#   dplyr::ungroup() |>
+#   dplyr::filter(converged2 == "likely") |>
+#   dplyr::select(modname) |>
+#   as.vector() |>
+#   unname() |>
+#   unlist()
+# 
+# moddirs_conv <-  moddirs[grepl(sprintf("\\.*(%s)$", paste(modcompare_conv, collapse = '|')), moddirs)]
+
+```
+
+
+# Trend comparisons
+
+## Methods change and adding one year
+
+Lets compare last year's 2024 SOE submission with the 2025 submission using the same model settings but without the custom extrapolation grid, and with one more year of data (2023).
+
+This is fall trend.
+
+```{r comptrend1, fig.cap="Trend comparison between fall forage indices using 1982-2022 (SOE 2024), and 1982-2023 (SOE 2025) with standard VAST grid.", fig.height=8}
+splitoutput <- modcompareindex %>%
+  dplyr::mutate(Season = modname |> map(str_split, pattern = "_") |> map_chr(c(1,3))) %>%
+  dplyr::mutate(Data = modname |> map(str_split, pattern = "_") |> map_chr(c(1,1))) %>% 
+  dplyr::mutate(modname = str_extract(modname, '(?<=allagg_).*')) |>
+  tidyr::unite("Stratum", c(strata, Stratum) ) |>
+  dplyr::left_join(stratlookall) %>%
+  dplyr::filter(Region %in% c("GOM", "GB", "MAB", "AllEPU", "allother")) %>%
+  dplyr::mutate(Type = ifelse(Region %in% c("GOM", "GB", "MAB"), "Ecoregion", "Coastwide"))
+
+foragemax <- max(splitoutput$Estimate)
+
+
+foragetsmean <- splitoutput %>%
+  dplyr::group_by(modname, Region) %>%
+  dplyr::mutate(fmean = mean(Estimate)) 
+
+
+ggplot(foragetsmean |> filter(Season =="fall",
+                             Data %in% c("1982-2022",
+                                         "1982-2023")), 
+       aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean, 
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point(aes(shape=Data))+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y", ncol = 1) +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Fall models: trend comparison") +
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0)
+        legend.position = "bottom",
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
+
+```
+
+This is spring trend.
+
+```{r comptrend2, fig.cap="Trend comparison between spring forage indices using 1982-2022 (SOE 2024), and 1982-2023 (SOE 2025) with standard VAST grid.", fig.height=8}
+
+ggplot(foragetsmean |> filter(Season =="spring",
+                             Data %in% c("1982-2022",
+                                         "1982-2023")), 
+       aes(x=Time, y=((Estimate-fmean)/fmean), colour=Data)) +
+  #geom_errorbar(aes(ymin=(Estimate+Std..Error.for.Estimate - fmean)/fmean,
+  #                  ymax=(Estimate-Std..Error.for.Estimate - fmean)/fmean))+
+  geom_point(aes(shape=Data))+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y", ncol = 1) +
+  #scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to time series mean")  +
+  ggtitle("Spring models: trend comparison")+
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0)
+        legend.position = "bottom",
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
+
+
+```
+
+Trends look comparable. The difference looks loke the time series mean changing with the addition of 2023. So far so good. 
+
+## Stomach spatial coverage
+
+Spatial coverage for stomachs in fall
+
+```{r}
+newmods <- moddirs[stringr::str_detect(moddirs,"EPUonly")]
+
+mapfall <- paste0(newmods[stringr::str_detect(newmods,"_fall_")], "/Data_by_year.png")
+
+knitr::include_graphics(mapfall) 
+```
+
+Spatial coverage for stomachs in spring
+
+```{r}
+mapspring <- paste0(newmods[stringr::str_detect(newmods,"_spring_")], "/Data_by_year.png")
+
+knitr::include_graphics(mapspring) 
+```
+
+# Scale comparisons
+
+We don't use scale much, but in case someone does here they are, scaled relative to the max observed across all datasets.
+
+## Methods change and adding one year
+
+Same comparisons as above: fall
+
+```{r compscale1, fig.cap="Scale comparison between fall forage indices using 1982-2022 (SOE 2024), and 1982-2023 (SOE 2025) with standard VAST grid.", fig.height=8}
+
+
+ggplot(splitoutput |> filter(Season =="fall",
+                             Data %in% c("1982-2022",
+                                         "1982-2023")), 
+       aes(x=Time, y=Estimate, colour=Data)) +
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=Data), linetype = 0, alpha = 0.15)+
+  geom_point(aes(shape=Data))+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y", ncol = 1) +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Fall models: scale comparison")+
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0)
+        legend.position = "bottom",
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
+
+```
+
+Spring
+
+```{r compscale2, fig.cap="Scale comparison between spring forage indices using 1982-2022 (SOE 2024), and 1982-2023 (SOE 2025) with standard VAST grid.", fig.height=8}
+  
+
+ggplot(splitoutput |> filter(Season =="spring",
+                             Data %in% c("1982-2022",
+                                         "1982-2023")), 
+       aes(x=Time, y=Estimate, colour=Data)) +
+  #geom_errorbar(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate))+
+  geom_ribbon(aes(ymin=Estimate+Std..Error.for.Estimate, ymax=Estimate-Std..Error.for.Estimate, fill=Data), linetype = 0, alpha = 0.15)+
+  geom_point(aes(shape=Data))+
+  geom_line()+
+  #acet_wrap(~fct_relevel(Type, "Ecoregion", "Bluefish"), scales = "free_y") +
+  facet_wrap(~Region, scales = "free_y", ncol = 1) +
+  scale_y_continuous(labels=function(x)round(x/foragemax, digits = 2))+
+  ylab("Relative forage biomass scaled to maximum")  +
+  ggtitle("Spring models: scale comparison")+
+  theme(#legend.position = c(1, 0),
+        #legend.justification = c(1, 0)
+        legend.position = "bottom",
+        legend.text = element_text(size=rel(0.5)),
+        legend.key.size = unit(0.5, 'lines'),
+        legend.title = element_text(size=rel(0.5)))
+
+
+```
+
+
+The spring comparison is what I was hoping for. I'm unclear on why the fall model is different in scale. 
+
+# Center of gravity exploration
+
+Has forage shifted along the coast?
+
+```{r, eval=FALSE}
+
+
+library(FishStatsUtils)
+
+fitfall <- VAST::reload_model(readRDS(here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/fit.rds")))
+
+cogoutfall <- FishStatsUtils::plot_range_index(Sdreport = fitfall$parameter_estimates$SD, 
+                                           Report = fitfall$Report, 
+                                           TmbData = fitfall$data_list,
+                                           year_labels = as.numeric(fitfall$year_labels),
+                                           years_to_plot = fitfall$years_to_plot,
+                                           Znames = colnames(fitfall$data_list$Z_xm),
+                                           PlotDir = here::here("test")) #already have plots, will delete this directory
+
+saveRDS(cogoutfall, here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+
+fitspring <- VAST::reload_model(readRDS(here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/fit.rds")))
+
+cogoutspring <- FishStatsUtils::plot_range_index(Sdreport = fitspring$parameter_estimates$SD, 
+                                           Report = fitspring$Report, 
+                                           TmbData = fitspring$data_list, 
+                                           year_labels = as.numeric(fitspring$year_labels),
+                                           years_to_plot = fitspring$years_to_plot,
+                                           Znames = colnames(fitspring$data_list$Z_xm),
+                                           PlotDir = here::here("test"))
+
+saveRDS(cogoutspring, here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+
+unlink(here::here("test"), recursive=TRUE) #removes directory with unneeded plots
+
+
+```
+
+Fall center of gravity, forage index, significantly more North and East over time
+```{r}
+
+cogoutfall <- readRDS(here::here("SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+
+cogdat <- as.data.frame(cogoutfall$COG_Table) |>
+  dplyr::mutate(direction = ifelse(m==1, "Eastward", "Northward"))
+
+ggplot2::ggplot(cogdat, ggplot2::aes(x = Year, y = COG_hat)) + 
+  ggplot2::geom_point() + 
+  ecodata::geom_gls() + 
+  ggplot2::labs(y = "Center of gravity, km") +
+  ggplot2::facet_wrap(~direction, scales = "free_y") + 
+  ecodata::theme_facet()
+
+```
+
+Spring center of gravity, forage index, no significant trend
+```{r}
+
+cogoutspring <- readRDS(here::here("SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/cogout.rds"))
+
+cogdat <- as.data.frame(cogoutspring$COG_Table) |>
+  dplyr::mutate(direction = ifelse(m==1, "Eastward", "Northward"))
+
+ggplot2::ggplot(cogdat, ggplot2::aes(x = Year, y = COG_hat)) + 
+  ggplot2::geom_point() + 
+  ecodata::geom_gls() + 
+  ggplot2::labs(y = "Center of gravity, km") +
+  ggplot2::facet_wrap(~direction, scales = "free_y") + 
+  ecodata::theme_facet()
+
+```
+
+update get function for ecodata to add cog to existing forage_index dataset
+```{r, eval=FALSE}
+## Forage Index
+raw.dir<- here::here("data-raw/")
+#ann<- "annualforageindex - Sarah Gaichas - NOAA Federal.rds"
+fal<- "fallforageindex - Sarah Gaichas - NOAA Federal.rds"
+spr<- "springforageindex - Sarah Gaichas - NOAA Federal.rds"
+falcog <- "fallforagecog.rds"
+sprcog <- "springforagecog.rds"
+
+get_forage_index <- function(save_clean = F){
+
+  #annual<-readRDS(file.path(raw.dir, ann))
+  fall<- readRDS(file.path(raw.dir, fal))
+  spring<-readRDS(file.path(raw.dir, spr))
+  fallcog <- readRDS(file.path(raw.dir, falcog))
+  springcog <-readRDS(file.path(raw.dir, sprcog))
+
+  forage_index<- rbind(fall, spring, fallcog, springcog)
+
+
+  if (save_clean){
+    usethis::use_data(forage_index, overwrite = T)
+  } else {
+    return(forage_index)
+  }
+}
+get_forage_index(save_clean = T)
+
+
+```
+
+update plot function
+```{r, eval=FALSE}
+
+plot_forage_index <- function(shadedRegion = NULL,
+                              report="MidAtlantic",
+                              varName = "index") {
+
+  setup <- ecodata::plot_setup(shadedRegion = shadedRegion,
+                               report=report)
+  
+  if (varName == "index") {
+    
+  if (report == "MidAtlantic") {
+    filterEPUs <- c("MAB")
+  } else {
+    filterEPUs <- c("GB", "GOM")
+  }
+
+  fix<- ecodata::forage_index |>
+    dplyr::filter(Var %in% c("Fall Forage Fish Biomass Estimate",
+                             "Spring Forage Fish Biomass Estimate"),
+                  EPU %in% filterEPUs) |>
+    dplyr::group_by(EPU) |>
+    dplyr::summarise(max = max(Value))
+
+  p <- ecodata::forage_index |>
+    dplyr::filter(Var %in% c("Fall Forage Fish Biomass Estimate",
+                             "Fall Forage Fish Biomass Estimate SE",
+                             "Spring Forage Fish Biomass Estimate",
+                             "Spring Forage Fish Biomass Estimate SE"),
+                  EPU %in% filterEPUs) |>
+    dplyr::group_by(EPU) |>
+    tidyr::separate(Var, into = c("Season", "A", "B", "C", "D", "Var")) |>
+    dplyr::mutate(Var = tidyr::replace_na(Var, "Mean")) |> #,
+                  #max = as.numeric(Value)) |>
+    tidyr::pivot_wider(names_from = Var, values_from = Value) |>
+    dplyr::left_join(fix) |>
+    dplyr::mutate(#Value = Value/resca,
+      Mean = as.numeric(Mean),
+      #max = as.numeric(Value),
+      Mean = Mean/max,
+      SE = SE/max,
+      Upper = Mean + SE,
+      Lower = Mean - SE) |>
+    ggplot2::ggplot(ggplot2::aes(x = Time, y = Mean, group = Season))+
+    ggplot2::annotate("rect", fill = setup$shade.fill, alpha = setup$shade.alpha,
+        xmin = setup$x.shade.min , xmax = setup$x.shade.max,
+        ymin = -Inf, ymax = Inf) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = Lower, ymax = Upper, fill = Season), alpha = 0.5)+
+    ggplot2::geom_point()+
+    ggplot2::geom_line()+
+    ggplot2::ggtitle("")+
+    ggplot2::ylab(expression("Relative forage biomass"))+
+    ggplot2::xlab(ggplot2::element_blank())+
+    ggplot2::facet_wrap(.~EPU)+
+    ecodata::geom_gls()+
+    ecodata::theme_ts()+
+    ecodata::theme_facet()+
+    ecodata::theme_title()
+
+    if (report == "NewEngland") {
+      p <- p +
+        ggplot2::theme(legend.position = "bottom",
+                       legend.title = ggplot2::element_blank())
+
+    }
+  }
+  
+  if (varName == "cog"){
+    
+    p <- ecodata::forage_index |>
+      dplyr::filter(Var %in% c("Fall Eastward Forage Fish Center of Gravity",
+                               "Fall Eastward Forage Fish Center of Gravity SE",
+                               "Fall Northward Forage Fish Center of Gravity",
+                               "Fall Northward Forage Fish Center of Gravity SE",
+                               "Spring Eastward Forage Fish Center of Gravity",
+                               "Spring Eastward Forage Fish Center of Gravity SE",
+                               "Spring Northward Forage Fish Center of Gravity",
+                               "Spring Northward Forage Fish Center of Gravity SE")) |>
+      tidyr::separate(Var, into = c("Season", "Direction", "A", "B", "C", "D", "E", "Var")) |>
+      dplyr::mutate(Var = tidyr::replace_na(Var, "Mean")) |> 
+      tidyr::pivot_wider(names_from = Var, values_from = Value) |>
+      dplyr::mutate(Mean = as.numeric(Mean),
+                    Upper = Mean + SE,
+                    Lower = Mean - SE) |>
+      ggplot2::ggplot(ggplot2::aes(x = Time, y = Mean, group = Season))+
+      ggplot2::annotate("rect", fill = setup$shade.fill, alpha = setup$shade.alpha,
+                        xmin = setup$x.shade.min , xmax = setup$x.shade.max,
+                        ymin = -Inf, ymax = Inf) +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin = Lower, ymax = Upper, fill = Season), alpha = 0.3)+ #
+      ggplot2::geom_point()+
+      ggplot2::geom_line()+
+      ggplot2::ggtitle("")+
+      ggplot2::ylab(expression("Forage Center of Gravity, km"))+
+      ggplot2::xlab(ggplot2::element_blank())+
+      ggplot2::facet_wrap(~Direction, scales = "free_y")+ #Season
+      ecodata::geom_gls()+
+      ecodata::theme_ts()+
+      ecodata::theme_facet()+
+      ecodata::theme_title()
+
+  }
+
+    return(p)
+
+}
+
+attr(plot_forage_index,"report") <- c("MidAtlantic","NewEngland")
+attr(plot_forage_index, "varName") <- c("index", "cog")
+
+```
+
+forage COG indices produced by SOE-VASTForageCOG.R
+
+```{r}
+
+fallforagecog <- readRDS(here::here("SOEpyindex/fallforagecog.rds"))
+springforagecog <- readRDS(here::here("SOEpyindex/springforagecog.rds"))
+
+setup <- ecodata::plot_setup(shadedRegion = c(2014,2023), report = "MidAtlantic")
+
+testplot <- dplyr::bind_rows(fallforagecog, springforagecog) |>
+  
+  dplyr::filter(Var %in% c("Fall Eastward Forage Fish Center of Gravity",
+                               "Fall Eastward Forage Fish Center of Gravity SE",
+                               "Fall Northward Forage Fish Center of Gravity",
+                               "Fall Northward Forage Fish Center of Gravity SE",
+                               "Spring Eastward Forage Fish Center of Gravity",
+                               "Spring Eastward Forage Fish Center of Gravity SE",
+                               "Spring Northward Forage Fish Center of Gravity",
+                               "Spring Northward Forage Fish Center of Gravity SE")) |>
+      tidyr::separate(Var, into = c("Season", "Direction", "A", "B", "C", "D", "E", "Var")) |>
+      dplyr::mutate(Var = tidyr::replace_na(Var, "Mean")) |> 
+      tidyr::pivot_wider(names_from = Var, values_from = Value) |>
+      dplyr::mutate(Mean = as.numeric(Mean),
+                    Upper = Mean + SE,
+                    Lower = Mean - SE) |>
+      ggplot2::ggplot(ggplot2::aes(x = Time, y = Mean, group = Season))+
+      ggplot2::annotate("rect", fill = setup$shade.fill, alpha = setup$shade.alpha,
+                        xmin = setup$x.shade.min , xmax = setup$x.shade.max,
+                        ymin = -Inf, ymax = Inf) +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin = Lower, ymax = Upper, fill = Season), alpha = 0.3)+ #
+      ggplot2::geom_point()+
+      ggplot2::geom_line()+
+      ggplot2::ggtitle("")+
+      ggplot2::ylab(expression("Forage Center of Gravity, km"))+
+      ggplot2::xlab(ggplot2::element_blank())+
+      ggplot2::facet_wrap(~Direction, scales = "free_y")+ #Season
+      ecodata::geom_gls()+
+      ecodata::theme_ts()+
+      ecodata::theme_facet()+
+      ecodata::theme_title()
+
+testplot
+
+```
+
