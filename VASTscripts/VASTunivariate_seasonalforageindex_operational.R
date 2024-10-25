@@ -43,7 +43,7 @@ bluepyagg_stn_fall <- bluepyagg_stn %>%
          npiscsp,
          #bottemp, #this leaves out many stations for NEFSC
          #surftemp, #this leaves out many stations for NEFSC
-         #oisst, #leaves out everything before 1982
+         oisst, #leaves out everything before 1982
          sstfill
          ) %>%
   na.omit() %>%
@@ -66,7 +66,7 @@ bluepyagg_stn_spring <- bluepyagg_stn %>%
          npiscsp,
          #bottemp, #this leaves out many stations for NEFSC
          #surftemp, #this leaves out many stations for NEFSC
-         #oisst, #leaves out everything before 1982
+         oisst, #leaves out everything before 1982
          sstfill
          ) %>%
   na.omit() %>%
@@ -251,6 +251,9 @@ settings = make_settings( n_x = 500,
 
 
 New_Extrapolation_List <- readRDS(here::here("spatialdat/CustomExtrapolationList.rds"))
+
+# try this fix to get custom grid to run in updated VAST/FishStatsUtils
+New_Extrapolation_List$Area_km2_x = as_units(New_Extrapolation_List$Area_km2_x, "km2")
 
 # select dataset and set directory for output
 
