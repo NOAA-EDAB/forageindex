@@ -79,12 +79,12 @@ stratlook_EPUonly <- data.frame(Stratum = c("Stratum_1",
 
 
 # make data files
-SOEinputs(infile = "SOEpyindex/1982-2022/allagg_fall_500_lennosst_ALLsplit_biascorrect/Index.csv",
+SOEinputs(infile = "SOEpyindex/1982-2023/allagg_fall_500_lennosst_EPUonly_biascorrect/Index.csv",
           season = "Fall", 
           stratlook = stratlook_EPUonly, 
            outfile = "SOEpyindex/fallforageindex.rds")
 
-SOEinputs(infile = "SOEpyindex/1982-2022/allagg_spring_500_lennosst_ALLsplit_biascorrect/Index.csv",
+SOEinputs(infile = "SOEpyindex/1982-2023/allagg_spring_500_lennosst_EPUonly_biascorrect/Index.csv",
           season = "Spring", 
           stratlook = stratlook_EPUonly,
            outfile = "SOEpyindex/springforageindex.rds")
