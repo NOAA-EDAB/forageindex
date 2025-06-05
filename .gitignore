@@ -15,3 +15,6 @@
 # local folders
 WHAMoutput/compare_png
 pyindex_modsel2depth
+
+# fit objects are too large
+*fit.rds
