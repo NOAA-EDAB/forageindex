@@ -1,0 +1,61 @@
+---
+title: "SOE forage fish index re-run"
+format:
+  html:
+    code-fold: true
+---
+
+## Code
+
+The input data was: `forageindex/fhdat/bluepyagg_stn_all_OISST_1982-2023.rds`, which was created at: `forageindex/fhdat/VASTforage_ProcessInputDat.R`
+```{r, code = readLines(here::here("fhdat/VASTforage_ProcessInputDat.R")), eval = FALSE}
+```
+
+
+The forage fish VAST model was run with the code at: `forageindex/test_SOEpyindex/VASTunivariate_seasonalforageindex_operational.R`
+
+```{r, code = readLines(here::here("test_SOEpyindex/VASTunivariate_seasonalforageindex_operational.R")), eval = FALSE}
+```
+
+The indicators were computed with the code at: `forageindex/test_SOEpyindex/SOE-VASTForageIndices.R`
+```{r, code = readLines(here::here("test_SOEpyindex/SOE-VASTForageIndices.R")), eval = FALSE}
+```
+
+## Data comparison
+
+New data:
+```{r}
+#| code-fold: false
+spring <- readRDS(here::here("test_SOEpyindex/springforageindex.rds"))
+fall <- readRDS(here::here("test_SOEpyindex/fallforageindex.rds"))
+```
+
+Original data:
+```{r}
+#| code-fold: false
+orig_fall <- readRDS(here::here("SOEpyindex/fallforageindex.rds"))
+orig_spring <- readRDS(here::here("SOEpyindex/springforageindex.rds"))
+```
+
+Combine and compare:
+```{r}
+#| code-fold: false
+all_dat <- dplyr::bind_rows(spring |> dplyr::mutate(Season = "Spring", Origin = "New"),
+                            fall |> dplyr::mutate(Season = "Fall", Origin = "New"),
+                            orig_spring |> dplyr::mutate(Season = "Spring", Origin = "Original"),
+                            orig_fall |> dplyr::mutate(Season = "Fall", Origin = "Original"))
+
+all_dat |>
+  ggplot2::ggplot(ggplot2::aes(x = Time,
+                               y = Value,
+                               color = Origin)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line() +
+  ggplot2::facet_grid(cols = ggplot2::vars(EPU),
+                      rows = ggplot2::vars(Var |> 
+                                             stringr::str_remove_all(" Forage Fish Biomass Estimate")),
+                      scales = "free_y") +
+  ggplot2::theme_bw() +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30,
+                                                     hjust = 1))
+```
