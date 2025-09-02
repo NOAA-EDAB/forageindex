@@ -48,3 +48,9 @@ dplyr::bind_rows(cogdat, foragecog) |>
     rows = ggplot2::vars(direction),
     scales = "free_y"
   )
+
+ggplot2::ggsave(
+  here::here("test_SOEpyindex/compare_cog.png"),
+  width = 6,
+  height = 4
+)
