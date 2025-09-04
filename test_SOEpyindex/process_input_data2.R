@@ -166,13 +166,13 @@ blueprey <- NEFSCprey %>%
 
 #### QA: compare to original prey list ----
 write.csv(blueprey, here::here("test_SOEpyindex", "new_blueprey.csv"))
-new_blueprey <- read.csv(here::here("test_SOEpyindex", "new_blueprey.csv"))
+blueprey <- read.csv(here::here("test_SOEpyindex", "new_blueprey.csv"))
 
 orig_blueprey <- read.csv(here::here("test_SOEpyindex", "orig_blueprey.csv"))
 
 ### antijoin should return 0 rows
-dplyr::anti_join(orig_blueprey, new_blueprey)
-dplyr::anti_join(new_blueprey, orig_blueprey)
+dplyr::anti_join(orig_blueprey, blueprey)
+dplyr::anti_join(blueprey, orig_blueprey)
 
 ### Classify prey in NEFSC data ----
 fh.nefsc.pisc.pisccomplete.blueprey <- fh.nefsc.pisc.pisccomplete %>%
@@ -285,12 +285,9 @@ nefsc_bluepyagg_stn <- bluepyagg_stn %>%
 ### QA: compare to original NEFSC aggregated data ----
 write.csv(
   nefsc_bluepyagg_stn,
-  here::here(
-    "test_SOEpyindex",
-    "new_nefsc_bluepyagg_stn.csv"
-  )
+  here::here("test_SOEpyindex", "new_nefsc_bluepyagg_stn.csv")
 )
-new_nefsc_bluepyagg_stn <- read.csv(here::here(
+nefsc_bluepyagg_stn <- read.csv(here::here(
   "test_SOEpyindex",
   "new_nefsc_bluepyagg_stn.csv"
 ))
@@ -301,8 +298,8 @@ orig_nefsc_bluepyagg_stn <- read.csv(here::here(
 ))
 
 # antijoins should return 0 rows
-dplyr::anti_join(new_nefsc_bluepyagg_stn, orig_nefsc_bluepyagg_stn)
-dplyr::anti_join(orig_nefsc_bluepyagg_stn, new_nefsc_bluepyagg_stn)
+dplyr::anti_join(nefsc_bluepyagg_stn, orig_nefsc_bluepyagg_stn)
+dplyr::anti_join(orig_nefsc_bluepyagg_stn, nefsc_bluepyagg_stn)
 
 ## Combine NEFSC and NEAMAP Datasets ----
 # This section reads in the NEAMAP data and combines it with the processed NEFSC data.
@@ -386,7 +383,7 @@ write.csv(
   bluepyagg_stn_all,
   here::here("test_SOEpyindex", "new_bluepyagg_stn_all.csv")
 )
-new_bluepyagg_stn_all <- read.csv(here::here(
+bluepyagg_stn_all <- read.csv(here::here(
   "test_SOEpyindex",
   "new_bluepyagg_stn_all.csv"
 ))
@@ -396,8 +393,8 @@ orig_bluepyagg_stn_all <- read.csv(here::here(
 ))
 
 ### antijoin should return 0 rows
-dplyr::anti_join(new_bluepyagg_stn_all, orig_bluepyagg_stn_all)
-dplyr::anti_join(orig_bluepyagg_stn_all, new_bluepyagg_stn_all)
+dplyr::anti_join(bluepyagg_stn_all, orig_bluepyagg_stn_all)
+dplyr::anti_join(orig_bluepyagg_stn_all, bluepyagg_stn_all)
 
 ## Integrate OISST Sea Surface Temperature Data ----
 # This section adds OISST data to the combined dataset by finding the nearest
@@ -440,7 +437,7 @@ dietstn_OISST <- join_oisst_to_stations(
 
 ### QA: compare to orig dietstn_OISST ----
 saveRDS(dietstn_OISST, here::here("test_SOEpyindex", "new_dietstn_OISST.rds"))
-new_dietstn_OISST <- readRDS(here::here(
+dietstn_OISST <- readRDS(here::here(
   "test_SOEpyindex",
   "new_dietstn_OISST.rds"
 ))
@@ -454,7 +451,7 @@ orig_dietstn_OISST <- readRDS(here::here(
 dplyr::anti_join(
   orig_dietstn_OISST |>
     tibble::as_tibble(),
-  new_dietstn_OISST |>
+  dietstn_OISST |>
     tibble::as_tibble() |>
     dplyr::mutate(
       year.y = as.numeric(year.y),
@@ -463,7 +460,7 @@ dplyr::anti_join(
     )
 )
 dplyr::anti_join(
-  new_dietstn_OISST |>
+  dietstn_OISST |>
     tibble::as_tibble() |>
     dplyr::mutate(
       year.y = as.numeric(year.y),
@@ -475,28 +472,77 @@ dplyr::anti_join(
 )
 
 ## Merge OISST into diet data ----
-# Coalesce `surftemp` and `oisst` to prefer the NEAMAP sensor data where available.
 final_data <- left_join(
   bluepyagg_stn_all,
   dietstn_OISST %>%
     dplyr::select(id, oisst = sst) %>%
     sf::st_drop_geometry(),
   by = "id"
-) %>%
-  dplyr::mutate(surftemp = dplyr::coalesce(surftemp, oisst))
+)
 
 # Save the final dataset ----
 saveRDS(
   final_data,
-  here("test_SOEpyindex/test_VAST_input.rds")
+  here::here("test_SOEpyindex/test_VAST_input.rds")
 )
 
 ## QA: compare to original data ----
 
 orig_data <- readRDS(here::here("fhdat/bluepyagg_stn_all_OISST_1982-2023.rds"))
+final_data <- readRDS(here::here("test_SOEpyindex/test_VAST_input.rds"))
 
 ### antijoin should return 0 rows
-dplyr::anti_join(orig_data, final_data)
-dplyr::anti_join(final_data, orig_data)
+orig_vals <- dplyr::anti_join(orig_data, final_data)
+new_vals <- dplyr::anti_join(final_data, orig_data)
 
-## TODO: 3235 rows are not matching, investigate differences
+## TODO: 3,235 rows are not matching, investigate differences
+## had accidentally been coalescing OISST into surftemp in the final step
+## fixed sst coalescing and now there are 18,124 mismatched rows
+## looks like a rounding/ matching issue
+## after transposing data in function below, all data matches
+
+orig_vals == new_vals[, -1]
+
+orig_vals[7, ]
+new_vals[7, ]
+
+orig_vals[1, ] == new_vals[1, -1]
+orig_vals[7, ] == new_vals[7, -1]
+# looks like it's a rounding difference in some cols
+
+dplyr::bind_cols(orig_vals[1, ] |> t(), new_vals[1, ] |> t()) |>
+  print(n = 25)
+
+orig_vals[1, 17]
+new_vals[1, 17]
+
+show_mismatched_vals <- function(data1, data2) {
+  output <- c()
+  rows_w_same <- c()
+  for (i in 1:nrow(data1)) {
+    this1 <- data1[i, ] |> t()
+    this2 <- data2[i, ] |>
+      dplyr::select(-X) |>
+      t()
+
+    combined_dat <- tibble::tibble(
+      names = colnames(data1),
+      data1 = this1,
+      data2 = this2
+    ) |>
+      dplyr::filter(!(is.na(data1) & is.na(data2)))
+
+    # different_col <- which(is.na(combined_dat$data1 == combined_dat$data2))
+    different_col <- which(combined_dat$data1 != combined_dat$data2)
+    if (length(different_col) == 0) {
+      rows_w_same <- c(rows_w_same, i)
+    }
+
+    output <- c(output, combined_dat[different_col, "names"])
+  }
+  return({
+    unique(output)
+    rows_w_same
+  })
+}
+show_mismatched_vals(orig_vals, new_vals)
